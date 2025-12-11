@@ -9,7 +9,7 @@
 ### 🎨 Clone Only Frontend
 
 ```bash
-git clone --no-checkout https://github.com/YourUser/NutriTrack.git
+git clone --no-checkout https://github.com/JagatKC-0506/NutriTrack.git
 cd NutriTrack
 
 git sparse-checkout init --cone
@@ -29,7 +29,7 @@ NutriTrack/
 ### ⚙️ Clone Only Backend
 
 ```bash
-git clone --no-checkout https://github.com/YourUser/NutriTrack.git
+git clone --no-checkout https://github.com/JagatKC-0506/NutriTrack.git
 cd NutriTrack
 
 git sparse-checkout init --cone
@@ -49,7 +49,7 @@ NutriTrack/
 ### 📦 Clone Both Frontend & Backend
 
 ```bash
-git clone https://github.com/YourUser/NutriTrack.git
+git clone https://github.com/JagatKC-0506/NutriTrack.git
 cd NutriTrack
 git checkout main
 ```
