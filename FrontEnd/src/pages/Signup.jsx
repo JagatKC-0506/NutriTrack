@@ -74,8 +74,11 @@ export default function Signup() {
       return;
     }
 
-    if (!formData.email.includes('@')) {
-      setError('Please enter a valid email');
+    // Strict email validation - only letters, numbers, dots, and underscores allowed
+    // Must start with letter, at least 3 chars before @
+    const emailRegex = /^[a-zA-Z][a-zA-Z0-9._]{2,}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Email must start with a letter, be at least 3 characters, and contain only letters, numbers, dots, or underscores before @');
       setIsLoading(false);
       return;
     }
