@@ -31,6 +31,7 @@ import Nutrition from './pages/Nutrition'
 import Vaccines from './pages/Vaccines'
 import Feeding from './pages/Feeding'
 import Growth from './pages/Growth'
+import Profile from './pages/Profile'
 import StageSelect from './pages/StageSelect'
 import './App.css'
 
@@ -75,8 +76,12 @@ function App() {
         {/* Route 7: Growth Page */}
         {/* Path: /growth → Shows <Growth /> component */}
         <Route path="/growth" element={<Growth />} />
+
+        {/* Route 8: Profile Page */}
+        {/* Path: /profile → Shows <Profile /> component */}
+        <Route path="/profile" element={<Profile />} />
         
-        {/* Route 8: Root Path Redirect */}
+        {/* Route 9: Root Path Redirect */}
         {/* Path: / (any other path) → Redirect to /login */}
         {/* replace: replaces history entry so user can't go back to "/" */}
         <Route path="/" element={<Navigate to="/welcome" replace />} />

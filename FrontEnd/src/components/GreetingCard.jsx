@@ -3,18 +3,23 @@
  * =======================
  * Displays a personalized greeting with user info
  * Shows current trimester/month and due date
+ * Includes profile button
  */
 
+import { useNavigate } from 'react-router-dom';
+
 export default function GreetingCard({ userName = "Sarah Johnson", trimester = "Trimester 2", dueDate = "2025-06-15" }) {
+  const navigate = useNavigate();
+
   return (
     <div className="greeting-card">
       <div className="greeting-header">
         <div className="greeting-text">
           <h1>Hello, <br /> <strong>{userName}</strong></h1>
         </div>
-        <div className="profile-avatar">
+        <button className="profile-button" onClick={() => navigate('/profile')} title="Go to Profile">
           <span>👤</span>
-        </div>
+        </button>
       </div>
       
       <div className="trimester-info">
