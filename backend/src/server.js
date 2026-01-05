@@ -6,6 +6,7 @@ import { errorHandler } from './middleware/auth.js';
 
 // Import routes
 import authRoutes from './routes/authRoutes.js';
+import babyRoutes from './routes/babyRoutes.js';
 import growthRoutes from './routes/growthRoutes.js';
 import reminderRoutes from './routes/reminderRoutes.js';
 import staticRoutes from './routes/staticRoutes.js';
@@ -20,6 +21,7 @@ app.use(cors(config.cors));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/babies', babyRoutes);
 app.use('/api/growth', growthRoutes);
 app.use('/api/reminders', reminderRoutes);
 app.use('/api/static', staticRoutes);
