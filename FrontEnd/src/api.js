@@ -60,7 +60,7 @@ export async function getCurrentUser() {
   });
 }
 
-export async function register({ fullName, email, dueDate, userType, password, babyDob }) {
+export async function register({ fullName, email, dueDate, userType, password }) {
   // Send dates as YYYY-MM-DD strings (no timezone conversion needed)
   return request('/api/auth/register', {
     method: 'POST',
@@ -72,7 +72,6 @@ export async function register({ fullName, email, dueDate, userType, password, b
       password,
       full_name: fullName,
       due_date: dueDate || null,
-      baby_date_of_birth: babyDob || null,
       user_type: userType,
     }),
   });

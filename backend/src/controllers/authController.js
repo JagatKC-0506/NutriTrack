@@ -17,7 +17,7 @@ const googleClient = config.oauth.googleClientId
  */
 export const register = async (req, res, next) => {
   try {
-    const { email, password, full_name, due_date, baby_date_of_birth, user_type } = req.body;
+    const { email, password, full_name, due_date, user_type } = req.body;
 
     // Validate password strength
     const passwordValidation = validatePasswordStrength(password);
@@ -41,7 +41,6 @@ export const register = async (req, res, next) => {
       hashed_password: hashedPassword,
       full_name,
       due_date,
-      baby_date_of_birth,
       user_type,
     });
 

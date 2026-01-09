@@ -37,8 +37,7 @@ export default function Signup() {
     email: '',
     password: '',
     userType: 'pregnant',
-    dueDate: '',
-    babyDob: ''
+    dueDate: ''
   });
   const navigate = useNavigate();
   const location = useLocation();
@@ -151,11 +150,7 @@ export default function Signup() {
       return;
     }
 
-    if (formData.userType === 'newParent' && !formData.babyDob) {
-      setError('Please enter your baby\'s date of birth');
-      setIsLoading(false);
-      return;
-    }
+    // Note: Dates (due date or baby DOB) will be collected after signup when creating baby profile
 
     // Strict email validation - only letters, numbers, dots, and underscores allowed
     // Must start with letter, at least 3 chars before @
@@ -184,8 +179,7 @@ export default function Signup() {
         email: formData.email,
         password: formData.password,
         userType: formData.userType,
-        dueDate: formData.userType === 'pregnant' ? formData.dueDate : '',
-        babyDob: formData.userType === 'newParent' ? formData.babyDob : ''
+        dueDate: formData.userType === 'pregnant' ? formData.dueDate : ''
       });
 
       navigate('/login', { state: { message: 'Account created! Please sign in.' } });
@@ -274,18 +268,6 @@ export default function Signup() {
               value={formData.dueDate}
               onChange={handleInputChange}
               minDate={new Date()}
-            />
-          )}
-
-          {/* Baby DOB Input - Only for new parents */}
-          {formData.userType === 'newParent' && (
-            <DateInput
-              label="Baby's Date of Birth"
-              id="babyDob"
-              name="babyDob"
-              value={formData.babyDob}
-              onChange={handleInputChange}
-              maxDate={new Date()}
             />
           )}
 
