@@ -25,6 +25,7 @@
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { BabyProvider } from './context/BabyContext'
+import Onboarding from './pages/Onboarding'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Home from './pages/Home'
@@ -48,7 +49,10 @@ function App() {
       <Router>
         {/* Routes: Container for all route definitions */}
         <Routes>
-          {/* Route 0: Welcome / Stage selection */}
+          {/* Route 0: Onboarding - First time user experience */}
+          <Route path="/onboarding" element={<Onboarding />} />
+
+          {/* Route 1: Welcome / Stage selection */}
           <Route path="/welcome" element={<StageSelect />} />
 
           {/* Route 1: Home Page (Dashboard) */}
@@ -79,15 +83,15 @@ function App() {
           {/* Path: /growth → Shows <Growth /> component */}
           <Route path="/growth" element={<Growth />} />
 
-          {/* Route 8: Profile Page */}
+          {/* Route 9: Profile Page */}
           {/* Path: /profile → Shows <Profile /> component */}
           <Route path="/profile" element={<Profile />} />
           
-          {/* Route 9: Root Path Redirect */}
-          {/* Path: / (any other path) → Redirect to /login */}
+          {/* Route 10: Root Path Redirect */}
+          {/* Path: / (any other path) → Redirect to /onboarding */}
           {/* replace: replaces history entry so user can't go back to "/" */}
-          <Route path="/" element={<Navigate to="/welcome" replace />} />
-          <Route path="*" element={<Navigate to="/welcome" replace />} />
+          <Route path="/" element={<Navigate to="/onboarding" replace />} />
+          <Route path="*" element={<Navigate to="/onboarding" replace />} />
         </Routes>
       </Router>
     </BabyProvider>
