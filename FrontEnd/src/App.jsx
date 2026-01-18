@@ -24,6 +24,7 @@
  */
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { BabyProvider } from './context/BabyContext'
 import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Home from './pages/Home'
@@ -42,52 +43,54 @@ import './App.css'
  */
 function App() {
   return (
-    // Router: Enables all React Router functionality
-    <Router>
-      {/* Routes: Container for all route definitions */}
-      <Routes>
-        {/* Route 0: Welcome / Stage selection */}
-        <Route path="/welcome" element={<StageSelect />} />
+    <BabyProvider>
+      {/* Router: Enables all React Router functionality */}
+      <Router>
+        {/* Routes: Container for all route definitions */}
+        <Routes>
+          {/* Route 0: Welcome / Stage selection */}
+          <Route path="/welcome" element={<StageSelect />} />
 
-        {/* Route 1: Home Page (Dashboard) */}
-        {/* Path: /home → Shows <Home /> component */}
-        <Route path="/home" element={<Home />} />
-        
-        {/* Route 2: Login Page */}
-        {/* Path: /login → Shows <Login /> component */}
-        <Route path="/login" element={<Login />} />
-        
-        {/* Route 3: Signup Page */}
-        {/* Path: /signup → Shows <Signup /> component */}
-        <Route path="/signup" element={<Signup />} />
+          {/* Route 1: Home Page (Dashboard) */}
+          {/* Path: /home → Shows <Home /> component */}
+          <Route path="/home" element={<Home />} />
+          
+          {/* Route 2: Login Page */}
+          {/* Path: /login → Shows <Login /> component */}
+          <Route path="/login" element={<Login />} />
+          
+          {/* Route 3: Signup Page */}
+          {/* Path: /signup → Shows <Signup /> component */}
+          <Route path="/signup" element={<Signup />} />
 
-        {/* Route 4: Nutrition Page */}
-        {/* Path: /nutrition → Shows <Nutrition /> component */}
-        <Route path="/nutrition" element={<Nutrition />} />
+          {/* Route 4: Nutrition Page */}
+          {/* Path: /nutrition → Shows <Nutrition /> component */}
+          <Route path="/nutrition" element={<Nutrition />} />
 
-        {/* Route 5: Vaccines Page */}
-        {/* Path: /vaccines → Shows <Vaccines /> component */}
-        <Route path="/vaccines" element={<Vaccines />} />
+          {/* Route 5: Vaccines Page */}
+          {/* Path: /vaccines → Shows <Vaccines /> component */}
+          <Route path="/vaccines" element={<Vaccines />} />
 
-        {/* Route 6: Feeding Page */}
-        {/* Path: /feeding → Shows <Feeding /> component */}
-        <Route path="/feeding" element={<Feeding />} />
+          {/* Route 6: Feeding Page */}
+          {/* Path: /feeding → Shows <Feeding /> component */}
+          <Route path="/feeding" element={<Feeding />} />
 
-        {/* Route 7: Growth Page */}
-        {/* Path: /growth → Shows <Growth /> component */}
-        <Route path="/growth" element={<Growth />} />
+          {/* Route 7: Growth Page */}
+          {/* Path: /growth → Shows <Growth /> component */}
+          <Route path="/growth" element={<Growth />} />
 
-        {/* Route 8: Profile Page */}
-        {/* Path: /profile → Shows <Profile /> component */}
-        <Route path="/profile" element={<Profile />} />
-        
-        {/* Route 9: Root Path Redirect */}
-        {/* Path: / (any other path) → Redirect to /login */}
-        {/* replace: replaces history entry so user can't go back to "/" */}
-        <Route path="/" element={<Navigate to="/welcome" replace />} />
-        <Route path="*" element={<Navigate to="/welcome" replace />} />
-      </Routes>
-    </Router>
+          {/* Route 8: Profile Page */}
+          {/* Path: /profile → Shows <Profile /> component */}
+          <Route path="/profile" element={<Profile />} />
+          
+          {/* Route 9: Root Path Redirect */}
+          {/* Path: / (any other path) → Redirect to /login */}
+          {/* replace: replaces history entry so user can't go back to "/" */}
+          <Route path="/" element={<Navigate to="/welcome" replace />} />
+          <Route path="*" element={<Navigate to="/welcome" replace />} />
+        </Routes>
+      </Router>
+    </BabyProvider>
   )
 }
 

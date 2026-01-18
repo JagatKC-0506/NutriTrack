@@ -9,24 +9,28 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BottomNavigation from '../components/BottomNavigation';
+import { useBabyContext } from '../context/BabyContext';
 import { 
   getCurrentUser,
   getUserProfile,
   saveEmergencyContact,
   getEmergencyContact,
   sendPartnerInvite,
-  clearAuthToken
+  clearAuthToken,
+  getBabies
 } from '../api';
 import '../styles/Profile.css';
 
 export default function Profile() {
   const navigate = useNavigate();
+  const { babies, selectedBaby, setSelectedBaby } = useBabyContext();
   const [loading, setLoading] = useState(true);
   
   // State for settings
   const [showEmergencyModal, setShowEmergencyModal] = useState(false);
   const [showLegalModal, setShowLegalModal] = useState(false);
   const [showPartnerModal, setShowPartnerModal] = useState(false);
+  const [showBabySelector, setShowBabySelector] = useState(false);
   
   // User data - fetch from API
   const [userData, setUserData] = useState({
@@ -149,6 +153,44 @@ export default function Profile() {
         {/* Settings Section */}
         <div className="settings-section">
           <h3 className="section-title">Settings</h3>
+          
+          {/* Baby Selection - Only show if user has multiple babies */}
+          {babies && babies.length > 1 && (
+            <div className="settings-item" onClick={() => setShowBabySelector(!showBabySelector)}>
+              <div className="settings-item-left">
+                <span className="settings-icon">👶</span>
+                <div className="settings-info">
+                  <p className="settings-label">Select Baby</p>
+                  <p className="settings-description">
+                    {selectedBaby ? `Currently viewing: ${selectedBaby.name}` : 'Choose which baby to view data for'}
+                  </p>
+                </div>
+              </div>
+              <span className="chevron">›</span>
+            </div>
+          )}
+          
+          {/* Baby Selector Dropdown */}
+          {showBabySelector && babies && babies.length > 1 && (
+            <div className="baby-selector-dropdown-section">
+              {babies.map((baby) => (
+                <button
+                  key={baby.id}
+                  className={`baby-selector-option ${selectedBaby?.id === baby.id ? 'active' : ''}`}
+                  onClick={() => {
+                    setSelectedBaby(baby);
+                    setShowBabySelector(false);
+                  }}
+                >
+                  <span className="baby-selector-name">{baby.name}</span>
+                  <span className="baby-selector-dob">
+                    DOB: {new Date(baby.date_of_birth).toLocaleDateString()}
+                  </span>
+                  {selectedBaby?.id === baby.id && <span className="checkmark">✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
           
           {/* Dark Mode Toggle */}
           <div className="settings-item">

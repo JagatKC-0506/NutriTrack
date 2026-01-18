@@ -505,3 +505,59 @@
 .legal-body::-webkit-scrollbar-thumb:hover {
   background: var(--border);
 }
+/* ===== BABY SELECTOR ===== */
+.baby-selector-dropdown-section {
+  background: rgba(123, 224, 214, 0.08);
+  border: 1px solid rgba(123, 224, 214, 0.2);
+  border-radius: 12px;
+  margin: 12px 0 20px 0;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.baby-selector-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.baby-selector-option:hover {
+  background: var(--card-muted);
+  border-color: var(--accent);
+}
+
+.baby-selector-option.active {
+  background: rgba(123, 224, 214, 0.15);
+  border-color: var(--accent);
+}
+
+.baby-selector-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-main);
+  display: block;
+}
+
+.baby-selector-dob {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: block;
+  margin-top: 4px;
+}
+
+.checkmark {
+  color: var(--success-green);
+  font-weight: bold;
+  font-size: 18px;
+  margin-left: 8px;
+}

@@ -26,13 +26,13 @@
 
 // Format date for display (expects YYYY-MM-DD format from backend)
 function formatDateOnly(dateString) {
-  if (!dateString) return '';
+  if (!dateString) return 'Date not set';
   
   // Parse YYYY-MM-DD format
   const [year, month, day] = dateString.split('-').map(Number);
   const date = new Date(year, month - 1, day);
   
-  if (Number.isNaN(date.getTime())) return dateString;
+  if (Number.isNaN(date.getTime())) return 'Date not set';
   
   const options = { year: 'numeric', month: 'short', day: 'numeric' };
   return date.toLocaleDateString('en-US', options);

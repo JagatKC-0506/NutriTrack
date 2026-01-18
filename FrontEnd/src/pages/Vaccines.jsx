@@ -13,12 +13,14 @@ import VaccineCard from '../components/VaccineCard';
 import KhopCard from '../components/KhopCard';
 import BottomNavigation from '../components/BottomNavigation';
 import NotificationService from '../services/NotificationService';
+import { useBabyContext } from '../context/BabyContext';
 import { getAllVaccines, getUserVaccineReminders, createVaccineReminder, updateVaccineReminderStatus, getCurrentUser, getBabies } from '../api';
-import { getNextDoseDate, isVaccineDueWithin, generateAutomaticVaccineReminders } from '../utils/vaccineSchedule';
+import vaccineScheduleConfig, { getNextDoseDate, isVaccineDueWithin, generateAutomaticVaccineReminders, calculateVaccineDateFromBirth } from '../utils/vaccineSchedule';
 import '../styles/Vaccines.css';
 
 export default function Vaccines() {
   const navigate = useNavigate();
+  const { babies, selectedBaby, setSelectedBaby } = useBabyContext();
   const [activeTab, setActiveTab] = useState('all');
   const [allVaccines, setAllVaccines] = useState([]);
   const [userReminders, setUserReminders] = useState([]);
@@ -26,29 +28,19 @@ export default function Vaccines() {
   const [autoSetupDone, setAutoSetupDone] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [showKhopCard, setShowKhopCard] = useState(false);
-  const [babies, setBabies] = useState([]);
-  const [selectedBaby, setSelectedBaby] = useState(null);
   
   // Fetch all available vaccines and user reminders on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [vaccinesData, remindersData, user, babiesData] = await Promise.all([
+        const [vaccinesData, remindersData, user] = await Promise.all([
           getAllVaccines(),
           getUserVaccineReminders().catch(() => []),
-          getCurrentUser().catch(() => null),
-          getBabies().catch(() => [])
+          getCurrentUser().catch(() => null)
         ]);
         
         setAllVaccines(vaccinesData || []);
         setCurrentUser(user);
-        setBabies(babiesData || []);
-        
-        // Set selected baby to the first active baby
-        if (babiesData && babiesData.length > 0) {
-          const activeBaby = babiesData.find(b => b.is_active) || babiesData[0];
-          setSelectedBaby(activeBaby);
-        }
 
         // Check if auto-setup was done for this user using localStorage
         const autoSetupKey = `vaccine_auto_setup_${user?.id}`;
@@ -56,7 +48,7 @@ export default function Vaccines() {
         
         // Only auto-create reminders if not done before
         if (!autoSetupDone) {
-          const babyDOB = babiesData && babiesData.length > 0 ? babiesData[0].date_of_birth : null;
+          const babyDOB = selectedBaby ? selectedBaby.date_of_birth : null;
           if (babyDOB && vaccinesData && vaccinesData.length > 0) {
             await autoCreateAllVaccineReminders(vaccinesData, remindersData || [], babyDOB);
             // Mark auto-setup as done for this user
@@ -76,7 +68,7 @@ export default function Vaccines() {
     };
 
     fetchData();
-  }, []);
+  }, [selectedBaby]);
 
   // Function to check if vaccine is due within 7 days
   const isDueWithinWeek = (dateString) => {
@@ -184,12 +176,23 @@ export default function Vaccines() {
     // Add available vaccines that have no reminders yet
     allVaccines.forEach(vaccine => {
       if (!vaccinesWithReminders.has(vaccine.name)) {
+        // Estimate first dose date from baby's DOB using schedule config
+        let reminderDate = '';
+        const schedule = vaccineScheduleConfig[vaccine.name];
+        const firstDose = schedule?.spacing?.[0];
+        if (firstDose && selectedBaby?.date_of_birth) {
+          const date = calculateVaccineDateFromBirth(selectedBaby.date_of_birth, firstDose.ageMonths);
+          if (date) {
+            reminderDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+          }
+        }
+
         displayVaccines.push({
           id: `available-${vaccine.id || vaccine.name}`,
           vaccine_name: vaccine.name,
           vaccine_icon: vaccine.emoji,
           description: vaccine.description,
-          reminder_date: '',
+          reminder_date: reminderDate,
           status: 'available',
           recipient: vaccine.recipient_type === 'baby' ? 'baby' : 'mother',
           recipient_type: vaccine.recipient_type,

@@ -6,30 +6,13 @@
  */
 
 import { useState } from 'react';
+import { calculateBabyAgeDetailed } from '../utils/babyAge';
 import '../styles/BabyCard.css';
 
 export default function BabyCard({ baby, onEdit, onDelete, onViewGrowth }) {
   const [showMenu, setShowMenu] = useState(false);
 
-  // Calculate baby's age
-  const calculateAge = (dob) => {
-    const today = new Date();
-    const birthDate = new Date(dob);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-    
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    
-    const months = monthDiff < 0 ? 12 + monthDiff : monthDiff;
-    return { years: age, months };
-  };
-
-  const age = calculateAge(baby.date_of_birth);
-  const ageText = age.years > 0 
-    ? `${age.years}y ${age.months}m` 
-    : `${age.months} months`;
+  const ageText = calculateBabyAgeDetailed(baby.date_of_birth).label;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);

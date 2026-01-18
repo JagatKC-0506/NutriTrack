@@ -14,6 +14,8 @@ import BabyCard from '../components/BabyCard';
 import BabyForm from '../components/BabyForm';
 import GrowthInput from '../components/GrowthInput';
 import BottomNavigation from '../components/BottomNavigation';
+import { useBabyContext } from '../context/BabyContext';
+import { calculateBabyAgeDetailed, getBabyAgeMonths } from '../utils/babyAge';
 import { 
   getBabies, 
   createBaby, 
@@ -27,9 +29,8 @@ import '../styles/Growth.css';
 
 export default function Growth() {
   const navigate = useNavigate();
+  const { babies, selectedBaby, setSelectedBaby, setBabies } = useBabyContext();
   const [activeTab, setActiveTab] = useState('babies');
-  const [babies, setBabies] = useState([]);
-  const [selectedBaby, setSelectedBaby] = useState(null);
   const [growthRecords, setGrowthRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showBabyForm, setShowBabyForm] = useState(false);
@@ -42,11 +43,8 @@ export default function Growth() {
   useEffect(() => {
     const fetchBabies = async () => {
       try {
-        const babiesData = await getBabies();
-        setBabies(babiesData);
-        if (babiesData.length > 0) {
-          setSelectedBaby(babiesData[0]);
-          fetchGrowthRecords(babiesData[0].id);
+        if (selectedBaby) {
+          fetchGrowthRecords(selectedBaby.id);
         }
       } catch (error) {
         console.error('Error fetching babies:', error);
@@ -56,7 +54,7 @@ export default function Growth() {
     };
 
     fetchBabies();
-  }, []);
+  }, [selectedBaby]);
 
   const fetchGrowthRecords = async (babyId) => {
     try {
@@ -162,12 +160,11 @@ export default function Growth() {
   };
 
   const calculateAge = (dob) => {
-    const today = new Date();
-    const birthDate = new Date(dob);
-    const ageMs = today - birthDate;
-    const ageDate = new Date(ageMs);
-    const months = ageDate.getUTCMonth() + (ageDate.getUTCFullYear() - 1970) * 12;
-    return months;
+    return calculateBabyAgeDetailed(dob).label;
+  };
+
+  const getAgeInMonths = (dob) => {
+    return getBabyAgeMonths(dob);
   };
 
   const [milestones, setMilestones] = useState([
@@ -362,7 +359,7 @@ export default function Growth() {
                     <div className="current-stat-content">
                       <h3>Current Height</h3>
                       <p className="current-stat-value">{growthRecords[0].height_cm} cm</p>
-                      <p>Age: {calculateAge(selectedBaby.date_of_birth)} months</p>
+                      <p>Age: {calculateAge(selectedBaby.date_of_birth)}</p>
                     </div>
                   </div>
                 </div>

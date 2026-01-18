@@ -14,9 +14,12 @@ import NotificationCard from '../components/NotificationCard';
 import NotificationBanner from '../components/NotificationBanner';
 import TipCard from '../components/TipCard';
 import BottomNavigation from '../components/BottomNavigation';
+import BabyForm from '../components/BabyForm';
 import NotificationService from '../services/NotificationService';
-import { getReminders, getDailyTip, getCurrentUser, getAuthToken, getUserVaccineReminders, getBabies } from '../api';
+import { useBabyContext } from '../context/BabyContext';
+import { getReminders, getDailyTip, getCurrentUser, getAuthToken, getUserVaccineReminders, getBabies, createBaby } from '../api';
 import { isVaccineDueWithin } from '../utils/vaccineSchedule';
+import { calculateBabyAgeDetailed, getBabyAgeMonths } from '../utils/babyAge';
 import '../styles/Home.css';
 import '../styles/NotificationCard.css';
 
@@ -48,43 +51,18 @@ const calculateTrimester = (dueDateString) => {
   return { trimester: 'Trimester 3', weeksPregnant };
 };
 
-// Derive baby age in weeks/months from date of birth
-const calculateBabyAge = (dobString) => {
-  if (!dobString) return { label: 'Age unknown', monthsValue: null, weeks: null };
-
-  const dob = new Date(dobString);
-  if (Number.isNaN(dob.getTime())) return { label: 'Age unknown', monthsValue: null, weeks: null };
-
-  const today = new Date();
-  const normalizedToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const normalizedDob = new Date(dob.getFullYear(), dob.getMonth(), dob.getDate());
-
-  const daysOld = Math.floor((normalizedToday - normalizedDob) / DAY_MS);
-  if (daysOld < 0) return { label: 'Baby not born yet', monthsValue: 0, weeks: 0 };
-
-  const weeks = Math.floor(daysOld / 7);
-  const monthsValue = Math.min(24, daysOld / 30.44); // cap at 24 months for UI
-
-  let label;
-  if (monthsValue < 1) {
-    label = `${weeks}w`;
-  } else {
-    const wholeMonths = Math.floor(monthsValue);
-    const remainingDays = Math.floor(daysOld - wholeMonths * 30.44);
-    label = `${wholeMonths}m${remainingDays > 0 ? ` ${remainingDays}d` : ''}`;
-  }
-
-  return { label, monthsValue, weeks };
-};
-
 export default function Home() {
   const navigate = useNavigate();
+  const { selectedBaby } = useBabyContext();
+  
   // State for notification permission
   const [notificationPermission, setNotificationPermission] = useState(false);
   const [tip, setTip] = useState("Stay hydrated! Drink at least 8 glasses of water daily.");
   const [tipError, setTipError] = useState(null);
   const [reminders, setReminders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAddBabyModal, setShowAddBabyModal] = useState(false);
+  const [isSubmittingBaby, setIsSubmittingBaby] = useState(false);
   const [userData, setUserData] = useState({
     userName: "Loading...",
     trimester: "Calculating...",
@@ -180,11 +158,12 @@ export default function Home() {
           try {
             const babiesData = await getBabies().catch(() => []);
             if (babiesData && babiesData.length > 0) {
-              const activeBaby = babiesData.find(b => b.is_active) || babiesData[0];
-              babyDob = activeBaby.date_of_birth;
-              const babyAge = calculateBabyAge(babyDob);
+              // Use selected baby from context or first active baby
+              const babyToUse = selectedBaby || babiesData.find(b => b.is_active) || babiesData[0];
+              babyDob = babyToUse.date_of_birth;
+              const babyAge = calculateBabyAgeDetailed(babyDob);
               babyAgeLabel = babyAge.label;
-              babyAgeMonths = babyAge.monthsValue;
+              babyAgeMonths = getBabyAgeMonths(babyDob);
               babyAgeWeeks = babyAge.weeks;
             }
           } catch (error) {
@@ -296,6 +275,21 @@ export default function Home() {
     fetchData();
   }, []);
 
+  const handleAddBaby = async (babyData) => {
+    setIsSubmittingBaby(true);
+    try {
+      await createBaby(babyData);
+      setShowAddBabyModal(false);
+      // Optionally, refresh the data or show a success message
+      alert('Baby added successfully!');
+    } catch (error) {
+      console.error('Error adding baby:', error);
+      alert(`Error adding baby: ${error.message}`);
+    } finally {
+      setIsSubmittingBaby(false);
+    }
+  };
+
   return (
     <div className="home-container">
       {/* Main Content */}
@@ -334,6 +328,40 @@ export default function Home() {
           content={tipError ? `Tip unavailable: ${tipError}` : tip}
         />
       </div>
+
+      {/* Floating Add Baby Button */}
+      <button 
+        className="floating-add-button"
+        onClick={() => setShowAddBabyModal(true)}
+        title="Add Baby"
+        aria-label="Add Baby"
+      >
+        +
+      </button>
+
+      {/* Add Baby Modal */}
+      {showAddBabyModal && (
+        <div className="modal-overlay" onClick={() => setShowAddBabyModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Add Baby</h2>
+              <button 
+                className="modal-close-button"
+                onClick={() => setShowAddBabyModal(false)}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="modal-body">
+              <BabyForm 
+                onSubmit={handleAddBaby}
+                isLoading={isSubmittingBaby}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Navigation */}
       <BottomNavigation activeTab="Home" userType={userData.userType} />

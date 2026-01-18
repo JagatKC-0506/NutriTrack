@@ -6,6 +6,7 @@
  */
 
 import { useState } from 'react';
+import { calculateBabyAgeDetailed } from '../utils/babyAge';
 import '../styles/KhopCard.css';
 
 export default function KhopCard({ isOpen, onClose, babyName, babyDOB, completedVaccines }) {
@@ -18,24 +19,8 @@ export default function KhopCard({ isOpen, onClose, babyName, babyDOB, completed
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
-  // Calculate age from DOB - show months if less than 2 years, years if 2 or more
-  const calculateAge = (dobString) => {
-    if (!dobString) return '';
-    const dob = new Date(dobString);
-    const today = new Date();
-    
-    // Calculate total months
-    const totalMonths = (today.getFullYear() - dob.getFullYear()) * 12 + (today.getMonth() - dob.getMonth());
-    
-    // If less than 24 months (2 years), show in months
-    if (totalMonths < 24) {
-      return `${totalMonths} months`;
-    }
-    
-    // If 2 years or more, show in years
-    const years = Math.floor(totalMonths / 12);
-    return `${years} years`;
-  };
+  // Calculate age using the utility function
+  const babyAge = calculateBabyAgeDetailed(babyDOB);
 
   return (
     <div className="khop-card-overlay" onClick={onClose}>
@@ -61,7 +46,7 @@ export default function KhopCard({ isOpen, onClose, babyName, babyDOB, completed
           </div>
           <div className="khop-info-row">
             <label>उमेर :</label>
-            <span>{calculateAge(babyDOB)}</span>
+            <span>{babyAge.label}</span>
           </div>
         </div>
 
