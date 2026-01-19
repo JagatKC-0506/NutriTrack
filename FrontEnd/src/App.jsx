@@ -35,6 +35,9 @@ import Feeding from './pages/Feeding'
 import Growth from './pages/Growth'
 import Profile from './pages/Profile'
 import StageSelect from './pages/StageSelect'
+import PregnantHome from './pages/PregnantHome'
+import PregnantNutrition from './pages/PregnantNutrition'
+import PregnantVaccines from './pages/PregnantVaccines'
 import './App.css'
 
 /**
@@ -55,9 +58,13 @@ function App() {
           {/* Route 1: Welcome / Stage selection */}
           <Route path="/welcome" element={<StageSelect />} />
 
-          {/* Route 1: Home Page (Dashboard) */}
+          {/* Route 1: Home Page (Dashboard) - New Parent */}
           {/* Path: /home → Shows <Home /> component */}
           <Route path="/home" element={<Home />} />
+
+          {/* Route 1b: Pregnant Home Page (Dashboard) - Pregnant Users */}
+          {/* Path: /pregnant/home → Shows <PregnantHome /> component */}
+          <Route path="/pregnant/home" element={<PregnantHome />} />
           
           {/* Route 2: Login Page */}
           {/* Path: /login → Shows <Login /> component */}
@@ -67,13 +74,21 @@ function App() {
           {/* Path: /signup → Shows <Signup /> component */}
           <Route path="/signup" element={<Signup />} />
 
-          {/* Route 4: Nutrition Page */}
+          {/* Route 4: Nutrition Page - New Parent */}
           {/* Path: /nutrition → Shows <Nutrition /> component */}
           <Route path="/nutrition" element={<Nutrition />} />
 
-          {/* Route 5: Vaccines Page */}
+          {/* Route 4b: Pregnant Nutrition Page */}
+          {/* Path: /pregnant/nutrition → Shows <PregnantNutrition /> component */}
+          <Route path="/pregnant/nutrition" element={<PregnantNutrition />} />
+
+          {/* Route 5: Vaccines Page - New Parent */}
           {/* Path: /vaccines → Shows <Vaccines /> component */}
           <Route path="/vaccines" element={<Vaccines />} />
+
+          {/* Route 5b: Pregnant Vaccines/Health Page */}
+          {/* Path: /pregnant/vaccines → Shows <PregnantVaccines /> component */}
+          <Route path="/pregnant/vaccines" element={<PregnantVaccines />} />
 
           {/* Route 6: Feeding Page */}
           {/* Path: /feeding → Shows <Feeding /> component */}
