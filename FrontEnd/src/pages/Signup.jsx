@@ -126,6 +126,9 @@ export default function Signup() {
         dueDate: formData.userType === 'pregnant' ? formData.dueDate : ''
       });
 
+      // Store user type for later use in navigation
+      localStorage.setItem('userType', formData.userType);
+
       navigate('/login', { state: { message: 'Account created! Please sign in.' } });
       setIsLoading(false);
     } catch (err) {

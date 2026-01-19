@@ -2,6 +2,7 @@ import express from 'express';
 import {
   getAllVaccines,
   getVaccineById,
+  getMotherVaccines,
   getUserVaccineReminders,
   createVaccineReminder,
   updateVaccineReminderStatus,
@@ -50,6 +51,13 @@ router.delete('/reminders/:reminderId', authenticateToken, deleteVaccineReminder
  * Get all available vaccines from database
  */
 router.get('/', getAllVaccines);
+
+/**
+ * GET /vaccines/mother
+ * Get all vaccines for pregnant women (mother or both recipient types)
+ * Must be BEFORE /:vaccineId to avoid route conflicts
+ */
+router.get('/mother', getMotherVaccines);
 
 /**
  * GET /vaccines/:vaccineId

@@ -58,6 +58,31 @@ export const getVaccineById = async (req, res, next) => {
 };
 
 /**
+ * Get all vaccines for pregnant women
+ * Returns vaccines with recipient_type 'mother' or 'both'
+ * Includes both recommended and optional vaccines
+ * 
+ * @route   GET /api/vaccines/mother
+ * @access  Public
+ * @returns {Array} List of vaccines safe/suitable for pregnant women
+ */
+export const getMotherVaccines = async (req, res, next) => {
+  try {
+    const vaccines = await Vaccine.findAll({
+      where: {
+        recipient_type: ['mother', 'both'],
+      },
+      order: [['recommended', 'DESC'], ['name', 'ASC']],
+    });
+
+    return res.json(vaccines);
+  } catch (error) {
+    console.error(`Error fetching mother vaccines: ${error.message}`);
+    return res.status(500).json({ detail: 'Error fetching mother vaccines' });
+  }
+};
+
+/**
  * Get all vaccine reminders for the current user
  * Returns user-specific vaccine reminders sorted by date
  * 

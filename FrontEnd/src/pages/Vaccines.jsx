@@ -42,17 +42,20 @@ export default function Vaccines() {
         setAllVaccines(vaccinesData || []);
         setCurrentUser(user);
 
-        // Check if auto-setup was done for this user using localStorage
-        const autoSetupKey = `vaccine_auto_setup_${user?.id}`;
-        const autoSetupDone = localStorage.getItem(autoSetupKey);
+        // Check if auto-setup was done for this baby using localStorage
+        // Use baby ID to support multiple babies
+        const autoSetupKey = selectedBaby ? `vaccine_auto_setup_baby_${selectedBaby.id}` : null;
+        const autoSetupDone = autoSetupKey ? localStorage.getItem(autoSetupKey) : false;
         
-        // Only auto-create reminders if not done before
+        // Only auto-create reminders if not done before for this baby
         if (!autoSetupDone) {
           const babyDOB = selectedBaby ? selectedBaby.date_of_birth : null;
           if (babyDOB && vaccinesData && vaccinesData.length > 0) {
             await autoCreateAllVaccineReminders(vaccinesData, remindersData || [], babyDOB);
-            // Mark auto-setup as done for this user
-            localStorage.setItem(autoSetupKey, 'true');
+            // Mark auto-setup as done for this baby
+            if (autoSetupKey) {
+              localStorage.setItem(autoSetupKey, 'true');
+            }
           } else {
             setUserReminders(remindersData || []);
           }
@@ -69,6 +72,28 @@ export default function Vaccines() {
 
     fetchData();
   }, [selectedBaby]);
+
+  // Manual trigger for auto-setup
+  const handleManualAutoSetup = async () => {
+    if (!selectedBaby || !allVaccines.length) {
+      alert('Please select a baby first');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await autoCreateAllVaccineReminders(allVaccines, userReminders, selectedBaby.date_of_birth);
+      // Mark auto-setup as done for this baby
+      const autoSetupKey = `vaccine_auto_setup_baby_${selectedBaby.id}`;
+      localStorage.setItem(autoSetupKey, 'true');
+      alert('✓ Vaccine reminders auto-created successfully!');
+    } catch (error) {
+      console.error('Error in manual auto-setup:', error);
+      alert('Error creating vaccine reminders. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Function to check if vaccine is due within 7 days
   const isDueWithinWeek = (dateString) => {
@@ -173,8 +198,13 @@ export default function Vaccines() {
     // Build display list starting with reminders
     const displayVaccines = [...uniqueReminders];
 
-    // Add available vaccines that have no reminders yet
+    // Add available vaccines that have no reminders yet (only baby vaccines)
     allVaccines.forEach(vaccine => {
+      // Filter out mother vaccines - only show baby vaccines
+      if (vaccine.recipient_type === 'mother') {
+        return;
+      }
+
       if (!vaccinesWithReminders.has(vaccine.name)) {
         // Estimate first dose date from baby's DOB using schedule config
         let reminderDate = '';
@@ -194,7 +224,7 @@ export default function Vaccines() {
           description: vaccine.description,
           reminder_date: reminderDate,
           status: 'available',
-          recipient: vaccine.recipient_type === 'baby' ? 'baby' : 'mother',
+          recipient: 'baby',
           recipient_type: vaccine.recipient_type,
           total_doses: vaccine.total_doses,
           dose_number: 0,
@@ -218,12 +248,7 @@ export default function Vaccines() {
     // Hide completed vaccines from other tabs
     const nonCompletedVaccines = displayVaccines.filter(v => v.status !== 'completed');
     
-    if (activeTab === 'mother') {
-      return nonCompletedVaccines.filter(v => 
-        (v.recipient_type === 'mother' || v.recipient_type === 'both') ||
-        (v.recipient === 'mother')
-      );
-    } else if (activeTab === 'baby') {
+    if (activeTab === 'baby') {
       return nonCompletedVaccines.filter(v => 
         (v.recipient_type === 'baby' || v.recipient_type === 'both') ||
         (v.recipient === 'baby')
@@ -382,12 +407,6 @@ export default function Vaccines() {
             All Vaccines
           </button>
           <button 
-            className={`vaccine-tab-btn ${activeTab === 'mother' ? 'active' : ''}`}
-            onClick={() => setActiveTab('mother')}
-          >
-            Mother
-          </button>
-<button 
             className={`vaccine-tab-btn ${activeTab === 'baby' ? 'active' : ''}`}
             onClick={() => setActiveTab('baby')}
           >
@@ -398,6 +417,14 @@ export default function Vaccines() {
             onClick={() => setActiveTab('completed')}
           >
             ✓ Completed
+          </button>
+          <button 
+            className="vaccine-tab-btn auto-setup-btn"
+            onClick={handleManualAutoSetup}
+            disabled={!selectedBaby || loading}
+            title="Automatically calculate vaccine dates based on baby's birth date"
+          >
+            🔄 Auto-Setup
           </button>
         </div>
 
@@ -417,7 +444,7 @@ export default function Vaccines() {
                   description={vaccine.description}
                   dueDate={vaccine.reminder_date}
                   status={vaccine.status}
-                  forPerson={vaccine.recipient === 'baby' ? 'Baby' : 'Mother'}
+                  forPerson="Baby"
                   details={vaccine.total_doses ? `${vaccine.dose_number || 1} of ${vaccine.total_doses}` : 'Single dose'}
                   isDueWithinWeek={isDueWithinWeek(vaccine.reminder_date)}
                   recommended={originalVaccine?.recommended || false}

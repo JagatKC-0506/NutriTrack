@@ -61,7 +61,14 @@ export default function Login() {
     try {
       const result = await login({ email: formData.email, password: formData.password });
       setAuthToken(result.access_token);
-      navigate('/home');
+      
+      // Redirect based on user type
+      const userType = localStorage.getItem('userType') || localStorage.getItem('selectedStage');
+      if (userType === 'pregnant') {
+        navigate('/pregnant/home');
+      } else {
+        navigate('/home');
+      }
       setIsLoading(false);
     } catch (err) {
       setError(err.message || 'Login failed. Please try again.');
