@@ -1,0 +1,12 @@
+{
+  "appId": "com.nutritrack.app",
+  "appName": "NutriTrack",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true,
+    "allowNavigation": [
+      "*"
+    ]
+  }
+}

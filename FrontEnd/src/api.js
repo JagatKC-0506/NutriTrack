@@ -1,5 +1,10 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+// Log API URL for debugging (only in development)
+if (import.meta.env.DEV) {
+  console.log('API URL:', API_URL);
+}
+
 async function request(path, options = {}) {
   const url = `${API_URL}${path}`;
   
@@ -12,21 +17,30 @@ async function request(path, options = {}) {
     };
   }
   
-  const res = await fetch(url, options);
+  try {
+    const res = await fetch(url, options);
 
-  if (!res.ok) {
-    let detail = 'Request failed';
-    try {
-      const data = await res.json();
-      detail = data.detail || detail;
-    } catch (_) {
-      // ignore json parse errors
+    if (!res.ok) {
+      let detail = 'Request failed';
+      try {
+        const data = await res.json();
+        detail = data.detail || detail;
+      } catch (_) {
+        // ignore json parse errors
+        detail = `HTTP ${res.status}: ${res.statusText}`;
+      }
+      throw new Error(detail);
     }
-    throw new Error(detail);
-  }
 
-  if (res.status === 204) return null;
-  return res.json();
+    if (res.status === 204) return null;
+    return res.json();
+  } catch (error) {
+    // Provide more helpful error messages
+    if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
+      throw new Error(`Cannot connect to server at ${API_URL}. Please check your network connection and ensure the backend is running.`);
+    }
+    throw error;
+  }
 }
 
 export async function login({ email, password }) {

@@ -1,6 +1,29 @@
 # 🥗 NutriTrack
 
-> A comprehensive nutrition tracking application with separate frontend and backend components.
+> A comprehensive nutrition tracking application with web and mobile support, featuring separate frontend and backend components.
+
+---
+
+## 📱 Mobile App (NEW!)
+
+**Your Android APK is ready!** See [MOBILE_APP_READY.md](./MOBILE_APP_READY.md) for installation instructions.
+
+### Quick Mobile Setup:
+```bash
+# One-command setup (configures, builds, and creates APK)
+./setup-mobile-complete.sh
+
+# Install on phone
+adb install NutriTrack.apk
+
+# Start backend
+cd backend && npm start
+```
+
+📚 **Mobile Documentation:**
+- [MOBILE_APP_READY.md](./MOBILE_APP_READY.md) - Complete mobile setup guide
+- [QUICK_START_MOBILE.md](./QUICK_START_MOBILE.md) - Quick reference
+- [MOBILE_SETUP.md](./MOBILE_SETUP.md) - Detailed documentation
 
 ---
 
