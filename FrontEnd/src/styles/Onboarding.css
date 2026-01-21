@@ -2,14 +2,7 @@
  * ONBOARDING STYLES
  * =================
  * Styling for the 3-page onboarding flow
- * Soft pastel theme with pink and lavender accents
- * 
- * Features:
- * - Smooth slide transitions
- * - Floating animations
- * - Gradient backgrounds
- * - Wave decoration
- * - Responsive design
+ * Simple full-screen image display with Next button
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
@@ -29,7 +22,163 @@
   --gradient-accent: linear-gradient(135deg, #9f7aea, #7be0d6);
 }
 
-/* ===== MAIN CONTAINER ===== */
+/* ===== SIMPLE ONBOARDING CONTAINER ===== */
+.onboarding-container-simple {
+  height: 100vh;
+  height: 100dvh;
+  width: 100vw;
+  background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f0f1a 100%);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Header */
+.onboarding-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.app-branding {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-logo {
+  font-size: 28px;
+}
+
+.app-name {
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #7be0d6, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.onboarding-next-btn-small {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Poppins', 'Segoe UI', system-ui, sans-serif;
+  color: #1a1a2e;
+  background: linear-gradient(135deg, #7be0d6 0%, #c084fc 100%);
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 15px rgba(123, 224, 214, 0.3);
+}
+
+.onboarding-next-btn-small:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(123, 224, 214, 0.5);
+}
+
+.onboarding-next-btn-small:active {
+  transform: scale(0.98);
+}
+
+/* Step Indicator */
+.step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.step-text {
+  font-size: 13px;
+  color: #a0a0b0;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.step-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.step-dot {
+  width: 32px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.step-dot.active {
+  background: linear-gradient(135deg, #7be0d6, #c084fc);
+  box-shadow: 0 0 10px rgba(123, 224, 214, 0.5);
+}
+
+.step-dot.completed {
+  background: #7be0d6;
+}
+
+/* Slide Info */
+.slide-info {
+  text-align: center;
+  margin-bottom: 12px;
+  padding: 0 8px;
+}
+
+.slide-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 6px 0;
+  line-height: 1.3;
+}
+
+.slide-description {
+  font-size: 13px;
+  color: #a0a0b0;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Image Container */
+.image-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.onboarding-fullscreen-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Footer */
+.onboarding-footer {
+  text-align: center;
+  padding: 12px 0 8px 0;
+}
+
+.tagline {
+  font-size: 12px;
+  color: #6a6a7a;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ===== MAIN CONTAINER (legacy) ===== */
 .onboarding-container {
   min-height: 100vh;
   min-height: 100dvh;
