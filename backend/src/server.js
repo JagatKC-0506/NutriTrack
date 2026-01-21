@@ -81,9 +81,11 @@ const startServer = async () => {
 
     // Start server
     const PORT = config.server.port;
-    app.listen(PORT, () => {
-      console.log(`NutriTrack API listening on port ${PORT}`);
+    const HOST = '0.0.0.0'; // Listen on all network interfaces
+    app.listen(PORT, HOST, () => {
+      console.log(`NutriTrack API listening on ${HOST}:${PORT}`);
       console.log(`Environment: ${config.server.environment}`);
+      console.log(`Access from phone: http://192.168.1.71:${PORT}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
