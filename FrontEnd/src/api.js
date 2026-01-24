@@ -17,6 +17,14 @@ async function request(path, options = {}) {
     };
   }
   
+  // Add ngrok bypass header if using ngrok
+  if (API_URL.includes('ngrok')) {
+    options.headers = {
+      ...options.headers,
+      'ngrok-skip-browser-warning': 'true',
+    };
+  }
+  
   try {
     const res = await fetch(url, options);
 
