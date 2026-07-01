@@ -1,0 +1,87 @@
+import { DataTypes } from 'sequelize';
+import sequelize from '../db/sequelize.js';
+import User from './User.js';
+import Baby from './Baby.js';
+
+const Reminder = sequelize.define('Reminder', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    references: {
+      model: User,
+      key: 'id',
+    },
+  },
+  baby_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: Baby,
+      key: 'id',
+    },
+  },
+  title: {
+    type: DataTypes.STRING(255),
+  },
+  reminder_date: {
+    type: DataTypes.STRING(10),
+  },
+  type: {
+    type: DataTypes.STRING(50), // 'vaccine' or 'appointment'
+  },
+  completed: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  description: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
+  vaccine_name: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+  },
+  dose_number: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  recipient: {
+    type: DataTypes.ENUM('baby', 'mother'),
+    defaultValue: 'baby',
+  },
+  age_due_months: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  status: {
+    type: DataTypes.ENUM('pending', 'completed', 'overdue', 'skipped'),
+    defaultValue: 'pending',
+  },
+  total_doses: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
+  last_dose_date: {
+    type: DataTypes.STRING(10),
+    allowNull: true,
+  },
+  vaccine_icon: {
+    type: DataTypes.STRING(50),
+    allowNull: true,
+  },
+}, {
+  tableName: 'reminders',
+  timestamps: false,
+});
+
+Reminder.belongsTo(User, { foreignKey: 'user_id' });
+User.hasMany(Reminder, { foreignKey: 'user_id' });
+
+Reminder.belongsTo(Baby, { foreignKey: 'baby_id' });
+Baby.hasMany(Reminder, { foreignKey: 'baby_id' });
+
+export default Reminder;

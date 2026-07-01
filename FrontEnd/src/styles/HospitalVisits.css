@@ -1,0 +1,247 @@
+/* ===== HOSPITAL VISITS THEME ===== */
+:root {
+  --hospital-accent: #f472b6;
+  --hospital-accent-dark: #db2777;
+  --hospital-accent-light: rgba(244, 114, 182, 0.15);
+}
+
+.hospital-accent {
+  color: var(--hospital-accent) !important;
+}
+
+.hospital-tab-active {
+  background: var(--hospital-accent) !important;
+  color: var(--white) !important;
+  border-color: var(--hospital-accent) !important;
+}
+
+.hospital-primary-btn {
+  background: var(--hospital-accent) !important;
+}
+
+.hospital-primary-btn:hover {
+  background: var(--hospital-accent-dark) !important;
+}
+
+/* ===== HEADER ===== */
+.hospital-header {
+  background: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+  color: var(--white);
+  padding: 30px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 12px rgba(244, 114, 182, 0.25);
+  justify-content: space-between;
+}
+
+.hospital-header-back {
+  font-size: 28px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--white);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.hospital-header-back:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.hospital-header-content {
+  flex: 1;
+}
+
+.hospital-header-content h1 {
+  font-size: 22px;
+  margin: 0;
+  font-weight: 700;
+}
+
+.hospital-header-content p {
+  font-size: 13px;
+  margin: 5px 0 0 0;
+  opacity: 0.9;
+}
+
+.hospital-header-add {
+  padding: 10px 16px;
+  font-size: 13px;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: var(--white);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.hospital-header-add:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+/* ===== HOSPITAL VISIT CARD ===== */
+.hospital-card {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  border-left: 4px solid var(--hospital-accent);
+}
+
+.hospital-card.upcoming {
+  border-left: 4px solid var(--warning-orange, #f97316);
+  background: linear-gradient(90deg, rgba(244, 114, 182, 0.08) 0%, var(--card-dark) 100%);
+}
+
+.hospital-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.hospital-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.hospital-card-icon {
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 24px;
+}
+
+.hospital-card-title-section {
+  flex: 1;
+}
+
+.hospital-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 4px 0;
+}
+
+.hospital-card-status-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hospital-card-status {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.hospital-card-status.completed {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--success-green, #22c55e);
+}
+
+.hospital-card-status.upcoming {
+  background: rgba(249, 115, 22, 0.15);
+  color: var(--warning-orange, #f97316);
+}
+
+.hospital-card-for-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: var(--hospital-accent-light);
+  color: var(--hospital-accent);
+}
+
+.hospital-card-details {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 8px 0 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.hospital-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  padding: 4px 0;
+}
+
+.hospital-card-notes {
+  align-items: flex-start;
+}
+
+.hospital-detail-label {
+  font-weight: 600;
+  color: var(--text-main);
+  min-width: 20px;
+}
+
+.hospital-detail-value {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.hospital-card-action {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.hospital-action-btn {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.hospital-action-btn.edit {
+  background: var(--hospital-accent);
+  color: var(--white);
+}
+
+.hospital-action-btn.edit:hover {
+  background: var(--hospital-accent-dark);
+}
+
+.hospital-action-btn.delete {
+  background: var(--card-muted);
+  color: var(--text-main);
+}
+
+.hospital-action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--error-red, #f87171);
+}
+
+@media (max-width: 480px) {
+  .hospital-header {
+    padding: 20px 16px;
+  }
+}

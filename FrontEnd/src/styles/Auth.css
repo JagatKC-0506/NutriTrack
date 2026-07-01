@@ -1,0 +1,346 @@
+/* Auth Pages Styling - Dark Theme aligned with Stage Select */
+/* ===== CSS VARIABLES FOR EASY MAINTENANCE ===== */
+:root {
+  --bg-dark: #0f172a;
+  --card-dark: #1c1b21;
+  --card-muted: #22212a;
+  --text-main: #e2e8f0;
+  --text-muted: #9ba4b5;
+  --border: #2b2c37;
+  --border-strong: #3b3d4a;
+  --accent: #7be0d6;
+  --accent-2: #c084fc;
+  --error-red: #f87171;
+  --white: #ffffff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: radial-gradient(circle at 20% 20%, rgba(192, 132, 252, 0.12), transparent 30%),
+    radial-gradient(circle at 80% 0%, rgba(123, 224, 214, 0.12), transparent 30%),
+    var(--bg-dark);
+  color: var(--text-main);
+}
+
+/* ===== AUTH CONTAINER ===== */
+.auth-container {
+  min-height: 100vh;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px 48px;
+}
+
+/* ===== AUTH CARD ===== */
+.auth-card {
+  background: linear-gradient(180deg, rgba(34, 33, 42, 0.9), rgba(28, 27, 33, 0.95));
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  padding: 38px 30px;
+  width: 100%;
+  max-width: 460px;
+}
+
+/* ===== ICON CONTAINER ===== */
+.icon-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 26px;
+}
+
+.heart-icon {
+  width: 78px;
+  height: 78px;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.14), transparent 50%),
+    linear-gradient(135deg, var(--accent-2), var(--accent));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 42px;
+  color: var(--white);
+}
+
+/* ===== TITLE AND SUBTITLE ===== */
+.auth-title {
+  text-align: center;
+  color: var(--text-main);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  margin-bottom: 6px;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 26px;
+}
+
+/* ===== FORM STYLING ===== */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.oauth-block {
+  margin-bottom: 16px;
+}
+
+.oauth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+  margin: 12px 0 18px;
+}
+
+.oauth-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.oauth-text {
+  white-space: nowrap;
+}
+
+.oauth-hint {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-input,
+.form-input-field {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-family: inherit;
+  background: #11121a;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+}
+
+.form-input:focus,
+.form-input-field:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(123, 224, 214, 0.2);
+}
+
+.form-input::placeholder,
+.form-input-field::placeholder {
+  color: #6f7686;
+}
+
+/* ===== DIET PREFERENCE ===== */
+/* ===== USER TYPE SELECTOR ===== */
+.user-type-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.user-type-btn {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card-dark);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.user-type-btn:hover {
+  border-color: var(--accent);
+  background: var(--card-muted);
+}
+
+.user-type-btn.active {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(123, 224, 214, 0.12), rgba(192, 132, 252, 0.12));
+  color: var(--text-main);
+}
+
+.user-type-btn .icon {
+  font-size: 24px;
+  display: block;
+  height: 28px;
+  line-height: 28px;
+  color: var(--text-main);
+}
+
+/* ===== ERROR MESSAGE ===== */
+.error-message {
+  padding: 10px 12px;
+  background-color: rgba(248, 113, 113, 0.12);
+  border-left: 4px solid var(--error-red);
+  color: var(--error-red);
+  border-radius: 6px;
+  font-size: 13px;
+  margin-top: -4px;
+}
+
+/* ===== FORGOT PASSWORD LINK ===== */
+.forgot-password-link {
+  text-align: right;
+  color: var(--accent);
+  font-size: 13px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.forgot-password-link:hover {
+  color: #9ff1e9;
+}
+
+/* ===== SUBMIT BUTTON ===== */
+.auth-button {
+  padding: 14px 20px;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  color: white;
+  border: none;
+  border-radius: 28px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 8px;
+  box-shadow: 0 10px 30px rgba(123, 224, 214, 0.25);
+}
+
+.auth-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 34px rgba(123, 224, 214, 0.35);
+}
+
+.auth-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.auth-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ===== FOOTER LINKS ===== */
+.auth-footer {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-top: 18px;
+}
+
+.auth-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.auth-link:hover {
+  color: #9ff1e9;
+  text-decoration: underline;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 600px) {
+  .auth-card {
+    padding: 30px 20px;
+  }
+
+  .auth-title {
+    font-size: 24px;
+  }
+
+  .auth-subtitle {
+    font-size: 13px;
+  }
+
+  .form-input {
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .auth-button {
+    padding: 12px 18px;
+    font-size: 15px;
+  }
+
+  .user-type-selector {
+    gap: 10px;
+  }
+
+  .user-type-btn {
+    padding: 14px 12px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 400px) {
+  .auth-card {
+    padding: 25px 18px;
+  }
+
+  .icon-container {
+    margin-bottom: 20px;
+  }
+
+  .heart-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 40px;
+  }
+
+  .auth-title {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .auth-form {
+    gap: 16px;
+  }
+
+  .user-type-btn .icon {
+    font-size: 20px;
+  }
+}

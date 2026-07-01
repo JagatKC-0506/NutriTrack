@@ -1,0 +1,1003 @@
+/* Growth Page Styling - Dark Theme */
+/* ===== CSS VARIABLES ===== */
+:root {
+  --bg-dark: #0f172a;
+  --card-dark: #1c1b21;
+  --card-muted: #22212a;
+  --text-main: #e2e8f0;
+  --text-muted: #9ba4b5;
+  --border: #2b2c37;
+  --growth-purple: #a855f7;
+  --light-growth-purple: rgba(168, 85, 247, 0.15);
+  --white: #ffffff;
+  --success-green: #22c55e;
+}
+
+/* ===== GROWTH CONTAINER ===== */
+.growth-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: radial-gradient(circle at 20% 20%, rgba(192, 132, 252, 0.12), transparent 30%),
+    radial-gradient(circle at 80% 0%, rgba(123, 224, 214, 0.12), transparent 30%),
+    var(--bg-dark);
+  padding-bottom: 80px;
+  overflow-y: auto;
+}
+
+/* ===== GROWTH CONTENT ===== */
+.growth-content {
+  flex: 1;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ===== GROWTH HEADER ===== */
+.growth-header {
+  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+  color: var(--white);
+  padding: 30px 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+  position: relative;
+}
+
+.growth-header-back {
+  font-size: 28px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.growth-header-back:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.growth-header-add-btn {
+  font-size: 28px;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  margin-left: auto;
+}
+
+.growth-header-add-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.growth-header-content h1 {
+  font-size: 24px;
+  margin: 0;
+  font-weight: 700;
+}
+
+.growth-header-content p {
+  font-size: 13px;
+  margin: 5px 0 0 0;
+  opacity: 0.9;
+}
+
+/* ===== GROWTH MAIN CONTENT ===== */
+.growth-main {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ===== CURRENT STATS CARD ===== */
+.current-stats-card {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.current-stat-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.current-stat-item:last-child {
+  margin-bottom: 0;
+}
+
+.current-stat-emoji {
+  font-size: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: var(--light-growth-purple);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.current-stat-content h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 4px 0;
+}
+
+.current-stat-content p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.current-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--growth-purple);
+}
+
+/* ===== GROWTH TABS ===== */
+.growth-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.growth-tab-btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card-dark);
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: none;
+}
+
+.growth-tab-btn.active {
+  background: var(--growth-purple);
+  color: var(--white);
+  border-color: var(--growth-purple);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+}
+
+.growth-tab-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ===== GROWTH CHART CARD ===== */
+.growth-chart-card {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.growth-chart-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 16px 0;
+}
+
+.growth-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.growth-metric-toggle {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.metric-btn {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.metric-btn.active {
+  background: var(--growth-purple);
+  color: var(--white);
+  border-color: var(--growth-purple);
+}
+
+.growth-line-chart {
+  background: rgba(168, 85, 247, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.growth-line-svg {
+  width: 100%;
+  height: 140px;
+}
+
+.growth-line {
+  fill: none;
+  stroke: #a855f7;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.growth-line-point {
+  fill: #a855f7;
+  stroke: rgba(255, 255, 255, 0.8);
+  stroke-width: 1;
+}
+
+.growth-line-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.growth-line-value {
+  font-size: 12px;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* ===== WHO BADGE ===== */
+.who-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.who-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+.who-category {
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* ===== TREND INDICATORS ===== */
+.trend-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.trend-stable {
+  color: #9ba4b5;
+}
+
+.trend-up {
+  color: #22c55e;
+}
+
+.trend-down {
+  color: #ef4444;
+}
+
+.trend-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.trend-empty {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 12px;
+  background: rgba(168, 85, 247, 0.05);
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+/* ===== MILESTONE CARD ===== */
+.milestone-card {
+  cursor: pointer;
+}
+
+.milestone-completed-date {
+  font-size: 11px;
+  color: var(--success-green);
+  margin: 2px 0 0;
+}
+
+.milestone-notes-preview {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 2px 0 0;
+  font-style: italic;
+}
+
+.milestone-edit-area {
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+
+.milestone-notes-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-main);
+  padding: 6px 8px;
+  font-family: inherit;
+  font-size: 12px;
+  resize: vertical;
+}
+
+.milestone-date-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.milestone-date-edit input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-main);
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.milestone-circle {
+  font-size: 24px;
+  color: var(--text-muted);
+  margin-left: auto;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.milestone-card:hover .milestone-circle {
+  opacity: 1;
+}
+.milestone-card {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.milestone-card.completed {
+  background: rgba(34, 197, 94, 0.08);
+  border-left: 4px solid var(--success-green);
+  border: 1px solid var(--border);
+}
+
+.milestone-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--growth-purple);
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.15);
+}
+
+.milestone-emoji {
+  font-size: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  background: var(--light-growth-purple);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.milestone-content {
+  flex: 1;
+}
+
+.milestone-content h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 4px 0;
+}
+
+.milestone-content p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0 0 6px 0;
+}
+
+.milestone-age {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.milestone-check {
+  font-size: 24px;
+  color: var(--success-green);
+  margin-left: auto;
+}
+
+/* ===== GROWTH SECTION TITLE ===== */
+.growth-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 10px 0 16px 0;
+}
+
+/* ===== MILESTONES LIST ===== */
+.milestones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===== SECTION HEADER ===== */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+
+.section-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.add-button {
+  padding: 10px 16px;
+  background: var(--growth-purple);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.add-button:hover {
+  background: #9945e6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.25);
+}
+
+.add-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== BABIES SECTION ===== */
+.babies-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.babies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ===== TRACKING SECTION ===== */
+.tracking-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tracking-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.growth-back-btn {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: var(--growth-purple);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 8px;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.growth-back-btn:hover {
+  background: rgba(168, 85, 247, 0.25);
+  border-color: var(--growth-purple);
+}
+
+.milestones-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.milestones-section h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 4px 0;
+}
+
+.milestones-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0 0 16px 0;
+}
+
+/* ===== EMPTY STATE ===== */
+.empty-state {
+  background: var(--card-dark);
+  border: 2px dashed var(--border);
+  border-radius: 12px;
+  padding: 40px 20px;
+  text-align: center;
+  margin: 20px 0;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin: 0 0 12px 0;
+}
+
+.empty-text {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ===== DEVELOPMENTAL MILESTONES CARD ===== */
+.dev-milestones-card {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  margin-top: 16px;
+}
+
+.dev-milestones-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.dev-milestones-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.dev-milestones-age {
+  font-size: 12px;
+  color: var(--growth-purple);
+  background: var(--light-growth-purple);
+  padding: 3px 10px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+
+.dev-milestones-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.dev-progress-track {
+  flex: 1;
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.dev-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--growth-purple), #c084fc);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.dev-progress-text {
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.dev-milestones-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dev-milestone-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--card-muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.dev-milestone-item:hover {
+  border-color: var(--growth-purple);
+}
+
+.dev-milestone-item.completed {
+  border-color: var(--success-green);
+  background: rgba(34, 197, 94, 0.08);
+}
+
+.dev-milestone-item:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.dev-milestone-check {
+  font-size: 16px;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.dev-milestone-emoji {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.dev-milestone-label {
+  font-size: 13px;
+  color: var(--text-main);
+  line-height: 1.3;
+  flex: 1;
+}
+
+/* ===== GROWTH RECORDS CARD ===== */
+.growth-records-card {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  margin-top: 16px;
+}
+
+.growth-records-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 16px 0;
+}
+
+/* ===== RECORDS TABLE ===== */
+.records-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 0.6fr;
+  gap: 12px;
+  background: rgba(168, 85, 247, 0.1);
+  padding: 12px;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--growth-purple);
+  border-bottom: 1px solid var(--border);
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 0.6fr;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-row:hover {
+  background: rgba(168, 85, 247, 0.05);
+}
+
+.table-cell {
+  font-size: 13px;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.delete-btn,
+.edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 6px;
+  transition: transform 0.2s;
+}
+
+.delete-btn:hover,
+.edit-btn:hover {
+  transform: scale(1.2);
+}
+
+.edit-btn {
+  color: var(--growth-purple);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+/* ===== GROWTH BAR VALUE ===== */
+.growth-bar-value {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* ===== LOADING SKELETON ===== */
+.growth-skeleton {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.growth-skeleton-line {
+  height: 14px;
+  background: rgba(168, 85, 247, 0.1);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.growth-skeleton-line:last-child {
+  width: 60%;
+}
+
+.growth-skeleton-line.wide {
+  width: 40%;
+}
+
+.growth-skeleton-line.medium {
+  width: 70%;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .growth-tabs {
+    flex-wrap: wrap;
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr 1fr 0.6fr;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .add-button {
+    width: 100%;
+  }
+}
+
+/* ===== INFO BUTTON & MODAL ===== */
+.growth-info-btn {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--growth-purple);
+  color: var(--white);
+  border: none;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.35);
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.growth-info-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.5);
+}
+
+.growth-info-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.growth-info-modal {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  width: 90%;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease-out;
+}
+
+.growth-info-modal h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--growth-purple);
+  margin: 0 0 16px 0;
+}
+
+.growth-info-modal h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 20px 0 8px 0;
+}
+
+.growth-info-modal p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0 0 12px 0;
+}
+
+.growth-info-modal ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px 0;
+}
+
+.growth-info-modal li {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 4px 0;
+  padding-left: 20px;
+  position: relative;
+}
+
+.growth-info-modal li::before {
+  content: '•';
+  position: absolute;
+  left: 6px;
+  color: var(--growth-purple);
+}
+
+.growth-info-close {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background: var(--growth-purple);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.3s ease;
+}
+
+.growth-info-close:hover {
+  background: #9945e6;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
