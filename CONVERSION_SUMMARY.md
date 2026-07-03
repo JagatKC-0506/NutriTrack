@@ -16,7 +16,7 @@ This document outlines all changes made to convert the NutriTrack project from L
 ✅ **Convert Linux scripts to Windows** - .bat and .ps1 versions  
 ✅ **Update configuration for local IP** - Direct WiFi connection  
 ✅ **Improve CORS configuration** - Support local network IPs  
-✅ **Create comprehensive Windows guide** - WINDOWS_SETUP.md  
+✅ **Create comprehensive Windows guide** - WINDOWS_SETUP.md  #helloworld
 ✅ **Update documentation** - README and backend docs  
 
 ---
