@@ -483,7 +483,34 @@ export async function getFeedingLogsSummary(params = {}) {
   const qs = query.toString();
   return request(`/api/feeding-logs/logs/summary${qs ? '?' + qs : ''}`);
 }
+// ===== Pregnancy Weight Records =====
+export async function getPregnancyWeightRecords() {
+  return request('/api/pregnancy-growth/records');
+}
 
+export async function createPregnancyWeightRecord(recordData) {
+  return request('/api/pregnancy-growth/records', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(recordData),
+  });
+}
+
+export async function deletePregnancyWeightRecord(recordId) {
+  return request(`/api/pregnancy-growth/records/${recordId}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function updatePregnancyWeightRecord(recordId, recordData) {
+  return request(`/api/pregnancy-growth/records/${recordId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(recordData),
+  });
+}
 // ===== Auth Token Management =====
 export function setAuthToken(token) {
   if (!token) return;

@@ -53,6 +53,7 @@ import PregnantEmergency from './pages/PregnantEmergency'
 import ProtectedRoute from './components/ProtectedRoute'
 import ErrorBoundary from './components/ErrorBoundary'
 import SimpleChatbot from './components/SimpleChatbot'
+import PregnantGrowth from './pages/PregnantGrowth'
 import './App.css'
 
 /**
@@ -95,6 +96,7 @@ function App() {
               <Route path="/pregnant/vaccines/health" element={<PregnantHealth />} />
               <Route path="/pregnant/vaccines/resources" element={<PregnantResources />} />
               <Route path="/pregnant/emergency" element={<PregnantEmergency />} />
+              <Route path="/pregnant/growth" element={<PregnantGrowth />} /> 
               <Route path="/feeding" element={<Feeding />} />
               <Route path="/feeding/history" element={<FeedingHistory />} />
               <Route path="/growth" element={<Growth />} />

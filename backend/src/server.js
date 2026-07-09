@@ -20,6 +20,7 @@ import foodRoutes from './routes/foodRoutes.js';
 import milestoneRoutes from './routes/milestoneRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
 import feedingLogRoutes from './routes/feedingLogRoutes.js';
+import pregnancyGrowthRoutes from './routes/pregnancyGrowth.js'; 
 import os from 'os';
 
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/foods', foodRoutes);
 app.use('/api/milestones', milestoneRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/feeding-logs', feedingLogRoutes);
+app.use('/api/pregnancy-growth', pregnancyGrowthRoutes); 
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -74,9 +76,10 @@ const startServer = async () => {
     }
 
     // Sync models with database - use alter: true only in development
-    const isDev = config.server.environment === 'development';
-    await sequelize.sync({ force: false, alter: isDev });
-    console.log(`Database synced (alter: ${isDev})`);
+       // TEMPORARY FIX: Force drop the broken pregnancy table so SQLite rebuilds it without the lock
+    if (config.database.url.startsWith('sqlite')) {
+      await sequelize.query('DROP TABLE IF EXISTS pregnancy_growth;');
+    }
 
     // Re-enable foreign key constraints for SQLite
     if (config.database.url.startsWith('sqlite')) {
