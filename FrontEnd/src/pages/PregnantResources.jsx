@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ArrowLeft, AlertTriangle } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import { getMotherVaccines } from '../api';

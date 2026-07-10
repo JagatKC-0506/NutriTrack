@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import DailyChecklist from '../components/pregnancy/DailyChecklist';
 import TodayTips from '../components/pregnancy/TodayTips';
