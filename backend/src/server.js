@@ -21,7 +21,7 @@ import milestoneRoutes from './routes/milestoneRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
 import feedingLogRoutes from './routes/feedingLogRoutes.js';
 import pregnancyGrowthRoutes from './routes/pregnancyGrowth.js'; 
-import os from 'os';
+
 
 const app = express();
 
@@ -65,26 +65,8 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('Database connection established');
 
-    // For SQLite, disable foreign key constraints temporarily during sync
-    if (config.database.url.startsWith('sqlite')) {
-      await sequelize.query('PRAGMA foreign_keys = OFF');
-    }
-
-    // For SQLite, disable foreign key constraints temporarily during sync
-    if (config.database.url.startsWith('sqlite')) {
-      await sequelize.query('PRAGMA foreign_keys = OFF');
-    }
-
-    // Sync models with database - use alter: true only in development
-       // TEMPORARY FIX: Force drop the broken pregnancy table so SQLite rebuilds it without the lock
-    if (config.database.url.startsWith('sqlite')) {
-      await sequelize.query('DROP TABLE IF EXISTS pregnancy_growth;');
-    }
-
-    // Re-enable foreign key constraints for SQLite
-    if (config.database.url.startsWith('sqlite')) {
-      await sequelize.query('PRAGMA foreign_keys = ON');
-    }
+    // Sync models with database
+    await sequelize.sync();
 
     // Seed vaccines
     await seedVaccines();
@@ -108,25 +90,11 @@ const startServer = async () => {
 
     // Start server
     const PORT = config.server.port;
-    const HOST = '0.0.0.0'; // Listen on all network interfaces
-    
-    // Dynamically get local IP
-    let localIp = 'localhost';
-    const interfaces = os.networkInterfaces();
-    for (const devName in interfaces) {
-      const iface = interfaces[devName];
-      for (let i = 0; i < iface.length; i++) {
-        const alias = iface[i];
-        if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
-          localIp = alias.address;
-        }
-      }
-    }
+    const HOST = '0.0.0.0';
 
     app.listen(PORT, HOST, () => {
       console.log(`NutriTrack API listening on ${HOST}:${PORT}`);
       console.log(`Environment: ${config.server.environment}`);
-      console.log(`Access from phone: http://${localIp}:${PORT}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

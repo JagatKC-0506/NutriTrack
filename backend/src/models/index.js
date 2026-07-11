@@ -11,3 +11,4 @@ export { default as Food } from './Food.js';
 export { default as DevelopmentMilestone } from './DevelopmentMilestone.js';
 export { default as BabyDocument } from './BabyDocument.js';
 export { default as FeedingLog } from './FeedingLog.js';
+export { default as PregnancyGrowth } from './PregnancyGrowth.js';
