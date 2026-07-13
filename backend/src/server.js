@@ -20,7 +20,8 @@ import foodRoutes from './routes/foodRoutes.js';
 import milestoneRoutes from './routes/milestoneRoutes.js';
 import documentRoutes from './routes/documentRoutes.js';
 import feedingLogRoutes from './routes/feedingLogRoutes.js';
-import pregnancyGrowthRoutes from './routes/pregnancyGrowth.js'; 
+import pregnancyGrowthRoutes from './routes/pregnancyGrowth.js';
+import hospitalVisitRoutes from './routes/hospitalVisitRoutes.js';
 
 
 const app = express();
@@ -43,7 +44,8 @@ app.use('/api/foods', foodRoutes);
 app.use('/api/milestones', milestoneRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/feeding-logs', feedingLogRoutes);
-app.use('/api/pregnancy-growth', pregnancyGrowthRoutes); 
+app.use('/api/pregnancy-growth', pregnancyGrowthRoutes);
+app.use('/api/hospital-visits', hospitalVisitRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {

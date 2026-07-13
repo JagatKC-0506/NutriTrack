@@ -360,6 +360,37 @@ export async function getMotherVaccines() {
   return request('/api/vaccines/mother');
 }
 
+// ===== Hospital Visits =====
+export async function getHospitalVisits() {
+  return request('/api/hospital-visits');
+}
+
+export async function getHospitalVisit(visitId) {
+  return request(`/api/hospital-visits/${visitId}`);
+}
+
+export async function createHospitalVisit(visitData) {
+  return request('/api/hospital-visits', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(visitData),
+  });
+}
+
+export async function updateHospitalVisit(visitId, visitData) {
+  return request(`/api/hospital-visits/${visitId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(visitData),
+  });
+}
+
+export async function deleteHospitalVisit(visitId) {
+  return request(`/api/hospital-visits/${visitId}`, {
+    method: 'DELETE',
+  });
+}
+
 // ===== Food Items =====
 export async function getAllFoods() {
   return request('/api/foods/all');

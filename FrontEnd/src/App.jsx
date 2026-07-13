@@ -35,6 +35,7 @@ import Vaccines from './pages/Vaccines'
 import Feeding from './pages/Feeding'
 import FeedingHistory from './pages/FeedingHistory'
 import Growth from './pages/Growth'
+import HospitalVisits from './pages/HospitalVisits'
 import DischargeSummary from './pages/documents/DischargeSummary'
 import ImmunizationCard from './pages/documents/ImmunizationCard'
 import BirthRegistration from './pages/documents/BirthRegistration'
@@ -100,6 +101,7 @@ function App() {
               <Route path="/feeding" element={<Feeding />} />
               <Route path="/feeding/history" element={<FeedingHistory />} />
               <Route path="/growth" element={<Growth />} />
+              <Route path="/hospital-visits" element={<HospitalVisits />} />
               <Route path="/documents/discharge-summary" element={<DischargeSummary />} />
               <Route path="/documents/immunization-card" element={<ImmunizationCard />} />
               <Route path="/documents/birth-registration" element={<BirthRegistration />} />

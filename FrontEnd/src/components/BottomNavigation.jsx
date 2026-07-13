@@ -20,7 +20,8 @@ export default function BottomNavigation({ activeTab = "Home", userType: userTyp
         { id: 1, label: "Home", icon: "🏠", path: "/pregnant/home" },
         { id: 2, label: "Nutrition", icon: "🍎", path: "/pregnant/nutrition" },
         { id: 3, label: "Vaccines", icon: "💉", path: "/pregnant/vaccines" },
-        { id: 4, label: "Growth", icon: "📈", path: "/pregnant/growth" }
+        { id: 4, label: "Hospital", icon: "🏥", path: "/hospital-visits" },
+        { id: 5, label: "Growth", icon: "📈", path: "/pregnant/growth" }
       ];
     }
 
@@ -30,7 +31,8 @@ export default function BottomNavigation({ activeTab = "Home", userType: userTyp
       { id: 2, label: "Nutrition", icon: "🍎", path: "/nutrition" },
       { id: 3, label: "Vaccines", icon: "💉", path: "/vaccines" },
       { id: 4, label: "Feeding", icon: "👶", path: "/feeding" },
-      { id: 5, label: "Growth", icon: "📈", path: "/growth" }
+      { id: 5, label: "Hospital", icon: "🏥", path: "/hospital-visits" },
+      { id: 6, label: "Growth", icon: "📈", path: "/growth" }
     ];
   }, [inferredUserType]);
 
