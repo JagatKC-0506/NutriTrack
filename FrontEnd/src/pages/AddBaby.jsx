@@ -7,30 +7,37 @@
  */
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import BabyForm from '../components/BabyForm';
-import { createBaby } from '../api';
+import { createBaby, updateBaby } from '../api';
 import { useBabyContext } from '../context/BabyContext';
 import '../styles/AddBaby.css';
 
 export default function AddBaby() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const editingBaby = location.state?.baby || null;
   const { babies, setBabies, setSelectedBaby } = useBabyContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleAddBaby = async (babyData) => {
+  const handleSaveBaby = async (babyData) => {
     setIsSubmitting(true);
     try {
-      const newBaby = await createBaby(babyData);
-      // Update the context with the new baby
-      setBabies([...babies, newBaby]);
-      setSelectedBaby(newBaby);
-      alert('Baby added successfully!');
-      // Navigate back to home or previous page
+      if (editingBaby) {
+        const updatedBaby = await updateBaby(editingBaby.id, babyData);
+        setBabies(prev => prev.map(b => b.id === updatedBaby.id ? updatedBaby : b));
+        setSelectedBaby(updatedBaby);
+        alert('Baby information updated successfully!');
+      } else {
+        const newBaby = await createBaby(babyData);
+        setBabies(prev => [...prev, newBaby]);
+        setSelectedBaby(newBaby);
+        alert('Baby added successfully!');
+      }
       navigate('/home');
     } catch (error) {
-      console.error('Error adding baby:', error);
-      alert(`Error adding baby: ${error.message}`);
+      console.error('Error saving baby:', error);
+      alert(`Error saving baby: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
@@ -46,14 +53,15 @@ export default function AddBaby() {
         >
           ← Back
         </button>
-        <h1>Add Your Baby</h1>
+        <h1>{editingBaby ? 'Edit Baby Information' : 'Add Your Baby'}</h1>
         <div className="header-spacer"></div>
       </div>
 
       <div className="add-baby-content">
         <BabyForm 
-          onSubmit={handleAddBaby}
+          onSubmit={handleSaveBaby}
           isLoading={isSubmitting}
+          initialData={editingBaby}
         />
       </div>
     </div>

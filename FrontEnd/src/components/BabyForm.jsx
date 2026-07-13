@@ -5,7 +5,7 @@
  * Includes name, DOB, gender, birth measurements
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import '../styles/BabyForm.css';
 
 export default function BabyForm({ onSubmit, isLoading = false, initialData = null }) {
@@ -21,6 +21,20 @@ export default function BabyForm({ onSubmit, isLoading = false, initialData = nu
   });
 
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    setFormData({
+      name: initialData?.name || '',
+      date_of_birth: initialData?.date_of_birth || '',
+      gender: initialData?.gender || 'male',
+      weight_at_birth_kg: initialData?.weight_at_birth_kg || '',
+      height_at_birth_cm: initialData?.height_at_birth_cm || '',
+      blood_type: initialData?.blood_type || '',
+      allergies: initialData?.allergies || '',
+      notes: initialData?.notes || '',
+    });
+    setErrors({});
+  }, [initialData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

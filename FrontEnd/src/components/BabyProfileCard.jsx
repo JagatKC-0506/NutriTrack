@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { useBabyContext } from '../context/BabyContext';
 
 export default function BabyProfileCard({
   babyAgeLabel = 'Age unknown',
   babyDob = null
 }) {
+  const navigate = useNavigate();
   const { babies, selectedBaby, setSelectedBaby } = useBabyContext();
   const babyName = selectedBaby?.name || 'Baby';
 
@@ -18,21 +20,32 @@ export default function BabyProfileCard({
           <p className="baby-dob-line">🎂 {formatDate(babyDob)}</p>
           <p className="baby-age-text">{babyAgeLabel}</p>
         </div>
-        {babies && babies.length > 1 && (
-          <select
-            className="baby-card-select"
-            value={selectedBaby?.id || ''}
-            onChange={(e) => {
-              const id = parseInt(e.target.value, 10);
-              const next = babies.find(b => b.id === id);
-              if (next) setSelectedBaby(next);
-            }}
-          >
-            {babies.map(baby => (
-              <option key={baby.id} value={baby.id}>{baby.name}</option>
-            ))}
-          </select>
-        )}
+        <div className="baby-profile-actions">
+          {selectedBaby && (
+            <button
+              className="baby-edit-btn"
+              onClick={() => navigate('/add-baby', { state: { baby: selectedBaby } })}
+              title="Edit baby information"
+            >
+              ✏️
+            </button>
+          )}
+          {babies && babies.length > 1 && (
+            <select
+              className="baby-card-select"
+              value={selectedBaby?.id || ''}
+              onChange={(e) => {
+                const id = parseInt(e.target.value, 10);
+                const next = babies.find(b => b.id === id);
+                if (next) setSelectedBaby(next);
+              }}
+            >
+              {babies.map(baby => (
+                <option key={baby.id} value={baby.id}>{baby.name}</option>
+              ))}
+            </select>
+          )}
+        </div>
       </div>
     </div>
   );
