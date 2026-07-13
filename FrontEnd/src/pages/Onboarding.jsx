@@ -22,17 +22,17 @@ const slides = [
   {
     image: onboard1,
     title: 'Danger Signs Awareness',
-    description: ''
+    description: 'Learn to recognize important health warning signs for mother and baby'
   },
   {
     image: onboard2,
     title: 'Vaccination Schedule',
-    description: ''
+    description: 'Stay updated with national immunization program and vaccine timelines'
   },
   {
     image: onboard3,
     title: 'Healthy Family Benefits',
-    description: ''
+    description: 'Discover the benefits of family health planning for a better future'
   }
 ];
 

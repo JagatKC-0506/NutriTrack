@@ -1,113 +1,121 @@
-/**
- * PREGNANT VACCINES/HEALTH PAGE COMPONENT
- * =======================================
- * Information page for prenatal health, vaccinations, and checkups
- * Specifically designed for pregnant users
- * Clean, minimal layout with essential health information
- */
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Shield } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
-import { getCurrentUser } from '../api';
+import { getCurrentUser, getMotherVaccines, getUserVaccineReminders } from '../api';
+import { calculateTrimester, getVaccineStatus } from '../data/pregnancyUtils';
+import VACCINE_ENRICHMENT from '../data/vaccineEnrichment';
+import PregnancyDashboard from '../components/pregnancy/PregnancyDashboard';
+import SummaryCards from '../components/pregnancy/SummaryCards';
 import '../styles/Vaccines.css';
+import '../styles/Pregnancy.css';
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+};
 
-const calculateTrimester = (dueDateString) => {
-  if (!dueDateString) return { trimester: 'Unknown', weeksPregnant: null };
-
-  const dueDate = new Date(dueDateString);
-  if (Number.isNaN(dueDate.getTime())) return { trimester: 'Unknown', weeksPregnant: null };
-
-  const today = new Date();
-  const normalizedToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  const estimatedLmp = new Date(dueDate.getTime() - 280 * DAY_MS);
-  const normalizedLmp = new Date(estimatedLmp.getFullYear(), estimatedLmp.getMonth(), estimatedLmp.getDate());
-
-  const daysPregnant = Math.floor((normalizedToday - normalizedLmp) / DAY_MS);
-  if (daysPregnant < 0) return { trimester: 'Unknown', weeksPregnant: 0 };
-
-  const weeksPregnant = Math.min(40, Math.floor(daysPregnant / 7));
-
-  if (weeksPregnant < 13) {
-    return { trimester: 'Trimester 1', weeksPregnant };
-  }
-  if (weeksPregnant < 28) {
-    return { trimester: 'Trimester 2', weeksPregnant };
-  }
-  return { trimester: 'Trimester 3', weeksPregnant };
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
 };
 
 export default function PregnantVaccines() {
-  const [currentTrimester, setCurrentTrimester] = useState('Unknown');
-  const [weeksPregnant, setWeeksPregnant] = useState(null);
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [currentTrimester, setCurrentTrimester] = useState('Trimester 1');
+  const [weeksPregnant, setWeeksPregnant] = useState(0);
   const [loading, setLoading] = useState(true);
   const [motherVaccines, setMotherVaccines] = useState([]);
+  const [userReminders, setUserReminders] = useState([]);
+
+  const fetchUserReminders = useCallback(async () => {
+    try {
+      const reminders = await getUserVaccineReminders();
+      setUserReminders(reminders.filter(r => r.recipient === 'mother') || []);
+    } catch (error) {
+      console.error('Error fetching reminders:', error);
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       try {
-        const user = await getCurrentUser();
-        const { trimester, weeksPregnant: weeks } = calculateTrimester(user.due_date);
+        const [userData, vaccines] = await Promise.all([
+          getCurrentUser(),
+          getMotherVaccines(),
+        ]);
+        setUser(userData);
+        const { trimester, weeksPregnant: weeks } = calculateTrimester(userData.due_date);
         setCurrentTrimester(trimester);
         setWeeksPregnant(weeks);
+        setMotherVaccines(vaccines);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
       }
     };
+    fetchData();
+    fetchUserReminders();
+  }, [fetchUserReminders]);
 
-    const fetchMotherVaccines = async () => {
-      try {
-        const response = await fetch('/api/vaccines/mother');
-        if (!response.ok) throw new Error('Failed to fetch mother vaccines');
-        const vaccines = await response.json();
-        setMotherVaccines(vaccines);
-      } catch (error) {
-        console.error('Error fetching mother vaccines:', error);
-      }
-    };
+  const recommendedVaccines = useMemo(
+    () => motherVaccines.filter(v => v.recommended && v.emoji !== '⚠️'),
+    [motherVaccines]
+  );
 
-    fetchUserData();
-    fetchMotherVaccines();
-  }, []);
+  const completedCount = useMemo(() => {
+    return recommendedVaccines.filter(v =>
+      userReminders.find(r => r.vaccine_name === v.name && r.status === 'completed')
+    ).length;
+  }, [recommendedVaccines, userReminders]);
 
-  // Pregnancy health checklist based on trimester
-  const healthChecklistByTrimester = {
-    'Trimester 1': [
-      { week: '8-12 weeks', task: 'First prenatal visit with healthcare provider', icon: '👨‍⚕️', completed: false },
-      { week: '8-10 weeks', task: 'Ultrasound to confirm pregnancy', icon: '📸', completed: false },
-      { week: '9-13 weeks', task: 'Nuchal translucency screening (optional)', icon: '📊', completed: false },
-      { week: 'Throughout', task: 'Take prenatal vitamins with folic acid', icon: '💊', completed: false }
-    ],
-    'Trimester 2': [
-      { week: '15-20 weeks', task: 'Quad screen or cell-free DNA test (optional)', icon: '🧪', completed: false },
-      { week: '18-22 weeks', task: 'Anatomy ultrasound - detailed fetal exam', icon: '📸', completed: false },
-      { week: '24-28 weeks', task: 'Glucose screening test', icon: '🧬', completed: false },
-      { week: '28 weeks', task: 'RhoGAM injection (if Rh negative)', icon: '💉', completed: false }
-    ],
-    'Trimester 3': [
-      { week: '36 weeks', task: 'Group B Streptococcus (GBS) test', icon: '🧪', completed: false },
-      { week: '36+ weeks', task: 'Weekly prenatal visits', icon: '👨‍⚕️', completed: false },
-      { week: 'Weekly', task: 'Monitor baby movements (kick counts)', icon: '👶', completed: false },
-      { week: '37-40 weeks', task: 'Cervical exams to check progress', icon: '📋', completed: false }
-    ],
-    'Unknown': [
-      { week: 'Contact healthcare provider', task: 'Schedule your first prenatal appointment', icon: '📞', completed: false }
-    ]
-  };
+  const completedPercent = useMemo(
+    () => recommendedVaccines.length > 0
+      ? Math.round((completedCount / recommendedVaccines.length) * 100)
+      : 0,
+    [completedCount, recommendedVaccines.length]
+  );
 
-  // Separate vaccines into recommended and to avoid categories
-  const recommendedVaccinesDB = motherVaccines.filter(v => v.recommended && v.emoji !== '⚠️');
-  const vaccinesToAvoidDB = motherVaccines.filter(v => v.emoji === '⚠️' || !v.recommended);
+  const dueSoonCount = useMemo(() => {
+    return recommendedVaccines.filter(v => {
+      const enrichment = VACCINE_ENRICHMENT[v.name];
+      const status = getVaccineStatus(v.name, weeksPregnant, userReminders, enrichment);
+      return status === 'due-soon' || status === 'overdue';
+    }).length;
+  }, [recommendedVaccines, weeksPregnant, userReminders]);
 
-  const currentChecklist = healthChecklistByTrimester[currentTrimester] || healthChecklistByTrimester['Unknown'];
+  const totalTests = useMemo(() => {
+    const tests = { 'Trimester 1': 6, 'Trimester 2': 4, 'Trimester 3': 5 };
+    return tests[currentTrimester] || 3;
+  }, [currentTrimester]);
 
   if (loading) {
     return (
       <div className="vaccines-container">
-        <div style={{ textAlign: 'center', padding: '20px' }}>Loading...</div>
+        <div className="vaccines-header">
+          <button className="vaccines-header-back" onClick={() => navigate('/home')}>
+            <ArrowLeft size={20} />
+          </button>
+          <div className="vaccines-header-content">
+            <h1>Prenatal Health</h1>
+            <p>Loading your dashboard...</p>
+          </div>
+        </div>
+        <div className="vaccines-main">
+          <div className="vaccine-loading">
+            <div className="vaccine-loading-line wide" />
+            <div className="vaccine-loading-line medium" />
+            <div className="vaccine-loading-line" />
+            <div className="vaccine-loading-line wide" />
+            <div className="vaccine-loading-line medium" />
+          </div>
+        </div>
         <BottomNavigation activeTab="Vaccines" userType="pregnant" />
       </div>
     );
@@ -115,98 +123,48 @@ export default function PregnantVaccines() {
 
   return (
     <div className="vaccines-container">
-      {/* Header */}
       <div className="vaccines-header">
-        <h1>🤰 Prenatal Health & Vaccines</h1>
-        <p>{currentTrimester} {weeksPregnant && `- Week ${weeksPregnant}`}</p>
+        <button className="vaccines-header-back" onClick={() => navigate('/home')}>
+          <ArrowLeft size={20} />
+        </button>
+        <div className="vaccines-header-content">
+          <h1>Prenatal Health</h1>
+          <p>{currentTrimester} {weeksPregnant > 0 ? `- Week ${weeksPregnant}` : ''}</p>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div className="vaccines-content">
-        
-        {/* Trimester Checklist */}
-        <section className="health-section">
-          <h2>✅ {currentTrimester} Checklist</h2>
-          <div className="checklist-container">
-            {currentChecklist.map((item, index) => (
-              <div key={index} className="checklist-item">
-                <div className="checklist-header">
-                  <span className="icon">{item.icon}</span>
-                  <div className="checklist-info">
-                    <h4>{item.task}</h4>
-                    <span className="week-info">{item.week}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+      <div className="vaccines-main">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.div variants={itemVariants}>
+            <PregnancyDashboard dueDate={user?.due_date} />
+          </motion.div>
 
-        {/* Recommended Vaccines */}
-        <section className="health-section">
-          <h2>💉 Recommended Vaccines During Pregnancy</h2>
-          {recommendedVaccinesDB.length > 0 ? (
-            <div className="vaccine-cards-container">
-              {recommendedVaccinesDB.map((vaccine) => (
-                <div key={vaccine.id} className="vaccine-card safe">
-                  <div className="vaccine-card-header">
-                    <span className="vaccine-icon">{vaccine.emoji}</span>
-                    <h3>{vaccine.name}</h3>
-                  </div>
-                  <div className="vaccine-card-body">
-                    <p><strong>Description:</strong> {vaccine.description}</p>
-                    {vaccine.total_doses && (
-                      <p><strong>Doses:</strong> {vaccine.total_doses}</p>
-                    )}
-                    <span className="safe-badge">✓ Recommended During Pregnancy</span>
-                  </div>
-                </div>
-              ))}
+          <motion.div variants={itemVariants}>
+            <SummaryCards
+              completedVaccines={completedCount}
+              totalRecommended={recommendedVaccines.length}
+              upcomingAppointments={dueSoonCount}
+              pendingTests={totalTests}
+              completionPercent={completedPercent}
+            />
+          </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <div className="pregnancy-dashboard-quick-info">
+              <Shield size={16} />
+              <span>
+                {completedCount} of {recommendedVaccines.length} vaccines completed
+                {dueSoonCount > 0 ? ` · ${dueSoonCount} due soon` : ''}
+              </span>
             </div>
-          ) : (
-            <p style={{ color: 'var(--text-muted)' }}>Loading vaccines...</p>
-          )}
-        </section>
-
-        {/* Vaccines to Avoid */}
-        <section className="health-section">
-          <h2>⚠️ Vaccines to Avoid During Pregnancy</h2>
-          {vaccinesToAvoidDB.length > 0 ? (
-            <div className="vaccine-cards-container">
-              {vaccinesToAvoidDB
-                .filter(v => v.emoji === '⚠️')
-                .map((vaccine) => (
-                  <div key={vaccine.id} className="vaccine-card unsafe">
-                    <div className="vaccine-card-header">
-                      <span className="vaccine-icon">{vaccine.emoji}</span>
-                      <h3>{vaccine.name}</h3>
-                    </div>
-                    <div className="vaccine-card-body">
-                      <p><strong>Reason:</strong> {vaccine.description}</p>
-                      <span className="unsafe-badge">⚠️ Avoid During Pregnancy</span>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          ) : (
-            <p style={{ color: 'var(--text-muted)' }}>No vaccines to avoid in database.</p>
-          )}
-        </section>
-
-        {/* Important Note */}
-        <section className="health-section important-note">
-          <h2>📌 Important Reminders</h2>
-          <ul className="important-list">
-            <li>Always consult with your healthcare provider before getting any vaccine</li>
-            <li>Keep your vaccination records up to date</li>
-            <li>Schedule prenatal visits regularly</li>
-            <li>Report any concerns or symptoms to your doctor immediately</li>
-            <li>Many vaccines are safe and recommended during pregnancy</li>
-          </ul>
-        </section>
+          </motion.div>
+        </motion.div>
       </div>
 
-      {/* Bottom Navigation */}
       <BottomNavigation activeTab="Vaccines" userType="pregnant" />
     </div>
   );

@@ -3,7 +3,8 @@ import 'dotenv/config';
 export const config = {
   database: {
     url: process.env.DATABASE_URL || 'sqlite://./db.sqlite',
-    dialect: process.env.DATABASE_URL?.startsWith('mysql') ? 'mysql' : 'sqlite',
+    dialect: process.env.DATABASE_URL?.startsWith('mysql') ? 'mysql' : 
+             process.env.DATABASE_URL?.startsWith('postgres') ? 'postgres' : 'sqlite',
   },
   jwt: {
     secret: process.env.NODE_ENV === 'production' && !process.env.SECRET_KEY 
@@ -34,8 +35,9 @@ export const config = {
           origin.match(/^http:\/\/172\.(1[6-9]|2[0-9]|3[01])\.\d+\.\d+/)) { // Local network IPs (172.16-31.x.x)
         callback(null, true);
       } else {
+        // In production, allow all origins (mobile app needs this)
         if (process.env.NODE_ENV === 'production') {
-          callback(new Error('Not allowed by CORS'));
+          callback(null, true);
         } else {
           callback(null, true);
         }

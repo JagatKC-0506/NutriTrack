@@ -33,15 +33,27 @@ import AddBaby from './pages/AddBaby'
 import Nutrition from './pages/Nutrition'
 import Vaccines from './pages/Vaccines'
 import Feeding from './pages/Feeding'
+import FeedingHistory from './pages/FeedingHistory'
 import Growth from './pages/Growth'
+import DischargeSummary from './pages/documents/DischargeSummary'
+import ImmunizationCard from './pages/documents/ImmunizationCard'
+import BirthRegistration from './pages/documents/BirthRegistration'
+import MedicalRecords from './pages/documents/MedicalRecords'
 import Profile from './pages/Profile'
 import StageSelect from './pages/StageSelect'
 import PregnantHome from './pages/PregnantHome'
 import PregnantNutrition from './pages/PregnantNutrition'
+import PregnantHealthGuide from './pages/PregnantHealthGuide'
 import PregnantVaccines from './pages/PregnantVaccines'
-import HospitalVisits from './pages/HospitalVisits'
+import PregnantVaccineList from './pages/PregnantVaccineList'
+import PregnantDailyCare from './pages/PregnantDailyCare'
+import PregnantHealth from './pages/PregnantHealth'
+import PregnantResources from './pages/PregnantResources'
+import PregnantEmergency from './pages/PregnantEmergency'
 import ProtectedRoute from './components/ProtectedRoute'
 import ErrorBoundary from './components/ErrorBoundary'
+import SimpleChatbot from './components/SimpleChatbot'
+import PregnantGrowth from './pages/PregnantGrowth'
 import './App.css'
 
 /**
@@ -76,18 +88,30 @@ function App() {
               <Route path="/pregnant/home" element={<PregnantHome />} />
               <Route path="/nutrition" element={<Nutrition />} />
               <Route path="/pregnant/nutrition" element={<PregnantNutrition />} />
+              <Route path="/pregnant/health-guide" element={<PregnantHealthGuide />} />
               <Route path="/vaccines" element={<Vaccines />} />
               <Route path="/pregnant/vaccines" element={<PregnantVaccines />} />
+              <Route path="/pregnant/vaccines/list" element={<PregnantVaccineList />} />
+              <Route path="/pregnant/vaccines/daily" element={<PregnantDailyCare />} />
+              <Route path="/pregnant/vaccines/health" element={<PregnantHealth />} />
+              <Route path="/pregnant/vaccines/resources" element={<PregnantResources />} />
+              <Route path="/pregnant/emergency" element={<PregnantEmergency />} />
+              <Route path="/pregnant/growth" element={<PregnantGrowth />} /> 
               <Route path="/feeding" element={<Feeding />} />
+              <Route path="/feeding/history" element={<FeedingHistory />} />
               <Route path="/growth" element={<Growth />} />
+              <Route path="/documents/discharge-summary" element={<DischargeSummary />} />
+              <Route path="/documents/immunization-card" element={<ImmunizationCard />} />
+              <Route path="/documents/birth-registration" element={<BirthRegistration />} />
+              <Route path="/documents/medical-records" element={<MedicalRecords />} />
               <Route path="/profile" element={<Profile />} />
-              <Route path="/hospital-visits" element={<HospitalVisits />} />
             </Route>
 
             {/* Route 10: Root Path Redirect */}
             <Route path="/" element={<Navigate to="/onboarding" replace />} />
             <Route path="*" element={<Navigate to="/onboarding" replace />} />
           </Routes>
+          <SimpleChatbot />
         </Router>
       </BabyProvider>
     </ErrorBoundary>

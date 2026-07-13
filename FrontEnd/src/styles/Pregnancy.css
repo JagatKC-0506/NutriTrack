@@ -1,0 +1,1768 @@
+/* ============================
+   Pregnancy Dashboard Styles
+   ============================ */
+
+/* ===== PREGNANCY DASHBOARD CARD ===== */
+.pregnancy-dashboard-card {
+  background: linear-gradient(135deg, #1e293b 0%, #1c1b21 100%);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.pregnancy-dashboard-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.pregnancy-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.pregnancy-dashboard-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pregnancy-dashboard-title-row h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.pregnancy-dashboard-icon {
+  color: var(--vaccine-blue);
+}
+
+.pregnancy-dashboard-trimester-badge {
+  padding: 4px 14px;
+  border-radius: 20px;
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--vaccine-blue);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pregnancy-dashboard-week-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pregnancy-dashboard-week-number {
+  font-size: 48px;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1;
+}
+
+.pregnancy-dashboard-week-label {
+  font-size: 16px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.pregnancy-dashboard-progress-section {
+  margin-bottom: 20px;
+}
+
+.pregnancy-dashboard-progress-bar {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.pregnancy-dashboard-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--vaccine-blue), #0284c7);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.pregnancy-dashboard-progress-text {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pregnancy-dashboard-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pregnancy-dashboard-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pregnancy-dashboard-detail-item svg {
+  color: var(--vaccine-blue);
+  flex-shrink: 0;
+}
+
+.pregnancy-dashboard-detail-item div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pregnancy-dashboard-detail-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pregnancy-dashboard-detail-value {
+  font-size: 14px;
+  color: var(--text-main);
+  font-weight: 600;
+}
+
+/* ===== SUMMARY CARDS ===== */
+.summary-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.summary-card {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  cursor: default;
+  transition: box-shadow 0.2s ease;
+}
+
+.summary-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.summary-card-icon {
+  margin-bottom: 4px;
+}
+
+.summary-card-value {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.summary-card-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.summary-card-subtext {
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* ===== VACCINE CARD NEW ===== */
+.vaccine-cards-new {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vaccine-card-new {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.vaccine-card-new:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.vaccine-card-new.completed {
+  border-left: 4px solid var(--success-green);
+  background: rgba(34, 197, 94, 0.03);
+}
+
+.vaccine-card-new-status-completed {
+  border-left: 4px solid var(--success-green);
+}
+
+.vaccine-card-new-status-due {
+  border-left: 4px solid var(--warning-orange);
+  background: rgba(249, 115, 22, 0.03);
+}
+
+.vaccine-card-new-status-upcoming {
+  border-left: 4px solid var(--vaccine-blue);
+}
+
+.vaccine-card-new-status-overdue {
+  border-left: 4px solid var(--upcoming-red);
+  background: rgba(239, 68, 68, 0.03);
+}
+
+.vaccine-card-new-status-optional {
+  border-left: 4px solid var(--text-gray);
+  opacity: 0.85;
+}
+
+.vaccine-card-new-main {
+  padding: 16px;
+  cursor: pointer;
+}
+
+.vaccine-card-new-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.vaccine-card-new-emoji {
+  font-size: 28px;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+}
+
+.vaccine-card-new-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.vaccine-card-new-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 3px 0;
+}
+
+.vaccine-card-new-protection {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.vaccine-card-new-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.vaccine-card-new-status.vaccine-card-status-completed {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--success-green);
+}
+
+.vaccine-card-new-status.vaccine-card-status-due {
+  background: rgba(249, 115, 22, 0.15);
+  color: var(--warning-orange);
+}
+
+.vaccine-card-new-status.vaccine-card-status-upcoming {
+  background: rgba(56, 189, 248, 0.15);
+  color: var(--vaccine-blue);
+}
+
+.vaccine-card-new-status.vaccine-card-status-overdue {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--upcoming-red);
+}
+
+.vaccine-card-new-status.vaccine-card-status-optional {
+  background: rgba(160, 174, 192, 0.15);
+  color: var(--text-gray);
+}
+
+.vaccine-card-new-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.vaccine-card-new-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+}
+
+.vaccine-card-new-meta-item svg {
+  flex-shrink: 0;
+}
+
+.vaccine-card-new-actions {
+  margin-bottom: 8px;
+}
+
+.vaccine-card-new-mark-btn {
+  width: 100%;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, var(--vaccine-blue), #0284c7);
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.vaccine-card-new-mark-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+}
+
+.vaccine-card-new-mark-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.vaccine-card-new-completed-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: 10px;
+  color: var(--success-green);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.vaccine-card-new-expand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.vaccine-card-new-chevron {
+  transition: transform 0.3s ease;
+}
+
+.vaccine-card-new-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.vaccine-card-new-details {
+  overflow: hidden;
+}
+
+.vaccine-card-new-details-inner {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+/* ===== VACCINE DETAIL SECTIONS ===== */
+.vaccine-detail-section {
+  margin-bottom: 14px;
+}
+
+.vaccine-detail-section:last-child {
+  margin-bottom: 0;
+}
+
+.vaccine-detail-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 6px 0;
+}
+
+.vaccine-detail-section h4 svg {
+  color: var(--vaccine-blue);
+  flex-shrink: 0;
+}
+
+.vaccine-detail-section p {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.vaccine-detail-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.vaccine-detail-section ul li {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 3px 0;
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.5;
+}
+
+.vaccine-detail-section ul li::before {
+  content: '•';
+  position: absolute;
+  left: 4px;
+  color: var(--vaccine-blue);
+}
+
+.vaccine-detail-section.who {
+  padding: 10px 12px;
+  background: rgba(56, 189, 248, 0.06);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  border-radius: 10px;
+}
+
+.vaccine-detail-section.who h4 svg {
+  color: #22c55e;
+}
+
+/* ===== VACCINE TIMELINE ===== */
+.vaccine-timeline {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.vaccine-timeline-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 4px 0;
+}
+
+.vaccine-timeline-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 20px 0;
+}
+
+.vaccine-timeline-track {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.vaccine-timeline-item {
+  display: flex;
+  gap: 16px;
+  position: relative;
+  padding-bottom: 0;
+}
+
+.vaccine-timeline-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.vaccine-timeline-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-muted);
+  border: 2px solid var(--border);
+  color: var(--text-muted);
+  flex-shrink: 0;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.vaccine-timeline-dot.current {
+  background: var(--vaccine-blue);
+  border-color: var(--vaccine-blue);
+  color: var(--white);
+  box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2);
+}
+
+.vaccine-timeline-item.past .vaccine-timeline-dot {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: var(--success-green);
+  color: var(--success-green);
+}
+
+.vaccine-timeline-line {
+  width: 2px;
+  flex: 1;
+  min-height: 30px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+.vaccine-timeline-line.past {
+  background: var(--success-green);
+}
+
+.vaccine-timeline-content {
+  flex: 1;
+  padding-bottom: 20px;
+  padding-top: 6px;
+}
+
+.vaccine-timeline-week {
+  margin-bottom: 4px;
+}
+
+.vaccine-timeline-week-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--vaccine-blue);
+}
+
+.vaccine-timeline-item.current .vaccine-timeline-week-badge {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: var(--vaccine-blue);
+  color: var(--white);
+}
+
+.vaccine-timeline-item-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 3px 0;
+}
+
+.vaccine-timeline-item-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.vaccine-timeline-item.current .vaccine-timeline-item-title {
+  color: var(--vaccine-blue);
+}
+
+/* ===== DAILY CHECKLIST ===== */
+.daily-checklist {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.daily-checklist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.daily-checklist-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.daily-checklist-title-row h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.daily-checklist-title-row svg {
+  color: var(--vaccine-blue);
+}
+
+.daily-checklist-count {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--vaccine-blue);
+}
+
+.daily-checklist-progress {
+  margin-bottom: 16px;
+}
+
+.daily-checklist-progress-bar {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 4px;
+}
+
+.daily-checklist-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--success-green), #22c55e);
+  border-radius: 3px;
+}
+
+.daily-checklist-progress-text {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.daily-checklist-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.daily-checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: var(--text-main);
+}
+
+.daily-checklist-item:hover {
+  border-color: var(--vaccine-blue);
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.daily-checklist-item.completed {
+  border-color: var(--success-green);
+  background: rgba(34, 197, 94, 0.05);
+}
+
+.daily-checklist-emoji {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.daily-checklist-label {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.daily-checklist-label.done {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.daily-checklist-check {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.daily-checklist-check.done {
+  color: var(--success-green);
+}
+
+/* ===== TODAY'S TIPS ===== */
+.today-tips {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.today-tips-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.today-tips-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.today-tips-header svg {
+  color: var(--warning-orange);
+}
+
+.today-tips-carousel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.today-tips-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card-muted);
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.today-tips-nav-btn:hover {
+  border-color: var(--vaccine-blue);
+  color: var(--vaccine-blue);
+}
+
+.today-tips-content-wrapper {
+  flex: 1;
+  overflow: hidden;
+}
+
+.today-tips-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(249, 115, 22, 0.04);
+  border: 1px solid rgba(249, 115, 22, 0.1);
+  border-radius: 10px;
+}
+
+.today-tips-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.today-tips-text {
+  font-size: 13px;
+  color: var(--text-main);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.today-tips-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.today-tips-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.today-tips-dot.active {
+  background: var(--vaccine-blue);
+  width: 18px;
+  border-radius: 3px;
+}
+
+/* ===== EMERGENCY CARD ===== */
+.emergency-card {
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.emergency-card:hover {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.emergency-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  gap: 12px;
+}
+
+.emergency-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.emergency-card-header-left svg {
+  color: var(--upcoming-red);
+  flex-shrink: 0;
+}
+
+.emergency-card-header-left h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--upcoming-red);
+  margin: 0 0 2px 0;
+}
+
+.emergency-card-header-left p {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.emergency-card-chevron {
+  color: var(--upcoming-red);
+  transition: transform 0.3s;
+  flex-shrink: 0;
+}
+
+.emergency-card-chevron.rotated {
+  transform: rotate(180deg);
+}
+
+.emergency-card-content {
+  overflow: hidden;
+}
+
+.emergency-card-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(239, 68, 68, 0.08);
+  font-size: 12px;
+  color: var(--upcoming-red);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.emergency-card-disclaimer svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.emergency-card-list {
+  padding: 12px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.emergency-card-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.emergency-card-item.critical {
+  border-left: 3px solid var(--upcoming-red);
+}
+
+.emergency-card-item.serious {
+  border-left: 3px solid var(--warning-orange);
+}
+
+.emergency-card-item.moderate {
+  border-left: 3px solid var(--text-gray);
+}
+
+.emergency-card-item-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.emergency-card-item-text {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-main);
+  font-weight: 500;
+}
+
+.emergency-card-item-severity {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.emergency-card-item-severity.critical {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--upcoming-red);
+}
+
+.emergency-card-item-severity.serious {
+  background: rgba(249, 115, 22, 0.2);
+  color: var(--warning-orange);
+}
+
+.emergency-card-item-severity.moderate {
+  background: rgba(160, 174, 192, 0.2);
+  color: var(--text-gray);
+}
+
+.emergency-card-footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid rgba(239, 68, 68, 0.15);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--upcoming-red);
+}
+
+.emergency-card-footer svg {
+  flex-shrink: 0;
+}
+
+/* ===== MEDICAL TESTS ===== */
+.medical-tests {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.medical-tests-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.medical-tests-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.medical-tests-header svg {
+  color: var(--vaccine-blue);
+}
+
+.medical-tests-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.medical-tests-tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.medical-tests-tab.active {
+  background: var(--vaccine-blue);
+  color: var(--white);
+  border-color: var(--vaccine-blue);
+}
+
+.medical-tests-tab:hover:not(.active) {
+  border-color: var(--vaccine-blue);
+  color: var(--vaccine-blue);
+}
+
+.medical-tests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.medical-test-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.medical-test-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(56, 189, 248, 0.08);
+  border-radius: 8px;
+}
+
+.medical-test-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.medical-test-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 3px 0;
+}
+
+.medical-test-desc {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 6px 0;
+  line-height: 1.4;
+}
+
+.medical-test-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.medical-test-when,
+.medical-test-purpose {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 4px;
+}
+
+.medical-test-when svg,
+.medical-test-purpose svg {
+  flex-shrink: 0;
+}
+
+/* ===== SECTION TITLES ===== */
+.pregnancy-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== VACCINES TO AVOID ===== */
+.vaccines-to-avoid {
+  background: rgba(249, 115, 22, 0.04);
+  border: 1px solid rgba(249, 115, 22, 0.15);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.vaccines-to-avoid h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--warning-orange);
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.vaccines-to-avoid-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vaccines-to-avoid-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+  border: 1px solid rgba(249, 115, 22, 0.1);
+}
+
+.vaccines-to-avoid-item-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.vaccines-to-avoid-item-info {
+  flex: 1;
+}
+
+.vaccines-to-avoid-item-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0 0 2px 0;
+}
+
+.vaccines-to-avoid-item-reason {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.vaccines-to-avoid-item-badge {
+  padding: 3px 8px;
+  background: rgba(249, 115, 22, 0.15);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--warning-orange);
+  flex-shrink: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+/* ===== NAVIGATION CARDS ===== */
+.pregnancy-nav-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pregnancy-nav-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px;
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.pregnancy-nav-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.pregnancy-nav-card:active {
+  transform: translateY(0);
+}
+
+.pregnancy-nav-card-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.pregnancy-nav-card-blue .pregnancy-nav-card-icon {
+  background: rgba(56, 189, 248, 0.12);
+}
+
+.pregnancy-nav-card-green .pregnancy-nav-card-icon {
+  background: rgba(34, 197, 94, 0.12);
+}
+
+.pregnancy-nav-card-orange .pregnancy-nav-card-icon {
+  background: rgba(249, 115, 22, 0.12);
+}
+
+.pregnancy-nav-card-red .pregnancy-nav-card-icon {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.pregnancy-nav-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.pregnancy-nav-card-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.pregnancy-nav-card-desc {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.pregnancy-nav-card-arrow {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.pregnancy-nav-card:hover .pregnancy-nav-card-arrow {
+  opacity: 1;
+}
+
+/* ===== QUICK INFO BAR ===== */
+.pregnancy-dashboard-quick-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: rgba(56, 189, 248, 0.06);
+  border: 1px solid rgba(56, 189, 248, 0.12);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.pregnancy-dashboard-quick-info svg {
+  color: var(--vaccine-blue);
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .summary-cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .pregnancy-dashboard-details {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .pregnancy-dashboard-detail-item {
+    flex: 1;
+  }
+}
+
+@media (max-width: 380px) {
+  .summary-cards-grid {
+    gap: 8px;
+  }
+
+  .summary-card {
+    padding: 12px 10px;
+  }
+
+  .summary-card-value {
+    font-size: 18px;
+  }
+
+  .pregnancy-dashboard-week-number {
+    font-size: 36px;
+  }
+
+  .vaccine-card-new-top {
+    flex-direction: column;
+  }
+
+  .vaccine-card-new-status {
+    align-self: flex-start;
+  }
+}
+
+/* ===== EMERGENCY WARNING SIGNS PAGE ===== */
+.emergency-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: radial-gradient(circle at 20% 20%, rgba(239, 68, 68, 0.08), transparent 30%),
+    radial-gradient(circle at 80% 0%, rgba(249, 115, 22, 0.08), transparent 30%),
+    var(--bg-dark);
+  padding-bottom: 100px;
+  overflow-y: auto;
+}
+
+.emergency-page-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.emergency-page-header {
+  background: linear-gradient(135deg, var(--upcoming-red) 0%, #dc2626 100%);
+  color: var(--white);
+  padding: 24px 20px;
+  border-radius: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+.emergency-page-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.emergency-page-header-back {
+  font-size: 24px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--white);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.emergency-page-header-back:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.05);
+}
+
+.emergency-page-header-content {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.emergency-page-header-content h1 {
+  font-size: 22px;
+  margin: 0 0 6px 0;
+  font-weight: 700;
+}
+
+.emergency-page-header-content p {
+  font-size: 13px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.emergency-week-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.emergency-disclaimer-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+}
+
+.emergency-disclaimer-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.emergency-disclaimer-text {
+  flex: 1;
+  font-size: 13px;
+  color: var(--upcoming-red);
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.emergency-signs-section {
+  background: var(--card-dark);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.emergency-signs-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border);
+}
+
+.emergency-signs-section-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.emergency-signs-section-title-row h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.emergency-signs-count {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.emergency-signs-count.critical {
+  background: rgba(239, 68, 68, 0.2);
+  color: var(--upcoming-red);
+}
+
+.emergency-signs-count.serious {
+  background: rgba(249, 115, 22, 0.2);
+  color: var(--warning-orange);
+}
+
+.emergency-signs-count.moderate {
+  background: rgba(160, 174, 192, 0.2);
+  color: var(--text-gray);
+}
+
+.emergency-signs-expand-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.emergency-signs-expand-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-main);
+}
+
+.emergency-signs-expand-btn.rotated {
+  transform: rotate(180deg);
+}
+
+.emergency-signs-list {
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.2s ease;
+}
+
+.emergency-signs-list.collapsed {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.emergency-signs-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.emergency-signs-item:last-child {
+  border-bottom: none;
+}
+
+.emergency-signs-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.emergency-signs-item.critical {
+  border-left: 4px solid var(--upcoming-red);
+}
+
+.emergency-signs-item.serious {
+  border-left: 4px solid var(--warning-orange);
+}
+
+.emergency-signs-item.moderate {
+  border-left: 4px solid var(--text-gray);
+}
+
+.emergency-signs-item-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 10px;
+}
+
+.emergency-signs-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.emergency-signs-item-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+  margin: 0 0 4px 0;
+  line-height: 1.4;
+}
+
+.emergency-signs-item-severity {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.emergency-signs-item-severity.critical {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--upcoming-red);
+}
+
+.emergency-signs-item-severity.serious {
+  background: rgba(249, 115, 22, 0.15);
+  color: var(--warning-orange);
+}
+
+.emergency-signs-item-severity.moderate {
+  background: rgba(160, 174, 192, 0.15);
+  color: var(--text-gray);
+}
+
+.emergency-signs-item-severity.critical::before {
+  content: '●';
+  font-size: 6px;
+}
+
+.emergency-signs-item-severity.serious::before {
+  content: '●';
+  font-size: 6px;
+}
+
+.emergency-signs-item-severity.moderate::before {
+  content: '●';
+  font-size: 6px;
+}
+
+.emergency-quick-actions {
+  display: flex;
+  gap: 12px;
+  padding: 20px;
+}
+
+.emergency-action-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 16px;
+  border-radius: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid;
+  font-weight: 600;
+  text-align: center;
+}
+
+.emergency-action-btn.primary {
+  background: var(--upcoming-red);
+  border-color: var(--upcoming-red);
+  color: var(--white);
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
+}
+
+.emergency-action-btn.primary:hover {
+  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
+
+.emergency-action-btn.primary:active {
+  transform: translateY(0);
+}
+
+.emergency-action-btn.secondary {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-main);
+}
+
+.emergency-action-btn.secondary:hover {
+  border-color: var(--vaccine-blue);
+  color: var(--vaccine-blue);
+  background: rgba(56, 189, 248, 0.05);
+}
+
+.emergency-action-btn-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.emergency-action-btn-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.emergency-action-btn-sub {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+.emergency-footer-note {
+  text-align: center;
+  padding: 0 20px 20px;
+}
+
+.emergency-footer-note p {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.emergency-footer-note p strong {
+  color: var(--text-main);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .emergency-page-header {
+    padding: 20px 16px;
+  }
+  
+  .emergency-page-header-content h1 {
+    font-size: 20px;
+  }
+  
+  .emergency-quick-actions {
+    flex-direction: column;
+    padding: 16px;
+  }
+  
+  .emergency-action-btn {
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 14px 16px;
+    gap: 12px;
+  }
+  
+  .emergency-action-btn-icon {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 380px) {
+  .emergency-page-content {
+    padding: 16px;
+    gap: 16px;
+  }
+  
+  .emergency-signs-item {
+    padding: 12px 16px;
+  }
+  
+  .emergency-signs-item-text {
+    font-size: 13px;
+  }
+}

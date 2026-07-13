@@ -25,6 +25,7 @@ import '../styles/Growth.css';
 export default function Growth() {
   const navigate = useNavigate();
   const { babies, selectedBaby, setSelectedBaby, setBabies } = useBabyContext();
+  const [viewingBaby, setViewingBaby] = useState(null);
   const [growthRecords, setGrowthRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showBabyForm, setShowBabyForm] = useState(false);
@@ -42,23 +43,23 @@ export default function Growth() {
 
   useEffect(() => {
     setLoading(true);
-    if (selectedBaby) {
-      fetchGrowthRecords(selectedBaby.id);
+    if (viewingBaby) {
+      fetchGrowthRecords(viewingBaby.id);
     } else {
       setGrowthRecords([]);
       setChartValues([]);
       setTrendAnalysis(null);
       setLoading(false);
     }
-  }, [selectedBaby]);
+  }, [viewingBaby]);
 
   useEffect(() => {
-    if (selectedBaby) {
-      const points = buildChartPoints(selectedBaby, growthRecords);
+    if (viewingBaby) {
+      const points = buildChartPoints(viewingBaby, growthRecords);
       const values = buildChartValues(points, metricConfig[chartMetric].key);
       setChartValues(values);
     }
-  }, [selectedBaby, growthRecords, chartMetric]);
+  }, [viewingBaby, growthRecords, chartMetric]);
 
   const fetchGrowthRecords = async (babyId) => {
     try {
@@ -78,6 +79,7 @@ export default function Growth() {
       const newBaby = await createBaby(babyData);
       setBabies([...babies, newBaby]);
       setSelectedBaby(newBaby);
+      setViewingBaby(newBaby);
       setShowBabyForm(false);
       setEditingBaby(null);
       fetchGrowthRecords(newBaby.id);
@@ -96,6 +98,7 @@ export default function Growth() {
       const updatedBaby = await updateBaby(editingBaby.id, babyData);
       setBabies(babies.map(b => b.id === updatedBaby.id ? updatedBaby : b));
       setSelectedBaby(updatedBaby);
+      setViewingBaby(updatedBaby);
       setShowBabyForm(false);
       setEditingBaby(null);
       addToast('Baby updated successfully!', 'success');
@@ -114,12 +117,12 @@ export default function Growth() {
         const updatedBabies = babies.filter(b => b.id !== babyId);
         setBabies(updatedBabies);
 
-        if (selectedBaby?.id === babyId) {
+        if (viewingBaby?.id === babyId) {
           if (updatedBabies.length > 0) {
-            setSelectedBaby(updatedBabies[0]);
+            setViewingBaby(updatedBabies[0]);
             fetchGrowthRecords(updatedBabies[0].id);
           } else {
-            setSelectedBaby(null);
+            setViewingBaby(null);
             setGrowthRecords([]);
           }
         }
@@ -141,8 +144,8 @@ export default function Growth() {
     try {
       await createGrowthRecord(recordData);
       setShowGrowthInput(false);
-      if (selectedBaby) {
-        fetchGrowthRecords(selectedBaby.id);
+      if (viewingBaby) {
+        fetchGrowthRecords(viewingBaby.id);
       }
       addToast('Growth record added successfully!', 'success');
       setTimeout(() => recordsEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
@@ -166,8 +169,8 @@ export default function Growth() {
       await updateGrowthRecord(editingRecord.id, recordData);
       setShowGrowthInput(false);
       setEditingRecord(null);
-      if (selectedBaby) {
-        fetchGrowthRecords(selectedBaby.id);
+      if (viewingBaby) {
+        fetchGrowthRecords(viewingBaby.id);
       }
       addToast('Growth record updated successfully!', 'success');
       setTimeout(() => recordsEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 100);
@@ -198,7 +201,7 @@ export default function Growth() {
   };
 
   const handleBackToBabies = () => {
-    setSelectedBaby(null);
+    setViewingBaby(null);
     setGrowthRecords([]);
     setShowGrowthInput(false);
   };
@@ -243,7 +246,7 @@ export default function Growth() {
 
       <div className="growth-main">
 
-        {!selectedBaby && (
+        {!viewingBaby && (
           <div className="babies-section">
             <div className="section-header">
               <h2>Your Babies</h2>
@@ -279,6 +282,7 @@ export default function Growth() {
                     onViewGrowth={(babyId) => {
                       const baby = babies.find(b => b.id === babyId);
                       setSelectedBaby(baby);
+                      setViewingBaby(baby);
                       fetchGrowthRecords(babyId);
                     }}
                   />
@@ -288,12 +292,12 @@ export default function Growth() {
           </div>
         )}
 
-        {selectedBaby && (
+        {viewingBaby && (
           <div className="tracking-section">
             <div className="section-header">
               <div className="tracking-header-left">
                 <button className="growth-back-btn" onClick={handleBackToBabies}>←</button>
-                <h2>📈 {selectedBaby.name}</h2>
+                <h2>📈 {viewingBaby.name}</h2>
               </div>
               <button
                 className="add-button"
@@ -308,8 +312,8 @@ export default function Growth() {
 
             {showGrowthInput && (
               <GrowthInput
-                babyId={selectedBaby.id}
-                babyDOB={selectedBaby.date_of_birth}
+                babyId={viewingBaby.id}
+                babyDOB={viewingBaby.date_of_birth}
                 onSubmit={editingRecord ? handleUpdateGrowthRecord : handleAddGrowthRecord}
                 isLoading={growthInputLoading}
                 onCancel={handleCancelGrowthInput}
@@ -343,7 +347,7 @@ export default function Growth() {
                     <div className="current-stat-content">
                       <h3>Current Height</h3>
                       <p className="current-stat-value">{latestRecord.height_cm} cm</p>
-                      <p>Age: {_calculateAge(selectedBaby.date_of_birth)}</p>
+                      <p>Age: {_calculateAge(viewingBaby.date_of_birth)}</p>
                       {latestWho?._skip ? (
                         <p className="who-hint">⚙️ Set baby gender for WHO percentiles</p>
                       ) : latestWho?.height_cm && (
@@ -494,8 +498,8 @@ export default function Growth() {
             )}
 
             <DevelopmentalMilestones
-              selectedBaby={selectedBaby}
-              babyAgeMonths={calculateBabyAgeDetailed(selectedBaby.date_of_birth).months ?? 0}
+              selectedBaby={viewingBaby}
+              babyAgeMonths={calculateBabyAgeDetailed(viewingBaby.date_of_birth).months ?? 0}
             />
 
             {growthRecords.length === 0 && !showGrowthInput && (

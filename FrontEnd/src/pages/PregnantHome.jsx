@@ -7,13 +7,13 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import GreetingCard from '../components/GreetingCard';
-import ReminderCard from '../components/ReminderCard';
 import NotificationBanner from '../components/NotificationBanner';
-import TipCard from '../components/TipCard';
+import PregnancyGuidePreview from '../components/PregnancyGuidePreview';
 import BottomNavigation from '../components/BottomNavigation';
 import NotificationService from '../services/NotificationService';
-import { getReminders, getDailyTip, getCurrentUser, getAuthToken } from '../api';
+import { getReminders, getCurrentUser, getAuthToken, getUserVaccineReminders } from '../api';
 import '../styles/Home.css';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -45,12 +45,13 @@ const calculateTrimester = (dueDateString) => {
 };
 
 export default function PregnantHome() {
+  const navigate = useNavigate();
   
   const [_notificationPermission, setNotificationPermission] = useState(false);
-  const [tip, setTip] = useState("Stay hydrated! Drink at least 8 glasses of water daily.");
-  const [tipError, setTipError] = useState(null);
   const [reminders, setReminders] = useState([]);
   const [_loading, setLoading] = useState(true);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifLoading, setNotifLoading] = useState(false);
   const [userData, setUserData] = useState({
     userName: "Loading...",
     trimester: "Calculating...",
@@ -134,15 +135,6 @@ export default function PregnantHome() {
       } catch (error) {
         console.error('Error fetching reminders:', error);
       }
-
-      try {
-        // Fetch daily tip from backend
-        const tipData = await getDailyTip();
-        setTip(tipData.tip);
-      } catch (error) {
-        console.error('Error fetching daily tip:', error);
-        setTipError(error.message);
-      }
       
       setLoading(false);
     };
@@ -150,6 +142,33 @@ export default function PregnantHome() {
     initializeNotifications();
     fetchData();
   }, []);
+
+  const fetchNotifications = async () => {
+    setNotifLoading(true);
+    try {
+      const [remindersData, vaccineReminders] = await Promise.all([
+        getReminders().catch(() => []),
+        getUserVaccineReminders().catch(() => []),
+      ]);
+      const all = [
+        ...vaccineReminders.map(v => ({ ...v, type: 'vaccine', icon: '💉' })),
+        ...remindersData.map(r => ({ ...r, type: 'reminder', icon: '📅' })),
+      ];
+      all.sort((a, b) => new Date(a.reminder_date) - new Date(b.reminder_date));
+      setNotifications(all);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setNotifLoading(false);
+    }
+  };
+
+  const handleOpenNotifications = () => {
+    setShowNotifications(true);
+    fetchNotifications();
+  };
+
+  const [notifications, setNotifications] = useState([]);
 
   return (
     <div className="home-container">
@@ -168,17 +187,65 @@ export default function PregnantHome() {
           dueDate={userData.dueDate}
           weeksPregnant={userData.weeksPregnant}
           userType="pregnant"
+          onNotificationClick={handleOpenNotifications}
         />
 
-        {/* Reminders Section */}
-        <ReminderCard reminders={reminders} />
+        {/* Quick Access Navigation */}
+        <div className="quick-nav">
+          <div className="quick-nav-card" onClick={() => navigate('/pregnant/vaccines/daily')}>
+            <span className="quick-nav-icon">✅</span>
+            <span className="quick-nav-label">Daily Care</span>
+          </div>
+          <div className="quick-nav-card" onClick={() => navigate('/pregnant/vaccines/health')}>
+            <span className="quick-nav-icon">🩺</span>
+            <span className="quick-nav-label">Medical Tests</span>
+          </div>
+          <div className="quick-nav-card" onClick={() => navigate('/pregnant/vaccines/resources')}>
+            <span className="quick-nav-icon">🆘</span>
+            <span className="quick-nav-label">Resources & Safety</span>
+          </div>
+        </div>
 
-        {/* Daily Tip Section */}
-        <TipCard 
-          title="Today's Pregnancy Tip"
-          content={tipError ? `Tip unavailable: ${tipError}` : tip}
-        />
+        <PregnancyGuidePreview />
       </div>
+
+      {/* Notification Modal */}
+      {showNotifications && (
+        <div className="notif-overlay" onClick={() => setShowNotifications(false)}>
+          <div className="notif-panel" onClick={e => e.stopPropagation()}>
+            <div className="notif-panel-header">
+              <h2>🔔 Notifications</h2>
+              <button className="notif-close-btn" onClick={() => setShowNotifications(false)}>✕</button>
+            </div>
+            <div className="notif-panel-body">
+              {notifLoading ? (
+                <p className="notif-empty">Loading...</p>
+              ) : notifications.length === 0 ? (
+                <p className="notif-empty">No notifications yet.</p>
+              ) : (
+                notifications.map((n, i) => (
+                  <div key={n.id || i} className="notif-item">
+                    <span className="notif-icon">{n.icon}</span>
+                    <div className="notif-content">
+                      <p className="notif-title">{n.title || n.vaccine_name}</p>
+                      {n.description && <p className="notif-desc">{n.description}</p>}
+                      {(n.dose_number != null) && (
+                        <p className="notif-desc">Dose {n.dose_number}{n.total_doses ? ` of ${n.total_doses}` : ''}</p>
+                      )}
+                      <p className="notif-date">
+                        {new Date(n.reminder_date || n.date).toLocaleDateString('en-US', {
+                          month: 'short', day: 'numeric', year: 'numeric',
+                        })}
+                      </p>
+                    </div>
+                    {n.status === 'completed' && <span className="notif-status">✅</span>}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Navigation */}
       <BottomNavigation activeTab="Home" userType="pregnant" />

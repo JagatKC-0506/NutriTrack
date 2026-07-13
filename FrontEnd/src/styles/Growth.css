@@ -67,24 +67,6 @@
   background: rgba(255, 255, 255, 0.3);
 }
 
-.growth-header-add-btn {
-  font-size: 28px;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  margin-left: auto;
-}
-
-.growth-header-add-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-}
 
 .growth-header-content h1 {
   font-size: 24px;

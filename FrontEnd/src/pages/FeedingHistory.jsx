@@ -1,0 +1,412 @@
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useBabyContext } from '../context/BabyContext';
+import { getBabyAgeMonths } from '../utils/babyAge';
+import { useFeedingData } from '../hooks/useFeedingData';
+import BottomNavigation from '../components/BottomNavigation';
+import LogModal from '../components/feeding/LogModal';
+import { ArrowLeft, Calendar, Clock, Search, Filter, Download, Loader2, ChevronDown } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import { applyPlugin } from 'jspdf-autotable';
+applyPlugin(jsPDF);
+
+const typeLabels = {
+  breast: { emoji: '🤱', label: 'Breast feeding' },
+  formula: { emoji: '🍼', label: 'Formula' },
+  solids: { emoji: '🥣', label: 'Solid Food' },
+  water: { emoji: '💧', label: 'Water' },
+};
+
+function formatTime(t) {
+  if (!t) return '';
+  try {
+    return new Date('2000-01-01T' + t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } catch { return t; }
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  try {
+    return new Date(d + 'T00:00:00').toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+  } catch { return d; }
+}
+
+function getDateRange(filter) {
+  const today = new Date();
+  const end = today.toISOString().split('T')[0];
+  let start;
+  switch (filter) {
+    case 'today':
+      start = end;
+      break;
+    case '7days':
+      start = new Date(today.getTime() - 7 * 86400000).toISOString().split('T')[0];
+      break;
+    case '30days':
+      start = new Date(today.getTime() - 30 * 86400000).toISOString().split('T')[0];
+      break;
+    default:
+      start = null;
+  }
+  return { start, end };
+}
+
+function generatePDF(logs, babyName, startDate, endDate) {
+  const doc = new jsPDF();
+  const pageWidth = doc.internal.pageSize.getWidth();
+
+  doc.setFontSize(20);
+  doc.setTextColor(236, 72, 153);
+  doc.text('NutriTrack', pageWidth / 2, 30, { align: 'center' });
+
+  doc.setFontSize(14);
+  doc.setTextColor(100, 116, 139);
+  doc.text('Baby Feeding Report', pageWidth / 2, 40, { align: 'center' });
+
+  doc.setDrawColor(226, 232, 240);
+  doc.line(20, 45, pageWidth - 20, 45);
+
+  let y = 55;
+  doc.setFontSize(11);
+  doc.setTextColor(51, 65, 85);
+
+  doc.setFont(undefined, 'bold');
+  doc.text('Baby Information', 20, y);
+  y += 7;
+  doc.setFont(undefined, 'normal');
+  doc.text(`Baby Name: ${babyName || 'N/A'}`, 20, y);
+  y += 6;
+  doc.text(`Report Period: ${formatDate(startDate)} — ${formatDate(endDate || new Date().toISOString().split('T')[0])}` , 20, y);
+  y += 6;
+  doc.text(`Date Generated: ${new Date().toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })}`, 20, y);
+
+  y += 12;
+  doc.setDrawColor(226, 232, 240);
+  doc.line(20, y, pageWidth - 20, y);
+  y += 8;
+
+  doc.setFont(undefined, 'bold');
+  doc.setFontSize(12);
+  doc.text('Feeding History', 20, y);
+  y += 8;
+
+  const tableData = logs.map(log => [
+    formatDate(log.date),
+    formatTime(log.time),
+    (typeLabels[log.feeding_type] || {}).label || log.feeding_type,
+    log.food_name || '-',
+    log.duration ? `${log.duration} min` : log.quantity ? `${log.quantity} ${log.quantity_unit || ''}` : '-',
+    log.notes || '-',
+  ]);
+
+  doc.autoTable({
+    startY: y,
+    head: [['Date', 'Time', 'Type', 'Food', 'Qty/Duration', 'Notes']],
+    body: tableData,
+    theme: 'striped',
+    headStyles: { fillColor: [236, 72, 153], textColor: [255, 255, 255], fontSize: 9 },
+    bodyStyles: { fontSize: 8, textColor: [51, 65, 85] },
+    alternateRowStyles: { fillColor: [248, 250, 252] },
+    margin: { top: 10, bottom: 30 },
+    styles: { cellPadding: 2.5 },
+    columnStyles: {
+      0: { cellWidth: 28 },
+      1: { cellWidth: 18 },
+      2: { cellWidth: 28 },
+      3: { cellWidth: 30 },
+      4: { cellWidth: 28 },
+      5: { cellWidth: 'auto' },
+    },
+  });
+
+  y = doc.lastAutoTable.finalY + 15;
+  doc.setDrawColor(226, 232, 240);
+  doc.line(20, y, pageWidth - 20, y);
+  y += 8;
+
+  const total = logs.length;
+  const breastfeeding = logs.filter(l => l.feeding_type === 'breast').length;
+  const formula = logs.filter(l => l.feeding_type === 'formula').length;
+  const solids = logs.filter(l => l.feeding_type === 'solids').length;
+  const water = logs.filter(l => l.feeding_type === 'water').length;
+
+  doc.setFont(undefined, 'bold');
+  doc.setFontSize(12);
+  doc.text('Summary', 20, y);
+  y += 8;
+  doc.setFont(undefined, 'normal');
+  doc.setFontSize(10);
+
+  const summaryRows = [
+    ['Total Feedings', String(total)],
+    ['Breastfeeding Sessions', String(breastfeeding)],
+    ['Formula Feedings', String(formula)],
+    ['Solid Food Feedings', String(solids)],
+    ['Water Intake', String(water)],
+  ];
+
+  summaryRows.forEach(([label, value]) => {
+    doc.text(label, 30, y);
+    doc.text(value, pageWidth - 30, y, { align: 'right' });
+    y += 7;
+  });
+
+  y = Math.max(y + 20, doc.internal.pageSize.getHeight() - 30);
+  doc.setFontSize(8);
+  doc.setTextColor(148, 163, 184);
+  doc.text('Generated by NutriTrack', pageWidth / 2, y, { align: 'center' });
+
+  const filename = `feeding-report-${new Date().toISOString().split('T')[0]}.pdf`;
+  doc.save(filename);
+}
+
+export default function FeedingHistory() {
+  const navigate = useNavigate();
+  const { selectedBaby } = useBabyContext();
+  const babyAgeMonths = selectedBaby ? getBabyAgeMonths(selectedBaby.date_of_birth) : 0;
+  const { feedingLogs, addLog, deleteLog, updateLog } = useFeedingData(selectedBaby);
+
+  const [filter, setFilter] = useState('7days');
+  const [customStart, setCustomStart] = useState('');
+  const [customEnd, setCustomEnd] = useState('');
+  const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [modalType, setModalType] = useState(null);
+  const [editingLog, setEditingLog] = useState(null);
+
+  const dateRange = useMemo(() => {
+    if (filter === 'custom') {
+      if (!customStart && !customEnd) return { start: null, end: null };
+      return { start: customStart || null, end: customEnd || null };
+    }
+    return getDateRange(filter);
+  }, [filter, customStart, customEnd]);
+
+  const filteredLogs = useMemo(() => {
+    let logs = [...feedingLogs];
+
+    if (dateRange.start) {
+      logs = logs.filter(l => l.date >= dateRange.start);
+    }
+    if (dateRange.end) {
+      logs = logs.filter(l => l.date <= dateRange.end);
+    }
+
+    if (typeFilter) {
+      logs = logs.filter(l => l.feeding_type === typeFilter);
+    }
+
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      logs = logs.filter(l =>
+        (l.food_name && l.food_name.toLowerCase().includes(q)) ||
+        (typeLabels[l.feeding_type] && typeLabels[l.feeding_type].label.toLowerCase().includes(q)) ||
+        (l.notes && l.notes.toLowerCase().includes(q))
+      );
+    }
+
+    logs.sort((a, b) => {
+      const dateA = new Date(`${a.date}T${a.time || '00:00'}`);
+      const dateB = new Date(`${b.date}T${b.time || '00:00'}`);
+      return dateB - dateA;
+    });
+    return logs;
+  }, [feedingLogs, dateRange, typeFilter, search]);
+
+  const handleExportPDF = async () => {
+    setExporting(true);
+    try {
+      const { start, end } = dateRange;
+      generatePDF(filteredLogs, selectedBaby?.name, start, end);
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0f172a] pb-24">
+      <header className="sticky top-0 z-40 bg-[#0f172a]/80 backdrop-blur-xl border-b border-[#2b2c37]">
+        <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
+          <button
+            onClick={() => navigate('/feeding')}
+            className="p-2 rounded-xl hover:bg-slate-800/50 text-slate-400 hover:text-slate-200 transition-colors"
+            aria-label="Back to feeding"
+          >
+            <ArrowLeft size={20} />
+          </button>
+          <span className="text-sm font-semibold text-slate-200">Feeding History</span>
+        </div>
+      </header>
+
+      <main className="max-w-lg mx-auto px-4 py-6 space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by food, type, or notes..."
+              className="w-full bg-[#1c1b21] border border-[#2b2c37] rounded-xl pl-9 pr-3 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-pink-500/50"
+            />
+          </div>
+
+          <div className="relative">
+            <button
+              onClick={() => setShowFilterMenu(!showFilterMenu)}
+              className="flex items-center gap-1.5 bg-[#1c1b21] border border-[#2b2c37] rounded-xl px-3 py-2.5 text-xs text-slate-400 hover:text-slate-200 hover:border-pink-500/30 transition-colors"
+            >
+              <Filter size={14} />
+              <span className="hidden sm:inline">Filter</span>
+              <ChevronDown size={12} />
+            </button>
+
+            {showFilterMenu && (
+              <div className="absolute right-0 top-full mt-2 w-56 bg-[#1c1b21] border border-[#2b2c37] rounded-2xl p-3 shadow-2xl z-50 space-y-2">
+                <button onClick={() => { setFilter('today'); setShowFilterMenu(false); }} className={`w-full text-left text-xs px-3 py-2 rounded-xl ${filter === 'today' ? 'bg-pink-500/10 text-pink-400' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'} transition-colors`}>Today</button>
+                <button onClick={() => { setFilter('7days'); setShowFilterMenu(false); }} className={`w-full text-left text-xs px-3 py-2 rounded-xl ${filter === '7days' ? 'bg-pink-500/10 text-pink-400' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'} transition-colors`}>Last 7 Days</button>
+                <button onClick={() => { setFilter('30days'); setShowFilterMenu(false); }} className={`w-full text-left text-xs px-3 py-2 rounded-xl ${filter === '30days' ? 'bg-pink-500/10 text-pink-400' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'} transition-colors`}>Last 30 Days</button>
+                <div className="border-t border-[#2b2c37] my-1" />
+                <button onClick={() => { setFilter('custom'); setShowFilterMenu(false); }} className={`w-full text-left text-xs px-3 py-2 rounded-xl ${filter === 'custom' ? 'bg-pink-500/10 text-pink-400' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'} transition-colors`}>Custom Range</button>
+              </div>
+            )}
+          </div>
+
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="bg-[#1c1b21] border border-[#2b2c37] rounded-xl px-3 py-2.5 text-xs text-slate-400 focus:outline-none focus:border-pink-500/50"
+            aria-label="Filter by feeding type"
+          >
+            <option value="">All Types</option>
+            <option value="breast">Breastfeeding</option>
+            <option value="breast_milk">Breast Milk</option>
+            <option value="formula">Formula</option>
+            <option value="solids">Solid Food</option>
+            <option value="water">Water</option>
+          </select>
+        </div>
+
+        {filter === 'custom' && (
+          <div className="flex items-center gap-2">
+            <input
+              type="date"
+              value={customStart}
+              onChange={(e) => setCustomStart(e.target.value)}
+              className="flex-1 bg-[#1c1b21] border border-[#2b2c37] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-pink-500/50"
+            />
+            <span className="text-xs text-slate-500">to</span>
+            <input
+              type="date"
+              value={customEnd}
+              onChange={(e) => setCustomEnd(e.target.value)}
+              className="flex-1 bg-[#1c1b21] border border-[#2b2c37] rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-pink-500/50"
+            />
+          </div>
+        )}
+
+        <div className="flex items-center justify-between">
+          <p className="text-xs text-slate-500">
+            {filteredLogs.length} feeding{filteredLogs.length !== 1 ? 's' : ''} found
+          </p>
+          <button
+            onClick={handleExportPDF}
+            disabled={exporting || filteredLogs.length === 0}
+            className="flex items-center gap-1.5 bg-gradient-to-r from-pink-500 to-pink-600 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:from-pink-600 hover:to-pink-700 transition-all shadow-lg shadow-pink-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+            Export PDF
+          </button>
+        </div>
+
+        {filteredLogs.length === 0 ? (
+          <div className="text-center py-12">
+            <Calendar size={32} className="text-slate-600 mx-auto mb-3" />
+            <p className="text-sm text-slate-500">No feeding logs found for the selected period.</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {filteredLogs.map((log) => (
+              <div key={log.id} className="group bg-[#1c1b21] rounded-2xl p-4 border border-[#2b2c37] shadow-lg hover:border-pink-500/30 transition-all">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{(typeLabels[log.feeding_type] || {}).emoji || '🍼'}</span>
+                    <span className="text-sm font-semibold text-slate-200">
+                      {(typeLabels[log.feeding_type] || {}).label || log.feeding_type}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => { setEditingLog(log); setModalType(log.feeding_type); }}
+                      className="p-1.5 rounded-lg hover:bg-slate-700/50 text-slate-500 hover:text-slate-200 transition-colors"
+                      aria-label="Edit"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                    </button>
+                    <button
+                      onClick={() => deleteLog(log.id)}
+                      className="p-1.5 rounded-lg hover:bg-red-500/10 text-slate-500 hover:text-red-400 transition-colors"
+                      aria-label="Delete"
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 text-xs text-slate-500 mb-2">
+                  <div className="flex items-center gap-1">
+                    <Calendar size={12} />
+                    {formatDate(log.date)}
+                  </div>
+                  {log.time && (
+                    <div className="flex items-center gap-1">
+                      <Clock size={12} />
+                      {formatTime(log.time)}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap gap-1.5">
+                  {log.food_name && (
+                    <span className="text-[10px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full">{log.food_name}</span>
+                  )}
+                  {log.duration && (
+                    <span className="text-[10px] bg-purple-500/10 text-purple-400 px-2 py-0.5 rounded-full">{log.duration} min</span>
+                  )}
+                  {log.quantity && (
+                    <span className="text-[10px] bg-green-500/10 text-green-400 px-2 py-0.5 rounded-full">{log.quantity} {log.quantity_unit || ''}</span>
+                  )}
+                  {log.side && (
+                    <span className="text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded-full">{log.side === 'left' ? 'Left' : log.side === 'right' ? 'Right' : 'Both'}</span>
+                  )}
+                  {log.texture && (
+                    <span className="text-[10px] bg-teal-500/10 text-teal-400 px-2 py-0.5 rounded-full">{log.texture.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())}</span>
+                  )}
+                </div>
+
+                {log.notes && (
+                  <p className="text-xs text-slate-500 mt-2 italic">{log.notes}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </main>
+
+      {modalType && (
+        <LogModal
+          type={modalType}
+          initialData={editingLog}
+          onClose={() => { setModalType(null); setEditingLog(null); }}
+          onSubmit={addLog}
+          onUpdate={updateLog}
+          babyAgeMonths={babyAgeMonths}
+        />
+      )}
+
+      <BottomNavigation activeTab="Feeding" />
+    </div>
+  );
+}

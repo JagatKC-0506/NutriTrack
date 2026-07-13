@@ -18,8 +18,10 @@ import profileRoutes from './routes/profileRoutes.js';
 import feedingRoutes from './routes/feedingRoutes.js';
 import foodRoutes from './routes/foodRoutes.js';
 import milestoneRoutes from './routes/milestoneRoutes.js';
-import hospitalVisitRoutes from './routes/hospitalVisitRoutes.js';
-import os from 'os';
+import documentRoutes from './routes/documentRoutes.js';
+import feedingLogRoutes from './routes/feedingLogRoutes.js';
+import pregnancyGrowthRoutes from './routes/pregnancyGrowth.js'; 
+
 
 const app = express();
 
@@ -39,7 +41,9 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/feedings', feedingRoutes);
 app.use('/api/foods', foodRoutes);
 app.use('/api/milestones', milestoneRoutes);
-app.use('/api/hospital-visits', hospitalVisitRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/feeding-logs', feedingLogRoutes);
+app.use('/api/pregnancy-growth', pregnancyGrowthRoutes); 
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -61,25 +65,8 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('Database connection established');
 
-    // For SQLite, disable foreign key constraints temporarily during sync
-    if (config.database.url.startsWith('sqlite')) {
-      await sequelize.query('PRAGMA foreign_keys = OFF');
-    }
-
-    // For SQLite, disable foreign key constraints temporarily during sync
-    if (config.database.url.startsWith('sqlite')) {
-      await sequelize.query('PRAGMA foreign_keys = OFF');
-    }
-
-    // Sync models with database - use alter: true only in development
-    const isDev = config.server.environment === 'development';
-    await sequelize.sync({ force: false, alter: isDev });
-    console.log(`Database synced (alter: ${isDev})`);
-
-    // Re-enable foreign key constraints for SQLite
-    if (config.database.url.startsWith('sqlite')) {
-      await sequelize.query('PRAGMA foreign_keys = ON');
-    }
+    // Sync models with database
+    await sequelize.sync();
 
     // Seed vaccines
     await seedVaccines();
@@ -103,25 +90,11 @@ const startServer = async () => {
 
     // Start server
     const PORT = config.server.port;
-    const HOST = '0.0.0.0'; // Listen on all network interfaces
-    
-    // Dynamically get local IP
-    let localIp = 'localhost';
-    const interfaces = os.networkInterfaces();
-    for (const devName in interfaces) {
-      const iface = interfaces[devName];
-      for (let i = 0; i < iface.length; i++) {
-        const alias = iface[i];
-        if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
-          localIp = alias.address;
-        }
-      }
-    }
+    const HOST = '0.0.0.0';
 
     app.listen(PORT, HOST, () => {
       console.log(`NutriTrack API listening on ${HOST}:${PORT}`);
       console.log(`Environment: ${config.server.environment}`);
-      console.log(`Access from phone: http://${localIp}:${PORT}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

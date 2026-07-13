@@ -356,40 +356,8 @@ export async function deleteVaccineReminder(reminderId) {
   });
 }
 
-// ===== Hospital Visit Endpoints =====
-export async function getHospitalVisits(babyId = null) {
-  const query = babyId ? `?baby_id=${babyId}` : '';
-  return request(`/api/hospital-visits${query}`);
-}
-
-export async function getHospitalVisit(visitId) {
-  return request(`/api/hospital-visits/${visitId}`);
-}
-
-export async function createHospitalVisit(visitData) {
-  return request('/api/hospital-visits', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(visitData),
-  });
-}
-
-export async function updateHospitalVisit(visitId, visitData) {
-  return request(`/api/hospital-visits/${visitId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(visitData),
-  });
-}
-
-export async function deleteHospitalVisit(visitId) {
-  return request(`/api/hospital-visits/${visitId}`, {
-    method: 'DELETE',
-  });
+export async function getMotherVaccines() {
+  return request('/api/vaccines/mother');
 }
 
 // ===== Food Items =====
@@ -455,6 +423,94 @@ export async function getNutrientGroups() {
   return request('/api/foods/nutrient-groups');
 }
 
+// ===== Profile Statistics =====
+export async function getProfileStatistics() {
+  return request('/api/profile/statistics');
+}
+
+export async function uploadProfileImage(formData) {
+  return request('/api/profile/image', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+// ===== Feeding Logs =====
+export async function getFeedingLogs(params = {}) {
+  const query = new URLSearchParams();
+  if (params.baby_id) query.set('baby_id', params.baby_id);
+  if (params.start_date) query.set('start_date', params.start_date);
+  if (params.end_date) query.set('end_date', params.end_date);
+  if (params.type) query.set('type', params.type);
+  if (params.search) query.set('search', params.search);
+  if (params.limit) query.set('limit', params.limit);
+  if (params.offset) query.set('offset', params.offset);
+  const qs = query.toString();
+  return request(`/api/feeding-logs/logs${qs ? '?' + qs : ''}`);
+}
+
+export async function getFeedingLog(logId) {
+  return request(`/api/feeding-logs/logs/${logId}`);
+}
+
+export async function createFeedingLog(logData) {
+  return request('/api/feeding-logs/logs', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(logData),
+  });
+}
+
+export async function updateFeedingLog(logId, logData) {
+  return request(`/api/feeding-logs/logs/${logId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(logData),
+  });
+}
+
+export async function deleteFeedingLog(logId) {
+  return request(`/api/feeding-logs/logs/${logId}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function getFeedingLogsSummary(params = {}) {
+  const query = new URLSearchParams();
+  if (params.baby_id) query.set('baby_id', params.baby_id);
+  if (params.start_date) query.set('start_date', params.start_date);
+  if (params.end_date) query.set('end_date', params.end_date);
+  const qs = query.toString();
+  return request(`/api/feeding-logs/logs/summary${qs ? '?' + qs : ''}`);
+}
+// ===== Pregnancy Weight Records =====
+export async function getPregnancyWeightRecords() {
+  return request('/api/pregnancy-growth/records');
+}
+
+export async function createPregnancyWeightRecord(recordData) {
+  return request('/api/pregnancy-growth/records', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(recordData),
+  });
+}
+
+export async function deletePregnancyWeightRecord(recordId) {
+  return request(`/api/pregnancy-growth/records/${recordId}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function updatePregnancyWeightRecord(recordId, recordData) {
+  return request(`/api/pregnancy-growth/records/${recordId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(recordData),
+  });
+}
 // ===== Auth Token Management =====
 export function setAuthToken(token) {
   if (!token) return;
@@ -462,6 +518,43 @@ export function setAuthToken(token) {
   
   // Dispatch custom event to notify BabyContext to refetch babies for new user
   window.dispatchEvent(new Event('login'));
+}
+
+// ===== Baby Documents =====
+export async function uploadDocument(babyId, formData) {
+  return request('/api/documents/upload', {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export async function getDocuments(babyId, category) {
+  return request(`/api/documents/${babyId}/${category}`);
+}
+
+export async function deleteDocument(docId) {
+  return request(`/api/documents/${docId}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function getDocumentFileUrl(docId) {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  return `${API_URL}/api/documents/file/${docId}`;
+}
+
+export async function getDocumentFileBlob(docId) {
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+  const token = getAuthToken();
+  const res = await fetch(`${API_URL}/api/documents/file/${docId}`, {
+    headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+  });
+  if (!res.ok) throw new Error('Failed to fetch document file');
+  return res.blob();
+}
+
+export async function getDocumentCounts(babyId) {
+  return request(`/api/documents/counts/${babyId}`);
 }
 
 export function getAuthToken() {

@@ -12,16 +12,31 @@ if (config.database.url.startsWith('sqlite')) {
   });
 } else {
   const dbUrl = new URL(config.database.url);
-  sequelize = new Sequelize(
-    dbUrl.pathname.replace('/', ''),
-    dbUrl.username,
-    dbUrl.password,
-    {
-      host: dbUrl.hostname,
-      dialect: 'mysql',
+  const dialect = config.database.dialect;
+  
+  if (dialect === 'postgres') {
+    sequelize = new Sequelize(config.database.url, {
+      dialect: 'postgres',
       logging: false,
-    }
-  );
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+      },
+    });
+  } else {
+    sequelize = new Sequelize(
+      dbUrl.pathname.replace('/', ''),
+      dbUrl.username,
+      dbUrl.password,
+      {
+        host: dbUrl.hostname,
+        dialect: 'mysql',
+        logging: false,
+      }
+    );
+  }
 }
 
 export default sequelize;
