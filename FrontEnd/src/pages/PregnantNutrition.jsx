@@ -5,6 +5,7 @@ import AvoidFoodCard from '../components/AvoidFoodCard';
 import FoodDetailModal from '../components/FoodDetailModal';
 import BottomNavigation from '../components/BottomNavigation';
 import { getAllFoods, getCurrentUser, getNutritionTips } from '../api';
+import { generateNutritionPDF } from '../utils/generateNutritionPDF';
 import '../styles/Nutrition.css';
 
 const CATEGORIES = [
@@ -125,6 +126,22 @@ export default function PregnantNutrition() {
     return dietFilteredFoods.filter(f => f.nutrient_group === activeCategory);
   }, [dietFilteredFoods, activeCategory]);
 
+  const trimesterAvoid = useMemo(() => {
+    if (!activeTrimester) return avoidFoods;
+    const tLabel = `Trimester ${activeTrimester}`;
+    return avoidFoods.filter(f => f.trimester === 'All' || f.trimester === tLabel);
+  }, [avoidFoods, activeTrimester]);
+
+  const handleExportPDF = () => {
+    const triLabel = TRIMESTER_INFO[activeTrimester]?.label || '';
+    generateNutritionPDF({
+      recommendedFoods: dietFilteredFoods,
+      avoidFoods: trimesterAvoid,
+      categories: CATEGORIES,
+      title: `Nutrition Guide - ${triLabel}`
+    });
+  };
+
   const triInfo = TRIMESTER_INFO[activeTrimester] || TRIMESTER_INFO['2'];
 
   if (loading) {
@@ -179,6 +196,11 @@ export default function PregnantNutrition() {
             <p className="trimester-note">Showing {triInfo.label} information. Your current trimester: {TRIMESTER_INFO[userTrimester]?.label}</p>
           )}
         </div>
+
+        {/* Export PDF Button */}
+        <button className="nutrition-export-pdf-btn" onClick={handleExportPDF}>
+          📄 Export as PDF
+        </button>
 
         {/* Overview Buttons: All + Avoid */}
         <div className="category-grid overview-grid">

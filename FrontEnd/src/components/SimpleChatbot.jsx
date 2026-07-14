@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import { Bot, MessageCircle, Send, Sparkles, X } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import '../styles/SimpleChatbot.css';
@@ -67,6 +67,53 @@ export default function SimpleChatbot() {
   const inferredUserType = location.pathname.startsWith('/pregnant') || userType === 'pregnant' ? 'pregnant' : 'newParent';
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [position, setPosition] = useState(() => ({
+    x: 20,
+    y: 160,
+  }));
+  const dragging = useRef(false);
+  const wasDragged = useRef(false);
+  const dragOffset = useRef({ x: 0, y: 0 });
+
+  const handlePointerDown = useCallback((e) => {
+    dragging.current = true;
+    wasDragged.current = false;
+    dragOffset.current = { x: e.clientX - position.x, y: window.innerHeight - e.clientY - position.y };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }, [position]);
+
+  const handlePointerMove = useCallback((e) => {
+    if (!dragging.current) return;
+    const dx = e.clientX - dragOffset.current.x - position.x;
+    const dy = (window.innerHeight - e.clientY - dragOffset.current.y) - position.y;
+    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+      wasDragged.current = true;
+    }
+    const newX = Math.max(0, Math.min(window.innerWidth - 100, e.clientX - dragOffset.current.x));
+    const newY = Math.max(10, Math.min(window.innerHeight - 80, window.innerHeight - e.clientY - dragOffset.current.y));
+    setPosition({ x: newX, y: newY });
+  }, [position]);
+
+  const panelH = 480;
+  const fabH = 54;
+  const opensUpward = !isOpen || position.y + panelH <= window.innerHeight;
+
+  const containerStyle = useMemo(() => {
+    const style = { left: position.x };
+    if (!isOpen || opensUpward) {
+      style.bottom = position.y;
+    } else {
+      const topY = Math.max(10, window.innerHeight - (position.y + fabH));
+      style.top = Math.min(topY, Math.max(10, window.innerHeight - panelH - 10));
+    }
+    if (isOpen && !opensUpward) style.alignItems = 'flex-start';
+    return style;
+  }, [position, isOpen, opensUpward]);
+
+  const handlePointerUp = useCallback(() => {
+    dragging.current = false;
+  }, []);
+
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -114,7 +161,7 @@ export default function SimpleChatbot() {
   };
 
   return (
-    <div className={`simple-chatbot ${isOpen ? 'open' : ''}`}>
+    <div className={`simple-chatbot ${isOpen ? 'open' : ''}`} style={containerStyle}>
       {isOpen ? (
         <section className="chatbot-panel" aria-label="NutriTrack chatbot">
           <header className="chatbot-header">
@@ -176,8 +223,11 @@ export default function SimpleChatbot() {
         <button
           type="button"
           className="chatbot-fab"
-          onClick={() => setIsOpen(true)}
+          onClick={() => { if (!wasDragged.current) setIsOpen(true); wasDragged.current = false; }}
           aria-label="Open chatbot"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
         >
           <Bot size={20} />
           <span>Chat</span>

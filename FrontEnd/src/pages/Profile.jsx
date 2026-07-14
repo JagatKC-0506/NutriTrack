@@ -11,7 +11,6 @@ import {
   clearAuthToken,
 } from '../api';
 import { useToast } from '../context/ToastContext';
-import { useTheme } from '../context/ThemeContext';
 import '../styles/Profile.css';
 
 const HOME_USER_TYPE = 'newParent';
@@ -64,7 +63,7 @@ function ConfirmDialog({ show, title, message, onConfirm, onCancel, confirmText 
 export default function Profile() {
   const navigate = useNavigate();
   const { addToast } = useToast();
-  const { darkMode, toggleDarkMode } = useTheme();
+
   const fileInputRef = useRef(null);
 
   const [userData, setUserData] = useState({ full_name: '', email: '', phone_number: '', profile_image: null });
@@ -204,15 +203,6 @@ export default function Profile() {
         <div className="pf-section">
           <h3 className="pf-section-title">SETTINGS</h3>
           <div className="pf-card">
-            <MenuItem icon={darkMode ? '🌙' : '☀️'} title="Dark Mode" desc="Toggle application theme"
-              right={
-                <div className="pf-toggle" onClick={e => { e.stopPropagation(); toggleDarkMode(); }} role="switch" aria-checked={darkMode} tabIndex={0}
-                  onKeyDown={e => { if (e.key === 'Enter') { e.stopPropagation(); toggleDarkMode(); } }}>
-                  <div className={`pf-toggle-track ${darkMode ? 'on' : ''}`}>
-                    <div className="pf-toggle-thumb" />
-                  </div>
-                </div>
-              } />
             <MenuItem icon="🔔" title="Notifications" desc="Manage notification preferences" onClick={() => toggleModal('notifications')} />
             <MenuItem icon="🚨" title="Emergency Contact" desc={emergencyContact.name || 'Add emergency contact'} onClick={() => toggleModal('emergency')} />
           </div>

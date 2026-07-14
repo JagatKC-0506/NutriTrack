@@ -6,6 +6,7 @@ import AvoidFoodCard from '../components/AvoidFoodCard';
 import FoodDetailModal from '../components/FoodDetailModal';
 import BottomNavigation from '../components/BottomNavigation';
 import { getAllFoods, getNutritionTips } from '../api';
+import { generateNutritionPDF } from '../utils/generateNutritionPDF';
 import '../styles/Nutrition.css';
 
 const CATEGORIES = [
@@ -71,6 +72,15 @@ export default function Nutrition() {
     return dietFilteredFoods.filter(f => f.nutrient_group === activeCategory);
   }, [dietFilteredFoods, activeCategory]);
 
+  const handleExportPDF = () => {
+    generateNutritionPDF({
+      recommendedFoods: allFoods,
+      avoidFoods,
+      categories: CATEGORIES,
+      title: 'Nutrition Guide'
+    });
+  };
+
   if (loading) {
     return (
       <div className="nutrition-container">
@@ -113,6 +123,11 @@ export default function Nutrition() {
             </div>
           </div>
         )}
+
+        {/* Export PDF Button */}
+        <button className="nutrition-export-pdf-btn" onClick={handleExportPDF}>
+          📄 Export as PDF
+        </button>
 
         {/* Overview Buttons: All + Avoid */}
         <div className="category-grid overview-grid">

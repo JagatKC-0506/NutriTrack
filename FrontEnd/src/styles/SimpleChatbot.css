@@ -1,10 +1,6 @@
 .simple-chatbot {
   position: fixed;
-  left: 20px;
-  top: 50%;
-  bottom: auto;
-  transform: translateY(-50%);
-  z-index: 60;
+  z-index: 110;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
@@ -197,6 +193,8 @@
   gap: 8px;
   font-weight: 700;
   box-shadow: 0 18px 40px rgba(15, 118, 110, 0.32);
+  cursor: grab;
+  touch-action: none;
 }
 
 .chatbot-mini-toggle {
@@ -233,13 +231,6 @@
 }
 
 @media (max-width: 720px) {
-  .simple-chatbot {
-    left: 12px;
-    top: 50%;
-    bottom: auto;
-    transform: translateY(-50%);
-  }
-
   .chatbot-panel {
     width: min(92vw, 360px);
   }
@@ -252,12 +243,6 @@
 }
 
 @media (max-width: 480px) {
-  .simple-chatbot {
-    top: 50%;
-    bottom: auto;
-    transform: translateY(-50%);
-  }
-
   .chatbot-panel {
     width: calc(100vw - 24px);
   }
