@@ -1,5 +1,7 @@
 import express from 'express';
 import cors from 'cors';
+import { Sequelize } from 'sequelize';
+import { Umzug, SequelizeStorage } from 'umzug';
 import sequelize from './db/sequelize.js';
 import { config } from './config/index.js';
 import { errorHandler } from './middleware/auth.js';
@@ -66,6 +68,15 @@ const startServer = async () => {
     // Authenticate and sync database
     await sequelize.authenticate();
     console.log('Database connection established');
+
+    // Run pending migrations
+    const umzug = new Umzug({
+      migrations: { glob: 'src/db/migrations/*.js' },
+      context: { queryInterface: sequelize.getQueryInterface(), Sequelize },
+      storage: new SequelizeStorage({ sequelize }),
+      logger: console,
+    });
+    await umzug.up();
 
     // Sync models with database
     await sequelize.sync();

@@ -1,5 +1,5 @@
 export default {
-  async up(queryInterface, Sequelize) {
+  async up({ context: { queryInterface, Sequelize } }) {
     await queryInterface.createTable('development_milestones', {
       id: {
         type: Sequelize.INTEGER,
@@ -63,7 +63,7 @@ export default {
     });
   },
 
-  async down(queryInterface, Sequelize) {
+  async down({ context: { queryInterface } }) {
     await queryInterface.dropTable('development_milestones');
   },
 };
