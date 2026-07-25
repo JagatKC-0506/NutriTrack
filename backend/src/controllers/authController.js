@@ -93,6 +93,8 @@ export const getCurrentUser = async (req, res, next) => {
       full_name: user.full_name,
       due_date: user.due_date,
       user_type: user.user_type,
+      height_cm: user.height_cm,
+      pre_pregnancy_weight_kg: user.pre_pregnancy_weight_kg,
       created_at: user.created_at,
       updated_at: user.updated_at,
     });

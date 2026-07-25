@@ -1,5 +1,5 @@
 const VACCINE_ENRICHMENT = {
-  'Influenza (Flu Shot)': {
+  'Flu Shot (Inactivated)': {
     recommendedWeeks: [0, 40],
     sideEffects: ['Soreness at injection site', 'Mild fever', 'Fatigue', 'Muscle aches'],
     protection: ['Protects against seasonal influenza', 'Reduces risk of severe flu complications', 'Prevents flu-related hospitalization'],
@@ -25,7 +25,7 @@ const VACCINE_ENRICHMENT = {
     doseInfo: '1 dose per pregnancy',
     category: 'recommended',
   },
-  'COVID-19': {
+  'COVID-19 Vaccine': {
     recommendedWeeks: [0, 40],
     sideEffects: ['Sore arm at injection site', 'Fatigue', 'Headache', 'Muscle pain', 'Mild fever'],
     protection: ['Protects against severe COVID-19', 'Reduces risk of hospitalization', 'Prevents pregnancy complications from COVID'],
@@ -51,7 +51,7 @@ const VACCINE_ENRICHMENT = {
     doseInfo: '1 dose between 32-36 weeks',
     category: 'recommended',
   },
-  'Hepatitis B': {
+  'Hepatitis B Vaccine': {
     recommendedWeeks: [0, 40],
     sideEffects: ['Soreness at injection site', 'Mild fever', 'Fatigue'],
     protection: ['Protects against Hepatitis B virus', 'Prevents chronic liver disease', 'Reduces liver cancer risk'],
@@ -64,7 +64,7 @@ const VACCINE_ENRICHMENT = {
     doseInfo: '3 doses over 6 months',
     category: 'risk-based',
   },
-  'Hepatitis A': {
+  'Hepatitis A Vaccine': {
     recommendedWeeks: [0, 40],
     sideEffects: ['Soreness at injection site', 'Headache', 'Fatigue', 'Mild fever'],
     protection: ['Protects against Hepatitis A virus', 'Prevents acute liver infection'],
@@ -77,20 +77,20 @@ const VACCINE_ENRICHMENT = {
     doseInfo: '2 doses, 6 months apart',
     category: 'risk-based',
   },
-  'Pneumococcal (PCV)': {
+  'Pneumococcal Vaccine (PPSV23)': {
     recommendedWeeks: [0, 40],
     sideEffects: ['Soreness at injection site', 'Mild fever', 'Fatigue', 'Muscle aches'],
     protection: ['Protects against pneumococcal disease', 'Prevents pneumonia, meningitis, and bloodstream infections'],
     importance: 'Recommended for pregnant women with certain medical conditions like diabetes, heart disease, or weakened immune system.',
     benefitsMother: ['Protects against pneumococcal pneumonia', 'Reduces hospitalization risk for high-risk women'],
     benefitsBaby: ['Passive antibody transfer provides some protection', 'Reduces risk of pneumococcal disease in early infancy'],
-    safety: 'PCV is an inactivated vaccine with no known risks during pregnancy. Given when benefit outweighs risk.',
+    safety: 'PPSV23 is an inactivated polysaccharide vaccine with no known risks during pregnancy. Given when benefit outweighs risk for women with certain medical conditions.',
     whoRecommendation: 'WHO recommends pneumococcal vaccination for high-risk pregnant women based on individual risk assessment.',
     whenToContactDoctor: 'If you experience high fever, difficulty breathing, or signs of severe allergic reaction.',
     doseInfo: '1 dose',
     category: 'risk-based',
   },
-  'Meningococcal': {
+  'Meningococcal Vaccine': {
     recommendedWeeks: [0, 40],
     sideEffects: ['Soreness at injection site', 'Headache', 'Fatigue', 'Mild fever'],
     protection: ['Protects against meningococcal disease', 'Prevents meningitis and bloodstream infections'],

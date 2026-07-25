@@ -51,6 +51,14 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(512),
     allowNull: true,
   },
+  height_cm: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
+  pre_pregnancy_weight_kg: {
+    type: DataTypes.FLOAT,
+    allowNull: true,
+  },
   created_at: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,

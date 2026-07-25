@@ -76,7 +76,7 @@ export default function PregnantGrowth() {
   const [editingRecord, setEditingRecord] = useState(null);
   const [growthInputLoading, setGrowthInputLoading] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
-  const [showReferenceTab, setShowReferenceTab] = useState(false);
+  const [showReferenceTab, setShowReferenceTab] = useState(true);
   const recordsEndRef = useRef(null);
 
   useEffect(() => {
@@ -156,13 +156,6 @@ export default function PregnantGrowth() {
     setEditingRecord(null);
   };
 
-  const handleToggleReference = () => {
-    const nextVal = !showReferenceTab;
-    setShowReferenceTab(nextVal);
-    if (!nextVal && activeTab === 'chart') {
-      setActiveTab('progress');
-    }
-  };
 
   const getUserRecommendation = () => {
     if (!user?.height_cm || !user?.pre_pregnancy_weight_kg) return null;
@@ -204,7 +197,7 @@ export default function PregnantGrowth() {
 
     const mapToPoints = (data) => data.map(r => {
       const x = 12 + ((r.week - 1) / 41) * 276; 
-      const y = 128 - ((r.weight_kg - minW) / range) * 116; 
+      const y = 130 - ((r.weight_kg - minW) / range) * 120; 
       return `${x},${y}`;
     });
 
@@ -275,16 +268,65 @@ export default function PregnantGrowth() {
           </div>
         )}
 
+        {recommendation && currentGain !== null && (
+          <div className="current-stats-card" style={{ marginTop: 4 }}>
+            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+              <div className="current-stat-item" style={{ flex: 1, minWidth: 120 }}>
+                <div className="current-stat-emoji" style={{
+                  background: currentGain >= recommendation.minGainKg && currentGain <= recommendation.maxGainKg
+                    ? 'rgba(34,197,94,0.12)' : '#ef4444' ? 'rgba(239,68,68,0.12)' : 'rgba(249,115,22,0.12)'
+                }}>
+                  {currentGain >= recommendation.minGainKg && currentGain <= recommendation.maxGainKg ? '✅' :
+                   currentGain < recommendation.minGainKg ? '⚠️' : '📈'}
+                </div>
+                <div className="current-stat-content">
+                  <h3>Weight Status</h3>
+                  <p className="current-stat-value" style={{
+                    color: currentGain >= recommendation.minGainKg && currentGain <= recommendation.maxGainKg
+                      ? 'var(--success-green)' : '#ef4444'
+                  }}>
+                    {currentGain >= recommendation.minGainKg && currentGain <= recommendation.maxGainKg ? 'On Track' :
+                     currentGain < recommendation.minGainKg ? 'Below Range' : 'Above Range'}
+                  </p>
+                </div>
+              </div>
+              <div className="current-stat-item" style={{ flex: 1, minWidth: 120 }}>
+                <div className="current-stat-emoji" style={{ background: 'rgba(168,85,247,0.12)' }}>📊</div>
+                <div className="current-stat-content">
+                  <h3>Progress</h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <div style={{ flex: 1, height: 6, background: 'var(--border)', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{
+                        height: '100%',
+                        width: `${Math.min(100, Math.max(0, (currentGain / recommendation.maxGainKg) * 100))}%`,
+                        background: 'linear-gradient(90deg, #a855f7, #ec4899)',
+                        borderRadius: 3,
+                        transition: 'width 0.5s ease',
+                      }} />
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-main)', whiteSpace: 'nowrap' }}>
+                      {Math.round((currentGain / recommendation.maxGainKg) * 100)}%
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="current-stat-item" style={{ flex: 1, minWidth: 120 }}>
+                <div className="current-stat-emoji" style={{ background: 'rgba(168,85,247,0.12)' }}>📈</div>
+                <div className="current-stat-content">
+                  <h3>Avg Weekly Gain</h3>
+                  <p className="current-stat-value">
+                    {records.length > 0 ? `${(currentGain / records[records.length - 1].week).toFixed(2)} kg` : '—'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
           <div className="growth-tabs" style={{ flex: 1, marginBottom: 0 }}>
             <button className={`growth-tab-btn ${activeTab === 'progress' ? 'active' : ''}`} onClick={() => setActiveTab('progress')}>My Progress</button>
-            {showReferenceTab && (
-              <button className={`growth-tab-btn ${activeTab === 'chart' ? 'active' : ''}`} onClick={() => setActiveTab('chart')}>Reference Chart</button>
-            )}
           </div>
-          <button onClick={handleToggleReference} className="add-button" style={{ padding: '8px 12px', fontSize: '12px' }}>
-            {showReferenceTab ? 'Hide Ref' : 'Show Ref'}
-          </button>
         </div>
 
         {activeTab === 'progress' && (
@@ -312,12 +354,21 @@ export default function PregnantGrowth() {
                   <h3>📈 Weight Progress</h3>
                 </div>
                 <div className="growth-line-chart">
-                  <svg viewBox="0 0 300 140" className="growth-line-svg">
+                  <svg viewBox="0 0 300 150" className="growth-line-svg">
+                    <rect x="12" y="0" width="74" height="130" fill="rgba(168,85,247,0.04)" />
+                    <rect x="86" y="0" width="101" height="130" fill="rgba(168,85,247,0.02)" />
+                    <rect x="187" y="0" width="87" height="130" fill="rgba(168,85,247,0.06)" />
+                    <text x="49" y="140" fill="var(--text-muted)" fontSize="8" textAnchor="middle">W1</text>
+                    <text x="160" y="140" fill="var(--text-muted)" fontSize="8" textAnchor="middle">W20</text>
+                    <text x="250" y="140" fill="var(--text-muted)" fontSize="8" textAnchor="middle">W40</text>
+                    <text x="49" y="8" fill="var(--text-muted)" fontSize="7" textAnchor="middle" opacity="0.6">T1</text>
+                    <text x="136" y="8" fill="var(--text-muted)" fontSize="7" textAnchor="middle" opacity="0.6">T2</text>
+                    <text x="230" y="8" fill="var(--text-muted)" fontSize="7" textAnchor="middle" opacity="0.6">T3</text>
                     {chartData.standardPath && <path d={chartData.standardPath} fill="none" stroke="rgba(255, 255, 255, 0.3)" strokeWidth="2" strokeDasharray="6 4" strokeLinecap="round" />}
                     <path d={chartData.userPath} fill="none" stroke="#ec4899" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                     {records.map((r, i) => {
                       const x = 12 + ((r.week - 1) / 41) * 276;
-                      const y = 128 - ((r.weight_kg - chartData.chartMin) / chartData.range) * 116;
+                      const y = 130 - ((r.weight_kg - chartData.chartMin) / chartData.range) * 116;
                       return <circle key={r.id} cx={x} cy={y} r="3.5" fill="#ec4899" stroke="rgba(255,255,255,0.8)" strokeWidth="1" />;
                     })}
                   </svg>
@@ -347,10 +398,14 @@ export default function PregnantGrowth() {
                   <div className="table-header">
                     <div className="table-cell">Week</div>
                     <div className="table-cell">Weight (kg)</div>
+                    <div className="table-cell">Change</div>
                     <div className="table-cell">Date</div>
                     <div className="table-cell">Actions</div>
                   </div>
-                  {[...records].reverse().map(record => (
+                  {[...records].reverse().map((record, i, arr) => {
+                    const prev = arr[i + 1];
+                    const change = prev ? (record.weight_kg - prev.weight_kg) : null;
+                    return (
                     <div key={record.id} className="table-row">
                       <div className="table-cell">Week {record.week}</div>
                       <div className="table-cell">
@@ -361,6 +416,19 @@ export default function PregnantGrowth() {
                           </div>
                         )}
                       </div>
+                      <div className="table-cell">
+                        {change !== null ? (
+                          <span style={{
+                            color: change > 0 ? 'var(--success-green)' : change < 0 ? '#ef4444' : 'var(--text-muted)',
+                            fontWeight: 600,
+                            fontSize: 13,
+                          }}>
+                            {change > 0 ? '+' : ''}{change.toFixed(1)} kg
+                          </span>
+                        ) : (
+                          <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>—</span>
+                        )}
+                      </div>
                       <div className="table-cell">{record.record_date}</div>
                       <div className="table-cell">
                         <div className="action-buttons">
@@ -369,7 +437,8 @@ export default function PregnantGrowth() {
                         </div>
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <div ref={recordsEndRef} />
               </div>
@@ -384,33 +453,67 @@ export default function PregnantGrowth() {
           </>
         )}
 
-        {activeTab === 'chart' && showReferenceTab && (
-          <div className="growth-records-card">
-            <h3>📏 Pregnancy Weight Gain By Height (lbs)</h3>
-            <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>Recommended total weight gain based on pre-pregnancy BMI</p>
-            <div className="records-table">
-              <div className="table-header">
-                <div className="table-cell">Height</div>
-                <div className="table-cell">Underweight</div>
-                <div className="table-cell">Normal</div>
-                <div className="table-cell">Overweight</div>
-                <div className="table-cell">Obese</div>
-              </div>
-              {HEIGHTS_ARRAY.map(h => {
-                const data = WEIGHT_GAIN_CHART[h];
-                return (
-                  <div key={h} className="table-row">
-                    <div className="table-cell" style={{ fontWeight: '600' }}>{h}</div>
-                    <div className="table-cell">{data.underweight[0]}-{data.underweight[1]}</div>
-                    <div className="table-cell">{data.normal[0]}-{data.normal[1]}</div>
-                    <div className="table-cell">{data.overweight[0]}-{data.overweight[1]}</div>
-                    <div className="table-cell">{data.obese[0]}-{data.obese[1]}</div>
-                  </div>
-                );
-              })}
-            </div>
+        <div className="growth-records-card" style={{ marginTop: 8 }}>
+          <div
+            className="growth-chart-header"
+            onClick={() => setShowReferenceTab(!showReferenceTab)}
+            style={{ cursor: 'pointer' }}
+          >
+            <h3>📏 Weight Gain Reference</h3>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
+              {showReferenceTab ? 'Collapse ▲' : 'Expand ▼'}
+            </span>
           </div>
-        )}
+          {showReferenceTab && (
+            <>
+              <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '0 0 12px 0' }}>
+                Recommended total weight gain (lbs) based on pre-pregnancy BMI
+              </p>
+              {user?.height_cm && (
+                <div style={{
+                  fontSize: 11, color: 'var(--vaccine-blue)', marginBottom: 10,
+                  padding: '6px 10px', background: 'rgba(56,189,248,0.08)', borderRadius: 8,
+                }}>
+                  Your height: {heightToKey(Math.round(cmToInches(user.height_cm)))} —
+                  Recommendation shown below for your BMI category
+                </div>
+              )}
+              <div className="records-table">
+                <div className="table-header">
+                  <div className="table-cell">Height</div>
+                  <div className="table-cell">Underweight</div>
+                  <div className="table-cell">Normal</div>
+                  <div className="table-cell">Overweight</div>
+                  <div className="table-cell">Obese</div>
+                </div>
+                {HEIGHTS_ARRAY.map(h => {
+                  const data = WEIGHT_GAIN_CHART[h];
+                  const isUserHeight = user?.height_cm && heightToKey(Math.round(cmToInches(user.height_cm))) === h;
+                  return (
+                    <div key={h} className="table-row" style={{
+                      background: isUserHeight ? 'rgba(168,85,247,0.08)' : undefined,
+                      fontWeight: isUserHeight ? 700 : undefined,
+                    }}>
+                      <div className="table-cell" style={{ fontWeight: isUserHeight ? 700 : 600 }}>{h}</div>
+                      <div className="table-cell" style={{
+                        color: isUserHeight && recommendation?.category === 'underweight' ? '#a855f7' : undefined,
+                      }}>{data.underweight[0]}-{data.underweight[1]}</div>
+                      <div className="table-cell" style={{
+                        color: isUserHeight && recommendation?.category === 'normal' ? '#a855f7' : undefined,
+                      }}>{data.normal[0]}-{data.normal[1]}</div>
+                      <div className="table-cell" style={{
+                        color: isUserHeight && recommendation?.category === 'overweight' ? '#a855f7' : undefined,
+                      }}>{data.overweight[0]}-{data.overweight[1]}</div>
+                      <div className="table-cell" style={{
+                        color: isUserHeight && recommendation?.category === 'obese' ? '#a855f7' : undefined,
+                      }}>{data.obese[0]}-{data.obese[1]}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+        </div>
 
       </div>
 

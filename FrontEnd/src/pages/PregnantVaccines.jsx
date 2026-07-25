@@ -1,10 +1,10 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Shield } from 'lucide-react';
+import { ArrowLeft, Shield, ChevronRight } from 'lucide-react';
 import BottomNavigation from '../components/BottomNavigation';
 import { getCurrentUser, getMotherVaccines, getUserVaccineReminders } from '../api';
-import { calculateTrimester, getVaccineStatus } from '../data/pregnancyUtils';
+import { calculateTrimester, getVaccineStatus, NAV_SECTIONS } from '../data/pregnancyUtils';
 import VACCINE_ENRICHMENT from '../data/vaccineEnrichment';
 import PregnancyDashboard from '../components/pregnancy/PregnancyDashboard';
 import SummaryCards from '../components/pregnancy/SummaryCards';
@@ -160,6 +160,29 @@ export default function PregnantVaccines() {
                 {completedCount} of {recommendedVaccines.length} vaccines completed
                 {dueSoonCount > 0 ? ` · ${dueSoonCount} due soon` : ''}
               </span>
+            </div>
+            </motion.div>
+
+          <motion.div variants={itemVariants}>
+            <div className="pregnancy-section-title" style={{ marginBottom: 12, marginTop: 8 }}>
+              Quick Access
+            </div>
+            <div className="pregnancy-nav-grid">
+              {NAV_SECTIONS.filter(s => s.path === '/pregnant/vaccines/list').map(section => (
+                <div
+                  key={section.path}
+                  className={`pregnancy-nav-card ${section.bgClass}`}
+                  onClick={() => navigate(section.path)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="pregnancy-nav-card-icon">{section.icon}</div>
+                  <div className="pregnancy-nav-card-content">
+                    <span className="pregnancy-nav-card-title">{section.title}</span>
+                    <span className="pregnancy-nav-card-desc">{section.desc}</span>
+                  </div>
+                  <ChevronRight size={18} className="pregnancy-nav-card-arrow" />
+                </div>
+              ))}
             </div>
           </motion.div>
         </motion.div>

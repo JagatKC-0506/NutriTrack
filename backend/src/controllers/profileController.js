@@ -41,6 +41,8 @@ export const getUserProfile = async (req, res, next) => {
       due_date: user.due_date,
       user_type: user.user_type,
       baby_date_of_birth: user.baby_date_of_birth,
+      height_cm: user.height_cm,
+      pre_pregnancy_weight_kg: user.pre_pregnancy_weight_kg,
       created_at: user.created_at,
       updated_at: user.updated_at,
       emergency_contact: user.EmergencyContact || null,
@@ -60,7 +62,7 @@ export const getUserProfile = async (req, res, next) => {
 export const updateUserProfile = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const { full_name, phone_number, email, due_date, user_type, baby_date_of_birth } = req.body;
+    const { full_name, phone_number, email, due_date, user_type, baby_date_of_birth, height_cm, pre_pregnancy_weight_kg } = req.body;
 
     const user = await User.findOne({ where: { id: userId } });
 
@@ -74,6 +76,8 @@ export const updateUserProfile = async (req, res, next) => {
     if (due_date !== undefined) updateData.due_date = due_date;
     if (user_type !== undefined) updateData.user_type = user_type;
     if (baby_date_of_birth !== undefined) updateData.baby_date_of_birth = baby_date_of_birth;
+    if (height_cm !== undefined) updateData.height_cm = height_cm;
+    if (pre_pregnancy_weight_kg !== undefined) updateData.pre_pregnancy_weight_kg = pre_pregnancy_weight_kg;
 
     await user.update(updateData);
 
@@ -86,6 +90,8 @@ export const updateUserProfile = async (req, res, next) => {
       due_date: user.due_date,
       user_type: user.user_type,
       baby_date_of_birth: user.baby_date_of_birth,
+      height_cm: user.height_cm,
+      pre_pregnancy_weight_kg: user.pre_pregnancy_weight_kg,
       created_at: user.created_at,
       updated_at: user.updated_at,
     });
