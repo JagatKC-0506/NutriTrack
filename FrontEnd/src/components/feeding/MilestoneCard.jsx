@@ -30,7 +30,7 @@ export default function MilestoneCard({ onInfo }) {
   return (
     <div>
       <h2 className="text-sm font-semibold text-slate-300 mb-3">Feeding Milestones</h2>
-      <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-thin scrollbar-thumb-slate-700">
+      <div className="space-y-2">
         {milestones.map((m, i) => (
           <button
             key={i}
@@ -40,16 +40,20 @@ export default function MilestoneCard({ onInfo }) {
               source: m.source,
               icon: m.emoji,
             })}
-            className="flex-shrink-0 w-40 bg-[#1c1b21] rounded-2xl p-4 border border-[#2b2c37] shadow-lg text-left hover:border-pink-500/30 hover:shadow-xl transition-all"
+            className="w-full flex items-center gap-3 bg-[#1c1b21] rounded-2xl p-3 border border-[#2b2c37] text-left hover:border-pink-500/30 transition-all"
           >
-            <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center mb-3">
+            <div className="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center flex-shrink-0">
               <span className="text-lg" aria-hidden="true">{m.emoji}</span>
             </div>
-            <p className="text-xs font-semibold text-purple-400">{m.age}</p>
-            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">{m.text}</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-purple-400">{m.age}</p>
+              <p className="text-xs text-slate-400 mt-0.5 leading-relaxed truncate">{m.text}</p>
+            </div>
           </button>
         ))}
       </div>
     </div>
   );
 }
+
+export { milestones };

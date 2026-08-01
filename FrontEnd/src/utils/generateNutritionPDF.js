@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf';
 import { applyPlugin } from 'jspdf-autotable';
+import { saveOrSharePdf } from './exportPdf';
 applyPlugin(jsPDF);
 
 const PAGE_WIDTH = 210;
@@ -33,7 +34,7 @@ function valueOrDash(val) {
   return val && val !== 'N/A' && val !== '0' ? val : '-';
 }
 
-export function generateNutritionPDF({ recommendedFoods, avoidFoods, categories, title = 'Nutrition Guide' }) {
+export async function generateNutritionPDF({ recommendedFoods, avoidFoods, categories, title = 'Nutrition Guide' }) {
   const doc = new jsPDF('p', 'mm', 'a4');
   const pageW = PAGE_WIDTH;
 
@@ -137,5 +138,6 @@ export function generateNutritionPDF({ recommendedFoods, avoidFoods, categories,
 
   addFooter(doc);
 
-  doc.save(`nutrition-guide-${new Date().toISOString().split('T')[0]}.pdf`);
+  const filename = `nutrition-guide-${new Date().toISOString().split('T')[0]}.pdf`;
+  await saveOrSharePdf(doc, filename);
 }

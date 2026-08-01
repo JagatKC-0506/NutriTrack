@@ -5,11 +5,18 @@
  * Formatted like the official vaccination card
  */
 
+import { useRef, useState } from 'react';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
+import { saveOrSharePdf } from '../utils/exportPdf';
 import logo from '../assets/logo.png';
 import '../styles/KhopCard.css';
 
 export default function KhopCard({ isOpen, onClose, personName, dateLabel = 'जन्म मिति :', dateValue, ageLabel, completedVaccines }) {
   if (!isOpen) return null;
+
+  const cardRef = useRef(null);
+  const [capturing, setCapturing] = useState(false);
 
   // Format date for display
   const formatDate = (dateString) => {
@@ -18,9 +25,34 @@ export default function KhopCard({ isOpen, onClose, personName, dateLabel = 'ज
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
+  const handlePrint = async () => {
+    if (!cardRef.current) return;
+    setCapturing(true);
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true,
+      });
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const ratio = Math.min((pageW - 20) / canvas.width, (pageH - 20) / canvas.height);
+      const imgW = canvas.width * ratio;
+      const imgH = canvas.height * ratio;
+      doc.addImage(imgData, 'JPEG', (pageW - imgW) / 2, (pageH - imgH) / 2, imgW, imgH);
+      await saveOrSharePdf(doc, 'khop-card.pdf');
+    } catch (error) {
+      console.error('Khop card export failed:', error);
+    } finally {
+      setCapturing(false);
+    }
+  };
+
   return (
     <div className="khop-card-overlay" onClick={onClose}>
-      <div className="khop-card-modal" onClick={(e) => e.stopPropagation()}>
+      <div className={`khop-card-modal ${capturing ? 'khop-capturing' : ''}`} ref={cardRef} onClick={(e) => e.stopPropagation()}>
         {/* Close Button */}
         <button className="khop-card-close" onClick={onClose}>×</button>
 
@@ -84,8 +116,8 @@ export default function KhopCard({ isOpen, onClose, personName, dateLabel = 'ज
 
         {/* Print Button */}
         <div className="khop-card-actions">
-          <button className="khop-card-print-btn" onClick={() => window.print()}>
-            🖨️ Print Card
+          <button className="khop-card-print-btn" onClick={handlePrint} disabled={capturing}>
+            {capturing ? '⏳ Generating PDF…' : '🖨️ Print / Save Card'}
           </button>
         </div>
       </div>

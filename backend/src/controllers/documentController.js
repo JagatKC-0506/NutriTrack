@@ -139,6 +139,33 @@ export const getDocuments = async (req, res) => {
   }
 };
 
+export const getAllDocuments = async (req, res) => {
+  try {
+    const { babyId } = req.params;
+    const userId = req.user.id;
+
+    const baby = await Baby.findOne({ where: { id: babyId, user_id: userId } });
+    if (!baby) {
+      return res.status(404).json({ detail: 'Baby not found' });
+    }
+
+    const docs = await BabyDocument.findAll({
+      where: { baby_id: babyId },
+      order: [['uploaded_at', 'DESC']],
+    });
+
+    const result = docs.map(d => ({
+      ...d.toJSON(),
+      file_size_formatted: formatFileSize(d.file_size),
+    }));
+
+    return res.json(result);
+  } catch (error) {
+    console.error('Error fetching documents:', error);
+    return res.status(500).json({ detail: 'Error fetching documents' });
+  }
+};
+
 export const deleteDocument = async (req, res) => {
   try {
     const { id } = req.params;

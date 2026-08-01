@@ -3,6 +3,7 @@ import multer from 'multer';
 import {
   uploadDocument,
   getDocuments,
+  getAllDocuments,
   deleteDocument,
   getDocumentFile,
   getDocumentCounts,
@@ -28,9 +29,10 @@ const upload = multer({
 router.use(authenticateToken);
 
 router.post('/upload', upload.array('files', 10), uploadDocument);
-router.get('/:babyId/:category', getDocuments);
-router.get('/counts/:babyId', getDocumentCounts);
 router.get('/file/:id', getDocumentFile);
+router.get('/counts/:babyId', getDocumentCounts);
+router.get('/:babyId/documents', getAllDocuments);
+router.get('/:babyId/:category', getDocuments);
 router.delete('/:id', deleteDocument);
 
 export default router;

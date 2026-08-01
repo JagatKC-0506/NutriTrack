@@ -44,21 +44,21 @@ router.put('/', authenticateToken, updateUserProfile);
 
 /**
  * POST /profile/emergency-contact
- * Save or update emergency contact
+ * Add a new emergency contact
  */
 router.post('/emergency-contact', authenticateToken, saveEmergencyContact);
 
 /**
  * GET /profile/emergency-contact
- * Get emergency contact
+ * Get all emergency contacts
  */
 router.get('/emergency-contact', authenticateToken, getEmergencyContact);
 
 /**
- * DELETE /profile/emergency-contact
- * Delete emergency contact
+ * DELETE /profile/emergency-contact/:id
+ * Delete an emergency contact
  */
-router.delete('/emergency-contact', authenticateToken, deleteEmergencyContact);
+router.delete('/emergency-contact/:id', authenticateToken, deleteEmergencyContact);
 
 /**
  * DELETE /profile

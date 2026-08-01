@@ -24,7 +24,7 @@ import '../styles/Vaccines.css';
 
 export default function Vaccines() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeTab, setActiveTab] = useState('thismonth');
   const { addToast } = useToast();
   const { babies, selectedBaby, setSelectedBaby } = useBabyContext();
   const [allVaccines, setAllVaccines] = useState([]);
@@ -121,6 +121,15 @@ export default function Vaccines() {
     const dueDate = new Date(dateString);
     const daysRemaining = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
     return daysRemaining > 0 && daysRemaining <= 7;
+  };
+
+  // Check if a vaccine due date falls within the current calendar month
+  const isDueThisMonth = (dateString) => {
+    if (!dateString) return false;
+    const dueDate = new Date(dateString);
+    if (Number.isNaN(dueDate.getTime())) return false;
+    const today = new Date();
+    return dueDate.getFullYear() === today.getFullYear() && dueDate.getMonth() === today.getMonth();
   };
 
   // Auto-create reminders for vaccines that don't have them yet
@@ -271,14 +280,27 @@ export default function Vaccines() {
     if (activeTab === 'completed') {
       return displayVaccines.filter(v => v.status === 'completed');
     }
+
+    // Show only overdue vaccines
+    if (activeTab === 'overdue') {
+      return displayVaccines.filter(v => v.status === 'overdue');
+    }
+
+    // This Month: vaccines due in the current calendar month (overdue live in their own tab)
+    if (activeTab === 'thismonth') {
+      return displayVaccines.filter(v => v.status !== 'completed' && v.status !== 'overdue' && isDueThisMonth(v.reminder_date));
+    }
     
     // Hide completed vaccines from other tabs
     const nonCompletedVaccines = displayVaccines.filter(v => v.status !== 'completed');
     
+    let list;
     if (activeTab === 'recommended') {
-      return nonCompletedVaccines.filter(v => v.recommended === true);
+      list = nonCompletedVaccines.filter(v => v.recommended === true);
+    } else {
+      list = nonCompletedVaccines;
     }
-    return nonCompletedVaccines;
+    return list;
   }, [displayVaccines, activeTab]);
 
   // Vaccine statistics for header cards (aligned with displayed data)
@@ -551,6 +573,18 @@ export default function Vaccines() {
             onClick={() => setActiveTab('all')}
           >
             All Vaccines
+          </button>
+          <button 
+            className={`vaccine-tab-btn ${activeTab === 'overdue' ? 'active' : ''}`}
+            onClick={() => setActiveTab('overdue')}
+          >
+            ⚠ Overdue
+          </button>
+          <button 
+            className={`vaccine-tab-btn ${activeTab === 'thismonth' ? 'active' : ''}`}
+            onClick={() => setActiveTab('thismonth')}
+          >
+            📅 This Month
           </button>
           <button 
             className={`vaccine-tab-btn ${activeTab === 'recommended' ? 'active' : ''}`}

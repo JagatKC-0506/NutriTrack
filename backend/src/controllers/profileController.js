@@ -46,7 +46,7 @@ export const getUserProfile = async (req, res, next) => {
       pre_pregnancy_weight_kg: user.pre_pregnancy_weight_kg,
       created_at: user.created_at,
       updated_at: user.updated_at,
-      emergency_contact: user.EmergencyContact || null,
+      emergency_contacts: user.EmergencyContacts || [],
       partner: user.partners || null,
     });
   } catch (error) {
@@ -105,7 +105,7 @@ export const updateUserProfile = async (req, res, next) => {
 };
 
 /**
- * Add or update emergency contact
+ * Add a new emergency contact
  */
 export const saveEmergencyContact = async (req, res, next) => {
   try {
@@ -118,27 +118,14 @@ export const saveEmergencyContact = async (req, res, next) => {
       });
     }
 
-    let emergencyContact = await EmergencyContact.findOne({
-      where: { user_id: userId },
+    const emergencyContact = await EmergencyContact.create({
+      user_id: userId,
+      name,
+      phone,
+      relationship,
     });
 
-    if (emergencyContact) {
-      await emergencyContact.update({
-        name,
-        phone,
-        relationship,
-        updated_at: new Date(),
-      });
-    } else {
-      emergencyContact = await EmergencyContact.create({
-        user_id: userId,
-        name,
-        phone,
-        relationship,
-      });
-    }
-
-    return res.json(emergencyContact);
+    return res.status(201).json(emergencyContact);
   } catch (error) {
     console.error(`Error saving emergency contact: ${error.message}`);
     return res.status(500).json({
@@ -148,38 +135,36 @@ export const saveEmergencyContact = async (req, res, next) => {
 };
 
 /**
- * Get emergency contact
+ * Get all emergency contacts
  */
 export const getEmergencyContact = async (req, res, next) => {
   try {
     const userId = req.user.id;
 
-    const emergencyContact = await EmergencyContact.findOne({
+    const emergencyContacts = await EmergencyContact.findAll({
       where: { user_id: userId },
+      order: [['created_at', 'DESC']],
     });
 
-    if (!emergencyContact) {
-      return res.status(404).json({ detail: 'No emergency contact found' });
-    }
-
-    return res.json(emergencyContact);
+    return res.json(emergencyContacts);
   } catch (error) {
-    console.error(`Error fetching emergency contact: ${error.message}`);
+    console.error(`Error fetching emergency contacts: ${error.message}`);
     return res.status(500).json({
-      detail: 'Error fetching emergency contact',
+      detail: 'Error fetching emergency contacts',
     });
   }
 };
 
 /**
- * Delete emergency contact
+ * Delete an emergency contact
  */
 export const deleteEmergencyContact = async (req, res, next) => {
   try {
     const userId = req.user.id;
+    const { id } = req.params;
 
     const emergencyContact = await EmergencyContact.findOne({
-      where: { user_id: userId },
+      where: { id, user_id: userId },
     });
 
     if (!emergencyContact) {

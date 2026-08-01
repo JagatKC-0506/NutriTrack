@@ -1,0 +1,131 @@
+.ea-section {
+  margin-bottom: 24px;
+}
+
+.ea-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.ea-header h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.ea-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.1);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.ea-carousel {
+  cursor: pointer;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ea-slide {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid;
+  border-radius: 16px;
+  min-height: 76px;
+}
+
+.ea-overdue {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.14), rgba(190, 18, 60, 0.10));
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+.ea-upcoming {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(217, 119, 6, 0.08));
+  border-color: rgba(251, 191, 36, 0.3);
+}
+
+.ea-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.ea-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ea-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f1f5f9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ea-dose {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 1px;
+}
+
+.ea-sub {
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 3px;
+}
+
+.ea-overdue .ea-sub {
+  color: #fca5a5;
+}
+
+.ea-upcoming .ea-sub {
+  color: #fcd34d;
+}
+
+.ea-badge {
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.ea-overdue .ea-badge {
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.25);
+}
+
+.ea-upcoming .ea-badge {
+  color: #fef3c7;
+  background: rgba(245, 158, 11, 0.25);
+}
+
+.ea-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.ea-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  background: #334155;
+  transition: background 0.25s, width 0.25s;
+}
+
+.ea-dot-active {
+  background: linear-gradient(90deg, #ec4899, #a855f7);
+  width: 18px;
+}

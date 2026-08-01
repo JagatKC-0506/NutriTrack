@@ -8,7 +8,7 @@
   background: radial-gradient(circle at 20% 20%, rgba(192, 132, 252, 0.12), transparent 30%),
     radial-gradient(circle at 80% 0%, rgba(123, 224, 214, 0.12), transparent 30%),
     var(--bg-dark);
-  padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
   overflow-y: auto;
 }
 
@@ -741,6 +741,16 @@
   gap: 10px;
 }
 
+.doc-card-full {
+  flex-direction: row;
+  justify-content: center;
+  padding: 18px 16px;
+}
+
+.doc-card-full .doc-icon {
+  font-size: 26px;
+}
+
 .doc-card {
   background: var(--card-dark, #1e1f2b);
   border: 1px solid var(--border, #2b2c37);
@@ -1044,6 +1054,87 @@
   text-align: center;
 }
 
+.emergency-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ===== EMERGENCY CONTACT ADD FORM ===== */
+.emergency-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.emergency-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main, #e2e8f0);
+  margin-top: 6px;
+}
+
+.emergency-input {
+  width: 100%;
+  background: var(--card-dark, #1e1f29);
+  border: 1px solid var(--border, #2b2c37);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: var(--text-main, #e2e8f0);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.emergency-input:focus {
+  border-color: var(--accent);
+}
+
+.emergency-form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.emergency-cancel-btn,
+.emergency-save-btn {
+  flex: 1;
+  border-radius: 10px;
+  padding: 11px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.emergency-cancel-btn {
+  background: var(--card-dark, #1e1f29);
+  border: 1px solid var(--border, #2b2c37);
+  color: var(--text-muted, #9ba4b5);
+}
+
+.emergency-save-btn {
+  background: var(--accent);
+  color: #fff;
+}
+
+.emergency-add-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent, #22c55e);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
 .quick-nav-card:hover {
   border-color: var(--accent);
   transform: translateY(-2px);
@@ -1060,6 +1151,72 @@
   font-weight: 600;
   color: var(--text-main);
   line-height: 1.2;
+}
+
+/* ===== EMERGENCY CONTACT ===== */
+.emergency-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.emergency-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.emergency-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.emergency-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.emergency-rel {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
+.emergency-phone {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.emergency-call-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #22c55e;
+  color: #fff;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.emergency-call-btn:hover,
+.emergency-call-btn:active {
+  transform: scale(1.08);
 }
 
 

@@ -10,12 +10,20 @@ import BabyOverviewCard from '../components/feeding/BabyOverviewCard';
 import WhoGuideCard from '../components/feeding/WhoGuideCard';
 import RecommendedFoodsSection from '../components/feeding/RecommendedFoodsSection';
 import FoodsToAvoidSection from '../components/feeding/FoodsToAvoidSection';
-import DailyTipCard from '../components/feeding/DailyTipCard';
 import HygieneCard from '../components/feeding/HygieneCard';
 import MilestoneCard from '../components/feeding/MilestoneCard';
 import RecentFeedingCard from '../components/feeding/RecentFeedingCard';
 import FloatingLogButton from '../components/feeding/FloatingLogButton';
+import { items as foodsToAvoidItems } from '../components/feeding/FoodsToAvoidSection';
+import { items as hygieneItems } from '../components/feeding/HygieneCard';
+import { milestones as feedingMilestones } from '../components/feeding/MilestoneCard';
 import { Baby } from 'lucide-react';
+
+const guideTiles = [
+  { id: 'foods', emoji: '🚫', title: 'Foods to Avoid', count: foodsToAvoidItems.length, countLabel: 'items' },
+  { id: 'hygiene', emoji: '🧼', title: 'Hygiene Tips', count: hygieneItems.length, countLabel: 'tips' },
+  { id: 'milestones', emoji: '🥣', title: 'Milestones', count: feedingMilestones.length, countLabel: 'stages' },
+];
 
 export default function Feeding() {
   const navigate = useNavigate();
@@ -24,12 +32,13 @@ export default function Feeding() {
 
   const [isLogModalOpen, setIsLogModalOpen] = useState(false);
   const [info, setInfo] = useState(null);
+  const [openTile, setOpenTile] = useState(null);
 
   const babyAgeMonths = selectedBaby ? getBabyAgeMonths(selectedBaby.date_of_birth) : 0;
   const babyAgeLabel = selectedBaby ? calculateBabyAgeDetailed(selectedBaby.date_of_birth).label : 'Unknown';
 
   return (
-    <div className="min-h-screen bg-[#0f172a] pb-24">
+    <div className="min-h-screen bg-[#0f172a] pb-24 page-bottom-safe">
       <header className="sticky top-0 z-40 bg-[#0f172a]/80 backdrop-blur-xl border-b border-[#2b2c37]">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
           <button
@@ -68,17 +77,37 @@ export default function Feeding() {
           ageMonths={babyAgeMonths}
         />
 
+        {/* Guide tiles */}
+        <div className="grid grid-cols-3 gap-1.5 max-w-md mx-auto w-full">
+          {guideTiles.map((tile) => {
+            const active = openTile === tile.id;
+            return (
+              <button
+                key={tile.id}
+                onClick={() => setOpenTile(active ? null : tile.id)}
+                className={`rounded-xl px-1.5 py-2 flex flex-col items-center gap-0.5 transition-all border ${
+                  active
+                    ? 'bg-gradient-to-br from-pink-500 to-purple-600 text-white border-transparent shadow'
+                    : 'bg-[#1c1b21] text-slate-300 border-[#2b2c37] hover:border-pink-500/40'
+                }`}
+              >
+                <span className="text-sm leading-none" aria-hidden="true">{tile.emoji}</span>
+                <span className="text-[9px] font-semibold text-center leading-tight">{tile.title}</span>
+                <span className={`text-[8px] ${active ? 'text-white/80' : 'text-slate-500'}`}>{tile.count} {tile.countLabel}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Expanded tile section */}
+        {openTile === 'foods' && <FoodsToAvoidSection onInfo={setInfo} />}
+        {openTile === 'hygiene' && <HygieneCard onInfo={setInfo} />}
+        {openTile === 'milestones' && <MilestoneCard onInfo={setInfo} />}
+
+        {/* Today's feeding guide — always visible */}
         <WhoGuideCard ageMonths={babyAgeMonths} onInfo={setInfo} />
 
         {babyAgeMonths >= 6 && <RecommendedFoodsSection />}
-
-        <FoodsToAvoidSection onInfo={setInfo} />
-
-        <DailyTipCard onInfo={setInfo} />
-
-        <HygieneCard onInfo={setInfo} />
-
-        <MilestoneCard onInfo={setInfo} />
 
         <RecentFeedingCard
           lastFeeding={lastFeeding}

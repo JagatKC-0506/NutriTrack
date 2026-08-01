@@ -5,15 +5,27 @@
  * Only shows if permissions are not yet granted
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import NotificationService from '../services/NotificationService';
 import '../styles/NotificationBanner.css';
 
 export default function NotificationBanner({ onPermissionChange = () => {} }) {
-  const [isVisible, setIsVisible] = useState(
-    NotificationService.isSupported() && 
-    NotificationService.getPermission() === 'default'
-  );
+  const [isVisible, setIsVisible] = useState(false);
+  const [checked, setChecked] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const checkPermission = async () => {
+      if (!NotificationService.isSupported()) return;
+      const permission = await NotificationService.getPermission();
+      if (isMounted) {
+        setIsVisible(permission === 'default');
+        setChecked(true);
+      }
+    };
+    checkPermission();
+    return () => { isMounted = false; };
+  }, []);
 
   const handleEnable = async () => {
     const granted = await NotificationService.requestPermission();
@@ -27,7 +39,7 @@ export default function NotificationBanner({ onPermissionChange = () => {} }) {
     setIsVisible(false);
   };
 
-  if (!isVisible || !NotificationService.isSupported()) {
+  if (!checked || !isVisible || !NotificationService.isSupported()) {
     return null;
   }
 
@@ -43,20 +55,20 @@ export default function NotificationBanner({ onPermissionChange = () => {} }) {
         </div>
       </div>
       <div className="notification-banner-actions">
-        <button 
+        <button
           className="notification-banner-btn enable"
           onClick={handleEnable}
         >
           Enable
         </button>
-        <button 
+        <button
           className="notification-banner-btn dismiss"
           onClick={handleDismiss}
         >
           Not Now
         </button>
       </div>
-      <button 
+      <button
         className="notification-banner-close"
         onClick={handleDismiss}
       >

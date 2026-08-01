@@ -282,8 +282,8 @@ export async function getEmergencyContact() {
   });
 }
 
-export async function deleteEmergencyContact() {
-  return request('/api/profile/emergency-contact', {
+export async function deleteEmergencyContact(id) {
+  return request(`/api/profile/emergency-contact/${id}`, {
     method: 'DELETE',
   });
 }
@@ -567,6 +567,10 @@ export async function uploadDocument(babyId, formData) {
 
 export async function getDocuments(babyId, category) {
   return request(`/api/documents/${babyId}/${category}`);
+}
+
+export async function getAllDocuments(babyId) {
+  return request(`/api/documents/${babyId}/documents`);
 }
 
 export async function deleteDocument(docId) {

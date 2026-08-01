@@ -225,6 +225,12 @@
   transform: translateY(0);
 }
 
+/* Hide controls during PDF capture */
+.khop-capturing .khop-card-close,
+.khop-capturing .khop-card-actions {
+  display: none;
+}
+
 /* Print Styling */
 @media print {
   .khop-card-overlay {

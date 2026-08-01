@@ -604,3 +604,14 @@ select.pf-input {
   color: var(--text-muted, #9ba4b5) !important;
   margin-bottom: 12px !important;
 }
+
+.pf-ec-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pf-ec-row .pf-btn {
+  flex-shrink: 0;
+}

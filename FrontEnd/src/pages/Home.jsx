@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GreetingCard from '../components/GreetingCard';
 import BabyProfileCard from '../components/BabyProfileCard';
+import EmergencyAlerts from '../components/EmergencyAlerts';
 import LoadingSpinner from '../components/LoadingSpinner';
 import BottomNavigation from '../components/BottomNavigation';
 import { useBabyContext } from '../context/BabyContext';
@@ -155,6 +156,9 @@ export default function Home() {
           onNotificationClick={handleOpenNotifications}
         />
 
+        {/* Emergency Alerts Carousel */}
+        <EmergencyAlerts babyId={selectedBaby?.id} />
+
         {/* Baby Profile Card */}
         <BabyProfileCard
           babyAgeLabel={userData.babyAgeLabel}
@@ -166,23 +170,9 @@ export default function Home() {
           <div className="doc-section-header">
             <h2>Important Baby Documents</h2>
           </div>
-          <div className="doc-grid">
-            <div className="doc-card" onClick={() => navigate('/documents/discharge-summary')}>
-              <span className="doc-icon">🏥</span>
-              <span className="doc-card-title">Hospital<br/>Discharge Summary</span>
-            </div>
-            <div className="doc-card" onClick={() => navigate('/documents/immunization-card')}>
-              <span className="doc-icon">💉</span>
-              <span className="doc-card-title">Immunization<br/>Card (खोप कार्ड)</span>
-            </div>
-            <div className="doc-card" onClick={() => navigate('/documents/birth-registration')}>
-              <span className="doc-icon">📜</span>
-              <span className="doc-card-title">Birth<br/>Registration<br/>(जन्म दर्ता)</span>
-            </div>
-            <div className="doc-card" onClick={() => navigate('/documents/medical-records')}>
-              <span className="doc-icon">📁</span>
-              <span className="doc-card-title">Medical<br/>Records</span>
-            </div>
+          <div className="doc-card doc-card-full" onClick={() => navigate('/documents')}>
+            <span className="doc-icon">📁</span>
+            <span className="doc-card-title">Add / View<br/>Documents</span>
           </div>
         </div>
 

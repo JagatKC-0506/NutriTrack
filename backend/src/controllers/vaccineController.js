@@ -146,7 +146,24 @@ export const getUserVaccineReminders = async (req, res, next) => {
       }
     }
 
-    return res.json(reminders);
+    // Compute overdue status dynamically: any non-completed reminder
+    // whose due date has passed is marked as overdue (not persisted)
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+
+    const result = reminders.map(r => {
+      const plain = r.toJSON();
+      const isOpen = plain.status !== 'completed' && plain.status !== 'taken';
+      if (isOpen && plain.reminder_date) {
+        const dueDate = new Date(plain.reminder_date);
+        if (!Number.isNaN(dueDate.getTime()) && dueDate < todayStart) {
+          plain.status = 'overdue';
+        }
+      }
+      return plain;
+    });
+
+    return res.json(result);
   } catch (error) {
     console.error(`Error fetching vaccine reminders: ${error.message}`);
     return res.status(500).json({ detail: 'Error fetching vaccine reminders' });

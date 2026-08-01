@@ -68,7 +68,8 @@ export default function Profile() {
   const fileInputRef = useRef(null);
 
   const [userData, setUserData] = useState({ full_name: '', email: '', phone_number: '', profile_image: null });
-  const [emergencyContact, setEmergencyContact] = useState({ name: '', phone: '', relationship: '' });
+  const [emergencyContacts, setEmergencyContacts] = useState([]);
+  const [emergencyForm, setEmergencyForm] = useState({ name: '', phone: '', relationship: '' });
   const [uploading, setUploading] = useState(false);
 
   const [modals, setModals] = useState({
@@ -90,10 +91,10 @@ export default function Profile() {
       try {
         const user = await getUserProfile().catch(() => ({ full_name: 'User', email: 'user@email.com' }));
         setUserData(user);
-        if (user.emergency_contact) setEmergencyContact(user.emergency_contact);
+        if (user.emergency_contacts) setEmergencyContacts(Array.isArray(user.emergency_contacts) ? user.emergency_contacts : []);
 
-        const ec = await getEmergencyContact().catch(() => null);
-        if (ec) setEmergencyContact(ec);
+        const ecs = await getEmergencyContact().catch(() => []);
+        if (Array.isArray(ecs)) setEmergencyContacts(ecs);
       } catch (e) {
         console.error(e);
       }
@@ -130,21 +131,22 @@ export default function Profile() {
     }
   };
 
-  const handleEmergencySave = async () => {
+  const handleEmergencyAdd = async () => {
     try {
-      await saveEmergencyContact(emergencyContact);
-      toggleModal('emergency');
-      addToast('Emergency contact saved', 'success');
+      await saveEmergencyContact(emergencyForm);
+      const ecs = await getEmergencyContact().catch(() => []);
+      if (Array.isArray(ecs)) setEmergencyContacts(ecs);
+      setEmergencyForm({ name: '', phone: '', relationship: '' });
+      addToast('Emergency contact added', 'success');
     } catch (err) {
       addToast(err.message || 'Save failed', 'error');
     }
   };
 
-  const handleEmergencyDelete = async () => {
+  const handleEmergencyDelete = async (id) => {
     try {
-      await deleteEmergencyContact();
-      setEmergencyContact({ name: '', phone: '', relationship: '' });
-      toggleModal('emergency');
+      await deleteEmergencyContact(id);
+      setEmergencyContacts(prev => prev.filter(c => c.id !== id));
       addToast('Emergency contact deleted', 'success');
     } catch (err) {
       addToast(err.message || 'Delete failed', 'error');
@@ -221,7 +223,7 @@ export default function Profile() {
           <h3 className="pf-section-title">SETTINGS</h3>
           <div className="pf-card">
             <MenuItem icon="🔔" title="Notifications" desc="Manage notification preferences" onClick={() => toggleModal('notifications')} />
-            <MenuItem icon="🚨" title="Emergency Contact" desc={emergencyContact.name || 'Add emergency contact'} onClick={() => toggleModal('emergency')} />
+            <MenuItem icon="🚨" title="Emergency Contact" desc={emergencyContacts.length ? `${emergencyContacts.length} contact${emergencyContacts.length > 1 ? 's' : ''}` : 'Add emergency contact'} onClick={() => toggleModal('emergency')} />
             <MenuItem icon="🗑️" title="Delete Account" desc="Permanently delete your account and data" onClick={() => { setDeleteConfirmText(''); toggleModal('deleteAccount'); }} danger />
           </div>
         </div>
@@ -302,20 +304,24 @@ export default function Profile() {
 
       {/* Emergency Contact */}
       <Modal show={modals.emergency} onClose={() => toggleModal('emergency')} title="Emergency Contact">
-        {emergencyContact.name && (
-          <div className="pf-existing-ec">
-            <p><strong>{emergencyContact.name}</strong> — {emergencyContact.phone}</p>
-            <p className="pf-ec-rel">{emergencyContact.relationship}</p>
-            <button className="pf-btn pf-btn-danger pf-btn-full" onClick={handleEmergencyDelete}>Delete Contact</button>
+        {emergencyContacts.map(c => (
+          <div key={c.id} className="pf-existing-ec">
+            <div className="pf-ec-row">
+              <div>
+                <p><strong>{c.name}</strong> — {c.phone}</p>
+                <p className="pf-ec-rel">{c.relationship}</p>
+              </div>
+              <button className="pf-btn pf-btn-danger" onClick={() => handleEmergencyDelete(c.id)}>Delete</button>
+            </div>
           </div>
-        )}
-        <p className="pf-modal-desc">{emergencyContact.name ? 'Update your' : 'Add an'} emergency contact.</p>
+        ))}
+        <p className="pf-modal-desc">{emergencyContacts.length > 0 ? 'Add another emergency contact.' : 'Add an emergency contact.'}</p>
         <label className="pf-field-label">Contact Name</label>
-        <input className="pf-input" value={emergencyContact.name} onChange={e => setEmergencyContact(p => ({ ...p, name: e.target.value }))} placeholder="John Doe" />
+        <input className="pf-input" value={emergencyForm.name} onChange={e => setEmergencyForm(p => ({ ...p, name: e.target.value }))} placeholder="John Doe" />
         <label className="pf-field-label">Phone Number</label>
-        <input className="pf-input" value={emergencyContact.phone} onChange={e => setEmergencyContact(p => ({ ...p, phone: e.target.value }))} placeholder="+977 98XXXXXXXX" />
+        <input className="pf-input" value={emergencyForm.phone} onChange={e => setEmergencyForm(p => ({ ...p, phone: e.target.value }))} placeholder="+977 98XXXXXXXX" />
         <label className="pf-field-label">Relationship</label>
-        <select className="pf-input" value={emergencyContact.relationship} onChange={e => setEmergencyContact(p => ({ ...p, relationship: e.target.value }))}>
+        <select className="pf-input" value={emergencyForm.relationship} onChange={e => setEmergencyForm(p => ({ ...p, relationship: e.target.value }))}>
           <option value="">Select relationship</option>
           <option value="spouse">Spouse</option>
           <option value="parent">Parent</option>
@@ -324,7 +330,7 @@ export default function Profile() {
           <option value="doctor">Doctor</option>
           <option value="other">Other</option>
         </select>
-        <button className="pf-btn pf-btn-primary pf-btn-full" onClick={handleEmergencySave}>Save Contact</button>
+        <button className="pf-btn pf-btn-primary pf-btn-full" onClick={handleEmergencyAdd}>Add Contact</button>
       </Modal>
 
       {/* Privacy Policy */}

@@ -24,6 +24,10 @@
  */
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Capacitor } from '@capacitor/core'
+import { App as CapacitorApp } from '@capacitor/app'
+import { StatusBar, Style as StatusBarStyle } from '@capacitor/status-bar'
 import { BabyProvider } from './context/BabyContext'
 import Onboarding from './pages/Onboarding'
 import Login from './pages/Login'
@@ -36,10 +40,7 @@ import Feeding from './pages/Feeding'
 import FeedingHistory from './pages/FeedingHistory'
 import Growth from './pages/Growth'
 import HospitalVisits from './pages/HospitalVisits'
-import DischargeSummary from './pages/documents/DischargeSummary'
-import ImmunizationCard from './pages/documents/ImmunizationCard'
-import BirthRegistration from './pages/documents/BirthRegistration'
-import MedicalRecords from './pages/documents/MedicalRecords'
+import Documents from './pages/Documents'
 import Profile from './pages/Profile'
 import PregnantHome from './pages/PregnantHome'
 import PregnantHealthGuide from './pages/PregnantHealthGuide'
@@ -57,6 +58,24 @@ import './App.css'
  * Main component that sets up routing for the entire application
  */
 function App() {
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    StatusBar.setOverlaysWebView({ overlay: true });
+    StatusBar.setStyle({ style: StatusBarStyle.Dark });
+    StatusBar.setBackgroundColor({ color: '#0f172a' });
+
+    const backHandler = CapacitorApp.addListener('backButton', ({ canGoBack }) => {
+      if (canGoBack) {
+        window.history.back();
+      } else {
+        CapacitorApp.exitApp();
+      }
+    });
+
+    return () => { backHandler.then(h => h.remove()); };
+  }, []);
+
   return (
     <ErrorBoundary>
       <BabyProvider>
@@ -89,10 +108,7 @@ function App() {
               <Route path="/feeding/history" element={<FeedingHistory />} />
               <Route path="/growth" element={<Growth />} />
               <Route path="/hospital-visits" element={<HospitalVisits />} />
-              <Route path="/documents/discharge-summary" element={<DischargeSummary />} />
-              <Route path="/documents/immunization-card" element={<ImmunizationCard />} />
-              <Route path="/documents/birth-registration" element={<BirthRegistration />} />
-              <Route path="/documents/medical-records" element={<MedicalRecords />} />
+              <Route path="/documents" element={<Documents />} />
               <Route path="/profile" element={<Profile />} />
             </Route>
 

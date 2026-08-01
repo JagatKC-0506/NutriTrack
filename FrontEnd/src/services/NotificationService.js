@@ -1,108 +1,151 @@
 /**
  * NOTIFICATION SERVICE
  * ====================
- * Handles browser/system notifications for vaccine reminders
- * Uses the Notification API to send push notifications to device
+ * Handles notifications for vaccine reminders.
+ * - On native devices (Capacitor): uses @capacitor/local-notifications
+ *   (permission prompt, sound + vibration).
+ * - In a regular browser: falls back to the web Notification API.
  */
 
+import { Capacitor } from '@capacitor/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
+
+const CHANNEL_ID = 'nutritrack-reminders';
+
 export class NotificationService {
-  /**
-   * Check if browser supports notifications
-   */
+  static isNative() {
+    return Capacitor.isNativePlatform();
+  }
+
   static isSupported() {
+    if (this.isNative()) return true;
     return 'Notification' in window;
   }
 
-  /**
-   * Check current notification permission status
-   */
-  static getPermission() {
-    if (!this.isSupported()) return null;
-    return Notification.permission;
-  }
-
-  /**
-   * Request notification permission from user
-   */
-  static async requestPermission() {
-    if (!this.isSupported()) {
-      console.warn('Notifications not supported in this browser');
-      return false;
+  static async getPermission() {
+    if (!this.isNative()) {
+      if (!this.isSupported()) return null;
+      return Notification.permission;
     }
-
-    if (Notification.permission === 'granted') {
-      return true;
-    }
-
-    if (Notification.permission === 'denied') {
-      console.warn('User has denied notification permissions');
-      return false;
-    }
-
     try {
-      const permission = await Notification.requestPermission();
-      return permission === 'granted';
+      const status = await LocalNotifications.checkPermissions();
+      return status.display === 'granted' ? 'granted' : status.display === 'denied' ? 'denied' : 'default';
     } catch (error) {
-      console.error('Error requesting notification permission:', error);
+      console.error('Error checking native notification permission:', error);
+      return 'default';
+    }
+  }
+
+  static async requestPermission() {
+    if (!this.isNative()) {
+      if (!this.isSupported()) {
+        console.warn('Notifications not supported in this browser');
+        return false;
+      }
+      if (Notification.permission === 'granted') return true;
+      if (Notification.permission === 'denied') return false;
+      try {
+        const permission = await Notification.requestPermission();
+        return permission === 'granted';
+      } catch (error) {
+        console.error('Error requesting notification permission:', error);
+        return false;
+      }
+    }
+
+    try {
+      await LocalNotifications.createChannel({
+        id: CHANNEL_ID,
+        name: 'Reminders',
+        description: 'Vaccine and health reminders',
+        importance: 5,
+        vibration: true,
+        sound: 'default',
+      });
+    } catch (error) {
+      console.error('Error creating notification channel:', error);
+    }
+
+    try {
+      const status = await LocalNotifications.checkPermissions();
+      if (status.display === 'granted') return true;
+      const result = await LocalNotifications.requestPermissions();
+      return result.display === 'granted';
+    } catch (error) {
+      console.error('Error requesting native notification permission:', error);
       return false;
     }
   }
 
-  /**
-   * Send a notification
-   * @param {string} title - Notification title
-   * @param {object} options - Notification options
-   */
   static async sendNotification(title, options = {}) {
-    if (!this.isSupported()) {
-      console.warn('Notifications not supported');
-      return null;
-    }
+    if (!this.isNative()) {
+      if (!this.isSupported()) {
+        console.warn('Notifications not supported');
+        return null;
+      }
+      if (Notification.permission !== 'granted') {
+        const granted = await this.requestPermission();
+        if (!granted) return null;
+      }
 
-    // Request permission if not already granted
-    if (Notification.permission !== 'granted') {
-      const granted = await this.requestPermission();
-      if (!granted) return null;
-    }
-
-    const defaultOptions = {
-      icon: '/vite.svg', // App icon
-      badge: '/vite.svg',
-      tag: 'vaccine-reminder', // Prevent duplicate notifications
-      requireInteraction: true, // Don't auto-close
-      vibrate: [200, 100, 200], // Vibration pattern
-      ...options
-    };
-
-    try {
-      const notification = new Notification(title, defaultOptions);
-      
-      // Handle notification click
-      notification.onclick = () => {
-        window.focus();
-        notification.close();
+      const defaultOptions = {
+        icon: '/vite.svg',
+        badge: '/vite.svg',
+        tag: 'vaccine-reminder',
+        requireInteraction: true,
+        vibrate: [200, 100, 200],
+        ...options,
       };
 
+      try {
+        const notification = new Notification(title, defaultOptions);
+        notification.onclick = () => {
+          window.focus();
+          notification.close();
+        };
+        return notification;
+      } catch (error) {
+        console.error('Error sending notification:', error);
+        return null;
+      }
+    }
+
+    try {
+      const status = await LocalNotifications.checkPermissions();
+      if (status.display !== 'granted') {
+        const granted = await this.requestPermission();
+        if (!granted) return null;
+      }
+
+      const id = Math.floor(Date.now() / 1000) % 2147483647;
+      const notification = {
+        id,
+        title,
+        body: options.body || '',
+        channelId: CHANNEL_ID,
+        smallIcon: 'ic_launcher',
+        vibration: true,
+        sound: 'default',
+        schedule: { at: new Date(Date.now() + 500) },
+      };
+
+      await LocalNotifications.schedule({ notifications: [notification] });
       return notification;
     } catch (error) {
-      console.error('Error sending notification:', error);
+      console.error('Error sending native notification:', error);
       return null;
     }
   }
 
-  /**
-   * Send vaccine reminder notification
-   * @param {array} vaccines - Array of vaccines due within 7 days
-   */
   static async sendVaccineReminders(vaccines) {
     if (!vaccines || vaccines.length === 0) return;
 
-    if (Notification.permission !== 'granted') {
+    const permission = await this.getPermission();
+    if (permission !== 'granted') {
       const granted = await this.requestPermission();
       if (!granted) return;
     }
 
-    // Send notification for each vaccine or single notification for multiple
     if (vaccines.length === 1) {
       const vaccine = vaccines[0];
       const daysLeft = this.calculateDaysRemaining(vaccine.dueDate);
@@ -111,72 +154,55 @@ export class NotificationService {
         {
           body: `Due in ${daysLeft} days for ${vaccine.forPerson}. Please schedule your appointment.`,
           tag: `vaccine-${vaccine.id}`,
-          actions: [
-            { action: 'view', title: 'View Details' },
-            { action: 'dismiss', title: 'Dismiss' }
-          ]
         }
       );
     } else {
       const dueCount = vaccines.length;
       const vaccineNames = vaccines.slice(0, 2).map(v => v.name).join(', ');
       const moreText = dueCount > 2 ? ` and ${dueCount - 2} more` : '';
-      
+
       await this.sendNotification(
         `🔔 ${dueCount} Vaccine Reminders - URGENT`,
         {
           body: `${vaccineNames}${moreText} are due within 7 days. Please check your schedule.`,
           tag: 'vaccine-batch',
-          actions: [
-            { action: 'view', title: 'View All' },
-            { action: 'dismiss', title: 'Dismiss' }
-          ]
         }
       );
     }
   }
 
-  /**
-   * Calculate days remaining until vaccine due date
-   * @param {string} dateString - Due date string
-   * @returns {number} Days remaining
-   */
   static calculateDaysRemaining(dateString) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     const dueDate = new Date(dateString);
     dueDate.setHours(0, 0, 0, 0);
-    
+
     const daysRemaining = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
     return Math.max(daysRemaining, 0);
   }
 
-  /**
-   * Check if vaccine is due within 7 days
-   * @param {string} dateString - Due date string
-   * @returns {boolean}
-   */
   static isDueWithinWeek(dateString) {
     const daysRemaining = this.calculateDaysRemaining(dateString);
     return daysRemaining > 0 && daysRemaining <= 7;
   }
 
-  /**
-   * Initialize notifications on app load
-   * Request permission and set up notification checking
-   */
   static async initialize() {
-    if (!this.isSupported()) {
-      console.warn('Notifications not supported in this browser');
-      return false;
+    if (!this.isNative()) {
+      if (!this.isSupported()) {
+        console.warn('Notifications not supported in this browser');
+        return false;
+      }
+      return Notification.permission === 'granted';
     }
 
-    // Note: We do not automatically request permission here because browsers
-    // may block or hang requests that do not originate from a user gesture.
-    // The NotificationBanner handles requesting permission on user click.
-
-    return Notification.permission === 'granted';
+    try {
+      const status = await LocalNotifications.checkPermissions();
+      return status.display === 'granted';
+    } catch (error) {
+      console.error('Error checking native notification permission:', error);
+      return false;
+    }
   }
 }
 

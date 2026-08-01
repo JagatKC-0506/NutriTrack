@@ -233,3 +233,18 @@
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
+
+/* ===== COMPACT TABS (fit all on one screen) ===== */
+.vaccine-tabs {
+  gap: 6px;
+  padding: 10px 12px 4px;
+}
+
+.vaccine-tabs button,
+.vaccine-tab-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 7px 6px;
+  font-size: 11px;
+  border-radius: 10px;
+}

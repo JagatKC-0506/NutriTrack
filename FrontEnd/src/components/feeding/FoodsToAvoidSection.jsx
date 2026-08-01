@@ -66,3 +66,5 @@ export default function FoodsToAvoidSection({ onInfo }) {
     </div>
   );
 }
+
+export { items };

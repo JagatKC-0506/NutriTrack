@@ -22,7 +22,7 @@
   background: radial-gradient(circle at 20% 20%, rgba(192, 132, 252, 0.12), transparent 30%),
     radial-gradient(circle at 80% 0%, rgba(123, 224, 214, 0.12), transparent 30%),
     var(--bg-dark);
-  padding-bottom: 80px;
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
   overflow-y: auto;
 }
 

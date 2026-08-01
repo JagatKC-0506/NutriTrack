@@ -42,6 +42,6 @@ const EmergencyContact = sequelize.define('EmergencyContact', {
 });
 
 EmergencyContact.belongsTo(User, { foreignKey: 'user_id' });
-User.hasOne(EmergencyContact, { foreignKey: 'user_id' });
+User.hasMany(EmergencyContact, { foreignKey: 'user_id' });
 
 export default EmergencyContact;

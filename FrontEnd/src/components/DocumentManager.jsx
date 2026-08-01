@@ -4,6 +4,7 @@ import { useBabyContext } from '../context/BabyContext';
 import {
   uploadDocument as uploadDocApi,
   getDocuments,
+  getAllDocuments,
   deleteDocument as deleteDocApi,
   getDocumentFileBlob,
 } from '../api';
@@ -15,6 +16,14 @@ const CATEGORY_CONFIG = {
   immunization_card: { icon: '💉', title: 'Immunization Card (खोप कार्ड)', desc: 'Upload and manage your baby\'s Immunization Card documents.' },
   birth_registration: { icon: '📜', title: 'Birth Registration Certificate (जन्म दर्ता)', desc: 'Upload and manage your baby\'s Birth Registration Certificate documents.' },
   medical_records: { icon: '📁', title: 'Medical Records', desc: 'Upload and manage your baby\'s Medical Records documents.' },
+  all: { icon: '📁', title: 'Baby Documents', desc: 'Upload and manage all of your baby\'s important documents in one place.' },
+};
+
+const CATEGORY_LABELS = {
+  discharge_summary: 'Discharge Summary',
+  immunization_card: 'Immunization Card',
+  birth_registration: 'Birth Registration',
+  medical_records: 'Medical Records',
 };
 
 function formatFileSize(bytes) {
@@ -34,10 +43,11 @@ function getFileIcon(mimeType) {
   return '📄';
 }
 
-export default function DocumentManager({ category }) {
+export default function DocumentManager({ category = 'all' }) {
   const navigate = useNavigate();
   const { babies, selectedBaby, setSelectedBaby } = useBabyContext();
-  const config = CATEGORY_CONFIG[category];
+  const isAllMode = category === 'all';
+  const config = CATEGORY_CONFIG[category] || CATEGORY_CONFIG.all;
 
   const [docs, setDocs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,6 +63,7 @@ export default function DocumentManager({ category }) {
     document_name: '',
     notes: '',
     files: [],
+    category: 'medical_records',
   });
 
   const showToast = useCallback((msg, type = 'success') => {
@@ -64,7 +75,9 @@ export default function DocumentManager({ category }) {
     if (!selectedBaby) return;
     setLoading(true);
     try {
-      const data = await getDocuments(selectedBaby.id, category);
+      const data = isAllMode
+        ? await getAllDocuments(selectedBaby.id)
+        : await getDocuments(selectedBaby.id, category);
       setDocs(data || []);
     } catch (e) {
       console.error(e);
@@ -72,7 +85,7 @@ export default function DocumentManager({ category }) {
     } finally {
       setLoading(false);
     }
-  }, [selectedBaby, category, showToast]);
+  }, [selectedBaby, category, isAllMode, showToast]);
 
   useEffect(() => {
     fetchDocs();
@@ -96,7 +109,7 @@ export default function DocumentManager({ category }) {
     try {
       const fd = new FormData();
       fd.append('baby_id', selectedBaby.id);
-      fd.append('category', category);
+      fd.append('category', isAllMode ? formData.category : category);
       fd.append('document_name', formData.document_name.trim());
       fd.append('notes', formData.notes.trim());
       formData.files.forEach(f => fd.append('files', f));
@@ -104,7 +117,7 @@ export default function DocumentManager({ category }) {
       await uploadDocApi(selectedBaby.id, fd);
       showToast('Upload successful');
       setShowUpload(false);
-      setFormData({ document_name: '', notes: '', files: [] });
+      setFormData({ document_name: '', notes: '', files: [], category: 'medical_records' });
       fetchDocs();
     } catch (e) {
       showToast(e.message || 'Upload failed', 'error');
@@ -253,6 +266,22 @@ export default function DocumentManager({ category }) {
                 onChange={e => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               />
 
+              {isAllMode && (
+                <>
+                  <label className="dm-field-label">Category *</label>
+                  <select
+                    className="dm-input"
+                    value={formData.category}
+                    onChange={e => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                  >
+                    <option value="discharge_summary">Hospital Discharge Summary</option>
+                    <option value="immunization_card">Immunization Card (खोप कार्ड)</option>
+                    <option value="birth_registration">Birth Registration (जन्म दर्ता)</option>
+                    <option value="medical_records">Medical Records</option>
+                  </select>
+                </>
+              )}
+
               <label className="dm-field-label">Files *</label>
               <div className="dm-file-zone">
                 <input
@@ -291,25 +320,29 @@ export default function DocumentManager({ category }) {
         <LoadingSpinner message="Loading documents..." />
       ) : filteredDocs.length === 0 ? (
         <div className="dm-empty-state">
-          <p>No {config.title} uploaded yet.</p>
+          <p>No documents uploaded yet.</p>
           <p className="dm-empty-hint">Tap "Add Document" to upload one.</p>
         </div>
       ) : (
         <div className="dm-doc-list">
           {filteredDocs.map(doc => (
-            <div key={doc.id} className="dm-doc-card">
+            <div key={doc.id} className="dm-doc-card" onClick={() => handleView(doc)}>
               <div className="dm-doc-icon">{getFileIcon(doc.mime_type)}</div>
               <div className="dm-doc-info">
                 <p className="dm-doc-name">{doc.document_name}</p>
+                {isAllMode && (
+                  <span className="dm-doc-category">
+                    {CATEGORY_CONFIG[doc.category]?.icon} {CATEGORY_LABELS[doc.category] || doc.category}
+                  </span>
+                )}
                 <p className="dm-doc-meta">
                   {doc.mime_type} • {formatDate(doc.uploaded_at)} • {doc.file_size_formatted}
                 </p>
                 {doc.notes && <p className="dm-doc-notes">{doc.notes}</p>}
               </div>
               <div className="dm-doc-actions">
-                <button className="dm-action-btn" title="View" onClick={() => handleView(doc)}>👁️</button>
-                <button className="dm-action-btn" title="Download" onClick={() => handleDownload(doc)}>⬇️</button>
-                <button className="dm-action-btn dm-action-delete" title="Delete" onClick={() => setDeleteConfirm(doc.id)}>🗑️</button>
+                <button className="dm-action-btn" title="Download" onClick={(e) => { e.stopPropagation(); handleDownload(doc); }}>⬇️</button>
+                <button className="dm-action-btn dm-action-delete" title="Delete" onClick={(e) => { e.stopPropagation(); setDeleteConfirm(doc.id); }}>🗑️</button>
               </div>
             </div>
           ))}

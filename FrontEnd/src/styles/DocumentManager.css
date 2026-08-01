@@ -243,6 +243,7 @@
   border-radius: 14px;
   padding: 14px;
   transition: border-color 0.2s;
+  cursor: pointer;
 }
 
 .dm-doc-card:hover {
@@ -266,6 +267,18 @@
   color: var(--text-main, #e2e8f0);
   margin: 0 0 4px;
   word-break: break-word;
+}
+
+.dm-doc-category {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-main, #e2e8f0);
+  background: rgba(123, 224, 214, 0.1);
+  border: 1px solid rgba(123, 224, 214, 0.25);
+  border-radius: 8px;
+  padding: 2px 8px;
+  margin-bottom: 6px;
 }
 
 .dm-doc-meta {

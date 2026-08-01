@@ -53,3 +53,5 @@ export default function HygieneCard({ onInfo }) {
     </div>
   );
 }
+
+export { items };
