@@ -5,11 +5,10 @@
  * Formatted like the official vaccination card
  */
 
-import { calculateBabyAgeDetailed } from '../utils/babyAge';
 import logo from '../assets/logo.png';
 import '../styles/KhopCard.css';
 
-export default function KhopCard({ isOpen, onClose, babyName, babyDOB, completedVaccines }) {
+export default function KhopCard({ isOpen, onClose, personName, dateLabel = 'जन्म मिति :', dateValue, ageLabel, completedVaccines }) {
   if (!isOpen) return null;
 
   // Format date for display
@@ -18,9 +17,6 @@ export default function KhopCard({ isOpen, onClose, babyName, babyDOB, completed
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
-
-  // Calculate age using the utility function
-  const babyAge = calculateBabyAgeDetailed(babyDOB);
 
   return (
     <div className="khop-card-overlay" onClick={onClose}>
@@ -35,19 +31,19 @@ export default function KhopCard({ isOpen, onClose, babyName, babyDOB, completed
           <h2>टीकाकरण रेकर्ड</h2>
         </div>
 
-        {/* Child Information */}
+        {/* Person Information */}
         <div className="khop-card-info">
           <div className="khop-info-row">
             <label>नाम :</label>
-            <span>{babyName || 'N/A'}</span>
+            <span>{personName || 'N/A'}</span>
           </div>
           <div className="khop-info-row">
-            <label>जन्म मिति :</label>
-            <span>{formatDate(babyDOB)}</span>
+            <label>{dateLabel}</label>
+            <span>{formatDate(dateValue)}</span>
           </div>
           <div className="khop-info-row">
             <label>उमेर :</label>
-            <span>{babyAge.label}</span>
+            <span>{ageLabel || 'N/A'}</span>
           </div>
         </div>
 

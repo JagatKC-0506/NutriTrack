@@ -18,7 +18,7 @@ export default function BottomNavigation({ activeTab = "Home", userType: userTyp
     if (inferredUserType === 'pregnant') {
       return [
         { id: 1, label: "Home", icon: "🏠", path: "/pregnant/home" },
-        { id: 2, label: "Nutrition", icon: "🍎", path: "/pregnant/nutrition" },
+        { id: 2, label: "Nutrition", icon: "🍎", path: "/nutrition" },
         { id: 3, label: "Vaccines", icon: "💉", path: "/pregnant/vaccines" },
         { id: 4, label: "Hospital", icon: "🏥", path: "/hospital-visits" },
         { id: 5, label: "Growth", icon: "📈", path: "/pregnant/growth" }

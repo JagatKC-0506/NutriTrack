@@ -40,5 +40,9 @@
   "devDependencies": {
     "nodemon": "^3.0.2",
     "sequelize-cli": "^6.6.5"
+  },
+  "allowScripts": {
+    "sqlite3@5.1.7": true,
+    "@scarf/scarf@1.4.0": true
   }
 }

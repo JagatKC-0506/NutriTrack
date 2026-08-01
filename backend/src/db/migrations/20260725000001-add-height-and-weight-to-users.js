@@ -1,4 +1,6 @@
 export async function up({ context: { queryInterface, Sequelize } }) {
+  const tables = await queryInterface.showAllTables();
+  if (!tables.includes('users')) return;
   const tableInfo = await queryInterface.describeTable('users');
   if (!tableInfo.height_cm) {
     await queryInterface.addColumn('users', 'height_cm', {
@@ -15,6 +17,8 @@ export async function up({ context: { queryInterface, Sequelize } }) {
 }
 
 export async function down({ context: { queryInterface, Sequelize } }) {
+  const tables = await queryInterface.showAllTables();
+  if (!tables.includes('users')) return;
   const tableInfo = await queryInterface.describeTable('users');
   if (tableInfo.height_cm) {
     await queryInterface.removeColumn('users', 'height_cm');

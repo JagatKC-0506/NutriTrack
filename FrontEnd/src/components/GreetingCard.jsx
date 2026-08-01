@@ -8,25 +8,19 @@
 
 import { useNavigate } from 'react-router-dom';
 
-const TRIMESTER_SEGMENTS = [
-  { label: 'Trimester 1', startWeek: 0, endWeek: 13 },
-  { label: 'Trimester 2', startWeek: 13, endWeek: 28 },
-  { label: 'Trimester 3', startWeek: 28, endWeek: 40 }
-];
-
 export default function GreetingCard({
   userName = "",
   trimester = "Trimester 2",
   dueDate = "",
   weeksPregnant = null,
   userType = 'pregnant',
+  profileImage = null,
   onNotificationClick
 }) {
   const navigate = useNavigate();
 
   const safeWeeks = typeof weeksPregnant === 'number' ? Math.max(0, Math.min(40, weeksPregnant)) : null;
-  const progressPercent = safeWeeks !== null ? (safeWeeks / 40) * 100 : null;
-  const activeTrimesterIndex = TRIMESTER_SEGMENTS.findIndex(seg => trimester === seg.label);
+  const weekPercent = safeWeeks !== null ? Math.round((safeWeeks / 40) * 100) : null;
 
   return (
     <div className="greeting-card">
@@ -39,7 +33,11 @@ export default function GreetingCard({
             <span>🔔</span>
           </button>
           <button className="profile-button" onClick={() => navigate('/profile')} title="Go to Profile">
-            <span>👤</span>
+            {profileImage ? (
+              <img className="profile-button-img" src={profileImage} alt="Profile" />
+            ) : (
+              <span>👤</span>
+            )}
           </button>
         </div>
       </div>
@@ -50,33 +48,17 @@ export default function GreetingCard({
           <div className="info-badge">
             <span className="badge-icon">❤️</span>
             <div className="badge-content">
-              <p className="badge-label">{trimester}</p>
-              <div className="trimester-progress">
-                {TRIMESTER_SEGMENTS.map((seg, idx) => (
-                  <div
-                    key={seg.label}
-                    className={`trimester-segment ${idx <= activeTrimesterIndex ? 'active' : ''}`}
-                    style={{
-                      gridColumn: `${idx + 1} / span 1`
-                    }}
-                  >
-                    <span className="segment-label">{seg.label}</span>
-                  </div>
-                ))}
-                {progressPercent !== null && (
-                  <div
-                    className="progress-indicator"
-                    style={{ left: `${progressPercent}%` }}
-                  >
-                    <span className="indicator-dot" />
-                    <span className="indicator-label">{safeWeeks}w</span>
-                  </div>
-                )}
-              </div>
+              <p className="week-text">Week {safeWeeks !== null ? safeWeeks : '—'}</p>
+              {weekPercent !== null && (
+                <div className="week-progress">
+                  <div className="week-progress-fill" style={{ width: `${weekPercent}%` }} />
+                </div>
+              )}
+              <p className="week-meta">
+                {trimester}
+                {formatDate(dueDate) !== '—' && ` • Due: ${formatDate(dueDate)}`}
+              </p>
             </div>
-          </div>
-          <div className="due-date">
-            <p>Due Date: <strong>{formatDate(dueDate)}</strong></p>
           </div>
         </div>
       )}

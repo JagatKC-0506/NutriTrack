@@ -13,3 +13,4 @@ export { default as BabyDocument } from './BabyDocument.js';
 export { default as FeedingLog } from './FeedingLog.js';
 export { default as PregnancyGrowth } from './PregnancyGrowth.js';
 export { default as HospitalVisit } from './HospitalVisit.js';
+export { default as Note } from './Note.js';

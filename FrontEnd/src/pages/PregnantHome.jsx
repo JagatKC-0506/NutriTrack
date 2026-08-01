@@ -10,11 +10,12 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GreetingCard from '../components/GreetingCard';
 import NotificationBanner from '../components/NotificationBanner';
-import PregnancyGuidePreview from '../components/PregnancyGuidePreview';
+import DailyChecklist from '../components/pregnancy/DailyChecklist';
 import BottomNavigation from '../components/BottomNavigation';
 import NotificationService from '../services/NotificationService';
-import { getReminders, getCurrentUser, getAuthToken, getUserVaccineReminders } from '../api';
+import { getReminders, getCurrentUser, getUserProfile, getAuthToken, getUserVaccineReminders } from '../api';
 import '../styles/Home.css';
+import '../styles/Pregnancy.css';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -52,6 +53,7 @@ export default function PregnantHome() {
   const [_loading, setLoading] = useState(true);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifLoading, setNotifLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
   const [userData, setUserData] = useState({
     userName: "Loading...",
     trimester: "Calculating...",
@@ -94,6 +96,11 @@ export default function PregnantHome() {
           weeksPregnant: weeksPregnant,
           userType: 'pregnant'
         });
+
+        const profile = await getUserProfile().catch(() => null);
+        if (profile?.profile_image) {
+          setProfileImage(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/${profile.profile_image}`);
+        }
       } catch (error) {
         console.error('Error fetching user data:', error);
         setUserData({
@@ -187,26 +194,27 @@ export default function PregnantHome() {
           dueDate={userData.dueDate}
           weeksPregnant={userData.weeksPregnant}
           userType="pregnant"
+          profileImage={profileImage}
           onNotificationClick={handleOpenNotifications}
         />
 
         {/* Quick Access Navigation */}
         <div className="quick-nav">
-          <div className="quick-nav-card" onClick={() => navigate('/pregnant/vaccines/daily')}>
-            <span className="quick-nav-icon">✅</span>
-            <span className="quick-nav-label">Daily Care</span>
-          </div>
           <div className="quick-nav-card" onClick={() => navigate('/pregnant/vaccines/health')}>
             <span className="quick-nav-icon">🩺</span>
             <span className="quick-nav-label">Medical Tests</span>
           </div>
-          <div className="quick-nav-card" onClick={() => navigate('/pregnant/vaccines/resources')}>
-            <span className="quick-nav-icon">🆘</span>
-            <span className="quick-nav-label">Resources & Safety</span>
+          <div className="quick-nav-card" onClick={() => navigate('/pregnant/health-guide')}>
+            <span className="quick-nav-icon">📖</span>
+            <span className="quick-nav-label">Pregnancy Guide</span>
+          </div>
+          <div className="quick-nav-card" onClick={() => navigate('/pregnant/emergency')}>
+            <span className="quick-nav-icon">🚨</span>
+            <span className="quick-nav-label">Emergency</span>
           </div>
         </div>
 
-        <PregnancyGuidePreview />
+        <DailyChecklist />
       </div>
 
       {/* Notification Modal */}

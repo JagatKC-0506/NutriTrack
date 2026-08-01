@@ -5,7 +5,7 @@
  * Displays title, subtitle with back button and khop card button
  */
 
-export default function VaccinesHeader({ onBack = () => {}, onKhopCard = () => {} }) {
+export default function VaccinesHeader({ onBack = () => {}, onKhopCard = () => {}, onAddVaccine = () => {}, showKhopCard = true }) {
   return (
     <div className="vaccines-header">
       <button className="vaccines-header-back" onClick={onBack}>
@@ -15,9 +15,21 @@ export default function VaccinesHeader({ onBack = () => {}, onKhopCard = () => {
         <h1>Vaccine Tracker</h1>
         <p>Track vaccination schedule</p>
       </div>
-      <button className="vaccines-header-khop" onClick={onKhopCard}>
-        खोप कार्ड
-      </button>
+      {showKhopCard && (
+        <div className="vaccines-header-actions">
+          <button className="vaccines-header-khop" onClick={onKhopCard}>
+            खोप कार्ड
+          </button>
+          <button
+            className="vaccines-header-add"
+            onClick={onAddVaccine}
+            title="Add an additional vaccine"
+            aria-label="Add vaccine"
+          >
+            +
+          </button>
+        </div>
+      )}
     </div>
   );
 }

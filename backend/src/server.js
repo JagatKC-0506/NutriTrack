@@ -1,4 +1,6 @@
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from 'cors';
 import { Sequelize } from 'sequelize';
 import { Umzug, SequelizeStorage } from 'umzug';
@@ -25,6 +27,8 @@ import feedingLogRoutes from './routes/feedingLogRoutes.js';
 import pregnancyGrowthRoutes from './routes/pregnancyGrowth.js';
 import hospitalVisitRoutes from './routes/hospitalVisitRoutes.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 
@@ -32,6 +36,9 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors(config.cors));
+
+// Serve uploaded files (profile images, documents)
+app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
 
 // Routes
 app.use('/api/auth', authRoutes);

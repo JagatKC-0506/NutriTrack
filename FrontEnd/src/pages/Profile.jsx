@@ -5,6 +5,7 @@ import {
   getUserProfile,
   updateUserProfile,
   uploadProfileImage,
+  deleteAccount,
   saveEmergencyContact,
   getEmergencyContact,
   deleteEmergencyContact,
@@ -15,13 +16,13 @@ import '../styles/Profile.css';
 
 const HOME_USER_TYPE = 'newParent';
 
-function MenuItem({ icon, title, desc, onClick, right }) {
+function MenuItem({ icon, title, desc, onClick, right, danger }) {
   return (
     <div className="pf-menu-item" onClick={onClick} role="button" tabIndex={0}
       onKeyDown={e => { if (e.key === 'Enter') onClick?.() }}>
       <span className="pf-menu-icon">{icon}</span>
       <div className="pf-menu-text">
-        <span className="pf-menu-title">{title}</span>
+        <span className={`pf-menu-title ${danger ? 'pf-danger-text' : ''}`}>{title}</span>
         {desc && <span className="pf-menu-desc">{desc}</span>}
       </div>
       {right !== undefined ? right : <span className="pf-chevron">›</span>}
@@ -73,9 +74,11 @@ export default function Profile() {
   const [modals, setModals] = useState({
     editProfile: false, changePassword: false, changeEmail: false,
     notifications: false, emergency: false,
-    privacy: false, terms: false,
+    privacy: false, terms: false, deleteAccount: false,
   });
   const [confirmLogout, setConfirmLogout] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deleting, setDeleting] = useState(false);
   const [editForm, setEditForm] = useState({ full_name: '', phone_number: '' });
   const [passwordForm, setPasswordForm] = useState({ current: '', newPass: '', confirm: '' });
   const [emailForm, setEmailForm] = useState({ email: '' });
@@ -103,8 +106,9 @@ export default function Profile() {
     if (!file) return;
     setUploading(true);
     try {
+      const toUpload = file.size > 1.5 * 1024 * 1024 ? await compressImage(file) : file;
       const fd = new FormData();
-      fd.append('image', file);
+      fd.append('image', toUpload, 'profile.jpg');
       const result = await uploadProfileImage(fd);
       setUserData(prev => ({ ...prev, profile_image: result.profile_image }));
       addToast('Profile picture updated', 'success');
@@ -150,6 +154,19 @@ export default function Profile() {
   const handleLogout = () => {
     clearAuthToken();
     navigate('/login');
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await deleteAccount();
+      clearAuthToken();
+      addToast('Account deleted permanently', 'info');
+      navigate('/login');
+    } catch (err) {
+      addToast(err.message || 'Failed to delete account', 'error');
+      setDeleting(false);
+    }
   };
 
   const profileImageUrl = userData.profile_image
@@ -205,6 +222,7 @@ export default function Profile() {
           <div className="pf-card">
             <MenuItem icon="🔔" title="Notifications" desc="Manage notification preferences" onClick={() => toggleModal('notifications')} />
             <MenuItem icon="🚨" title="Emergency Contact" desc={emergencyContact.name || 'Add emergency contact'} onClick={() => toggleModal('emergency')} />
+            <MenuItem icon="🗑️" title="Delete Account" desc="Permanently delete your account and data" onClick={() => { setDeleteConfirmText(''); toggleModal('deleteAccount'); }} danger />
           </div>
         </div>
 
@@ -343,6 +361,57 @@ export default function Profile() {
         onConfirm={handleLogout}
         onCancel={() => setConfirmLogout(false)}
       />
+
+      {/* Confirm Delete Account */}
+      <Modal show={modals.deleteAccount} onClose={() => toggleModal('deleteAccount')} title="Delete Account">
+        <p className="pf-modal-desc pf-danger-text">
+          This will permanently delete your account and all associated data. This action cannot be undone.
+        </p>
+        <label className="pf-field-label">Type <strong>confirm</strong> to continue</label>
+        <input
+          className="pf-input"
+          value={deleteConfirmText}
+          onChange={e => setDeleteConfirmText(e.target.value)}
+          placeholder="confirm"
+          autoComplete="off"
+        />
+        <button
+          className="pf-btn pf-btn-danger pf-btn-full"
+          disabled={deleteConfirmText !== 'confirm' || deleting}
+          onClick={handleDeleteAccount}
+        >
+          {deleting ? 'Deleting...' : 'Delete My Account'}
+        </button>
+      </Modal>
     </div>
   );
+}
+
+function compressImage(file, maxSize = 512, quality = 0.85) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      canvas.toBlob(blob => {
+        if (blob) resolve(blob);
+        else reject(new Error('Image compression failed'));
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Could not read the selected image'));
+    };
+    img.src = url;
+  });
 }

@@ -16,8 +16,7 @@
  * - PasswordStrengthIndicator: Real-time password strength feedback
  */
 
-import { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useForm } from '../hooks/useForm';
 import FormInput from '../components/FormInput';
 import DateInput from '../components/DateInput';
@@ -40,19 +39,6 @@ export default function Signup() {
     dueDate: '',
   });
   const navigate = useNavigate();
-  const location = useLocation();
-
-  // Prefill user type based on stage selection from welcome screen
-  useEffect(() => {
-    const stageFromNav = location.state?.stage || localStorage.getItem('selectedStage');
-    if (!stageFromNav) return;
-
-    const normalizedStage = stageFromNav === 'newParent' ? 'newParent' : 'pregnant';
-    setFormData(prev => ({
-      ...prev,
-      userType: normalizedStage
-    }));
-  }, [location.state, setFormData]);
 
   // ===== HANDLE USER TYPE CHANGE =====
   const handleUserTypeChange = (type) => {

@@ -44,20 +44,12 @@ export function getVaccineStatus(vaccineName, weeksPregnant, userReminders, enri
 
 export const NAV_SECTIONS = [
   {
-    path: '/pregnant/vaccines/list',
+    path: '/pregnant/vaccines',
     icon: '💉',
     title: 'Vaccine Recommendations',
     desc: 'Personalized vaccine list with educational info',
     color: 'var(--vaccine-blue)',
     bgClass: 'nav-card-blue',
-  },
-  {
-    path: '/pregnant/vaccines/daily',
-    icon: '✅',
-    title: 'Daily Care',
-    desc: 'Checklist & health tips',
-    color: 'var(--success-green)',
-    bgClass: 'nav-card-green',
   },
   {
     path: '/pregnant/vaccines/health',
@@ -66,13 +58,5 @@ export const NAV_SECTIONS = [
     desc: 'Trimester-by-trimester screenings',
     color: 'var(--warning-orange)',
     bgClass: 'nav-card-orange',
-  },
-  {
-    path: '/pregnant/vaccines/resources',
-    icon: '🆘',
-    title: 'Resources & Safety',
-    desc: 'Emergency signs & vaccines to avoid',
-    color: 'var(--upcoming-red)',
-    bgClass: 'nav-card-red',
   },
 ];

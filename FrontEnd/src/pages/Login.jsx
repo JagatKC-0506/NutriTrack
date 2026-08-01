@@ -84,7 +84,7 @@ export default function Login() {
         
         {/* Header with icon and title */}
         <AuthHeader 
-          title="Welcome Back" 
+          title="Welcome" 
           subtitle="Sign in to continue"
         />
 

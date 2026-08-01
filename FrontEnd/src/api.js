@@ -466,6 +466,12 @@ export async function uploadProfileImage(formData) {
   });
 }
 
+export async function deleteAccount() {
+  return request('/api/profile', {
+    method: 'DELETE',
+  });
+}
+
 // ===== Feeding Logs =====
 export async function getFeedingLogs(params = {}) {
   const query = new URLSearchParams();

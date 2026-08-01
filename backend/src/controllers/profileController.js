@@ -1,7 +1,8 @@
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { User, Baby, BabyDocument, DevelopmentMilestone, EmergencyContact, Partner } from '../models/index.js';
+import sequelize from '../db/sequelize.js';
+import { User, Baby, BabyDocument, DevelopmentMilestone, EmergencyContact, Partner, FeedingLog, GrowthRecord, HospitalVisit, Note, PregnancyGrowth, Reminder } from '../models/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -257,8 +258,8 @@ export const uploadProfileImage = async (req, res, next) => {
       return res.status(400).json({ detail: 'Only JPG, PNG, and WebP images are allowed' });
     }
 
-    if (req.file.size > 5 * 1024 * 1024) {
-      return res.status(400).json({ detail: 'Image must be less than 5 MB' });
+    if (req.file.size > 10 * 1024 * 1024) {
+      return res.status(400).json({ detail: 'Image must be less than 10 MB' });
     }
 
     const uploadDir = path.resolve(__dirname, '../../uploads/profiles');
@@ -276,6 +277,11 @@ export const uploadProfileImage = async (req, res, next) => {
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
       return res.status(404).json({ detail: 'User not found' });
+    }
+
+    if (user.profile_image && user.profile_image.startsWith('uploads/profiles/')) {
+      const oldPath = path.resolve(__dirname, '../../', user.profile_image);
+      fs.unlink(oldPath, () => {});
     }
 
     await user.update({ profile_image: relativePath, updated_at: new Date() });
@@ -409,6 +415,61 @@ export const declinePartnerInvitation = async (req, res, next) => {
     console.error(`Error declining partner invitation: ${error.message}`);
     return res.status(500).json({
       detail: 'Error declining partner invitation',
+    });
+  }
+};
+
+/**
+ * Delete account permanently
+ * Removes the user and all associated data
+ */
+export const deleteAccount = async (req, res, next) => {
+  const userId = req.user.id;
+  const t = await sequelize.transaction();
+
+  try {
+    const user = await User.findOne({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ detail: 'User not found' });
+    }
+
+    const babies = await Baby.findAll({
+      where: { user_id: userId },
+      attributes: ['id'],
+      transaction: t,
+    });
+    const babyIds = babies.map(b => b.id);
+
+    if (babyIds.length > 0) {
+      await BabyDocument.destroy({ where: { baby_id: babyIds }, transaction: t });
+      await DevelopmentMilestone.destroy({ where: { baby_id: babyIds }, transaction: t });
+      await FeedingLog.destroy({ where: { baby_id: babyIds }, transaction: t });
+      await HospitalVisit.destroy({ where: { baby_id: babyIds }, transaction: t });
+      await Baby.destroy({ where: { id: babyIds }, transaction: t });
+    }
+
+    await GrowthRecord.destroy({ where: { user_id: userId }, transaction: t });
+    await PregnancyGrowth.destroy({ where: { user_id: userId }, transaction: t });
+    await Reminder.destroy({ where: { user_id: userId }, transaction: t });
+    await Note.destroy({ where: { user_id: userId }, transaction: t });
+    await EmergencyContact.destroy({ where: { user_id: userId }, transaction: t });
+    await Partner.destroy({ where: { user_id: userId }, transaction: t });
+    await Partner.destroy({ where: { partner_id: userId }, transaction: t });
+
+    if (user.profile_image && user.profile_image.startsWith('uploads/profiles/')) {
+      const imagePath = path.resolve(__dirname, '../../', user.profile_image);
+      fs.unlink(imagePath, () => {});
+    }
+
+    await user.destroy({ transaction: t });
+    await t.commit();
+
+    return res.json({ detail: 'Account deleted successfully' });
+  } catch (error) {
+    await t.rollback();
+    console.error(`Error deleting account: ${error.message}`);
+    return res.status(500).json({
+      detail: 'Error deleting account',
     });
   }
 };

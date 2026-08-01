@@ -175,7 +175,18 @@ export const createVaccineReminder = async (req, res, next) => {
       description,
       vaccine_icon,
       baby_id,
+      status,
+      last_dose_date,
     } = req.body;
+
+    const allowedStatuses = ['pending', 'upcoming', 'completed', 'overdue'];
+    const normalizedStatus = allowedStatuses.includes(status) ? status : 'pending';
+
+    let normalizedDoseDate = last_dose_date || null;
+    if (normalizedStatus === 'completed' && !normalizedDoseDate) {
+      const now = new Date();
+      normalizedDoseDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    }
 
     // Normalize date to YYYY-MM-DD format for consistent comparison
     let normalizedDate = reminder_date;
@@ -222,7 +233,8 @@ export const createVaccineReminder = async (req, res, next) => {
       age_due_months,
       description,
       vaccine_icon,
-      status: 'pending', // Default status for new reminders
+      status: normalizedStatus,
+      last_dose_date: normalizedDoseDate,
     });
 
     return res.status(201).json(newReminder);
@@ -260,9 +272,11 @@ export const updateVaccineReminderStatus = async (req, res, next) => {
 
     // Update reminder status and record dose date
     let normalizedDoseDate = last_dose_date;
-    if (!normalizedDoseDate) {
+    if (last_dose_date === undefined) {
       const now = new Date();
       normalizedDoseDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    } else if (last_dose_date === null || last_dose_date === '') {
+      normalizedDoseDate = null;
     } else if (normalizedDoseDate.includes('T')) {
       normalizedDoseDate = normalizedDoseDate.split('T')[0];
     }

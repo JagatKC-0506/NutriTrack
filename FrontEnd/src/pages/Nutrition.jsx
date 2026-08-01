@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NutritionHeader from '../components/NutritionHeader';
 import NutritionCard from '../components/NutritionCard';
@@ -34,14 +34,18 @@ function NutritionSkeleton() {
 
 export default function Nutrition() {
   const navigate = useNavigate();
+  const userType = localStorage.getItem('userType') || localStorage.getItem('selectedStage') || 'newParent';
+  const homePath = userType === 'pregnant' ? '/pregnant/home' : '/home';
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [allFoods, setAllFoods] = useState([]);
   const [avoidFoods, setAvoidFoods] = useState([]);
   const [nutritionTips, setNutritionTips] = useState([]);
-  const [activeCategory, setActiveCategory] = useState(null);
   const [selectedFood, setSelectedFood] = useState(null);
+  const [activeSection, setActiveSection] = useState('ALL');
+  const [activeCategory, setActiveCategory] = useState(null);
   const [dietFilter, setDietFilter] = useState(null);
+
   const fetchData = async () => {
     setLoading(true);
     setError(null);
@@ -53,7 +57,7 @@ export default function Nutrition() {
       setAllFoods(foodsData.filter(f => f.type === 'recommended'));
       setAvoidFoods(foodsData.filter(f => f.type === 'avoid'));
       setNutritionTips(tipsData.tips || []);
-    } catch (err) {
+    } catch {
       setError('Failed to load nutrition data. Please check your connection.');
     } finally {
       setLoading(false);
@@ -62,15 +66,11 @@ export default function Nutrition() {
 
   useEffect(() => { fetchData(); }, []);
 
-  const dietFilteredFoods = useMemo(() => {
-    if (!dietFilter) return allFoods;
-    return allFoods.filter(f => f.diet_type === dietFilter);
-  }, [allFoods, dietFilter]);
-
-  const categoryFoods = useMemo(() => {
-    if (!activeCategory) return [];
-    return dietFilteredFoods.filter(f => f.nutrient_group === activeCategory);
-  }, [dietFilteredFoods, activeCategory]);
+  const filteredFoods = allFoods.filter(f => {
+    if (activeCategory && f.nutrient_group !== activeCategory) return false;
+    if (dietFilter && f.diet_type !== dietFilter) return false;
+    return true;
+  });
 
   const handleExportPDF = () => {
     generateNutritionPDF({
@@ -81,10 +81,15 @@ export default function Nutrition() {
     });
   };
 
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+    setActiveCategory(null);
+  };
+
   if (loading) {
     return (
       <div className="nutrition-container">
-        <NutritionHeader onBack={() => navigate('/home')} />
+        <NutritionHeader onBack={() => navigate(homePath)} />
         <NutritionSkeleton />
         <BottomNavigation activeTab="Nutrition" />
       </div>
@@ -94,7 +99,7 @@ export default function Nutrition() {
   if (error) {
     return (
       <div className="nutrition-container">
-        <NutritionHeader onBack={() => navigate('/home')} />
+        <NutritionHeader onBack={() => navigate(homePath)} />
         <div className="nutrition-main">
           <div className="nutrition-empty-state">
             <div className="empty-icon">⚠️</div>
@@ -110,7 +115,7 @@ export default function Nutrition() {
 
   return (
     <div className="nutrition-container">
-      <NutritionHeader onBack={() => navigate('/home')} />
+      <NutritionHeader onBack={() => navigate(homePath)} />
 
       <div className="nutrition-main">
         {/* Nutrition Tip */}
@@ -129,50 +134,56 @@ export default function Nutrition() {
           📄 Export as PDF
         </button>
 
-        {/* Overview Buttons: All + Avoid */}
+        {/* Section Toggle: All Food + Avoid Food */}
         <div className="category-grid overview-grid">
           <button
-            className={`category-btn ${activeCategory === 'ALL' ? 'active' : ''}`}
-            onClick={() => setActiveCategory(activeCategory === 'ALL' ? null : 'ALL')}
+            className={`category-btn ${activeSection === 'ALL' ? 'active' : ''}`}
+            onClick={() => handleSectionChange('ALL')}
           >
             <span className="category-emoji">🍽️</span>
-            <span className="category-label">All</span>
+            <span className="category-label">All Food</span>
           </button>
           <button
-            className={`category-btn ${activeCategory === 'AVOID' ? 'active' : ''}`}
-            onClick={() => setActiveCategory(activeCategory === 'AVOID' ? null : 'AVOID')}
+            className={`category-btn ${activeSection === 'AVOID' ? 'active' : ''}`}
+            onClick={() => handleSectionChange('AVOID')}
           >
             <span className="category-emoji">🚫</span>
-            <span className="category-label">Avoid</span>
+            <span className="category-label">Avoid Food</span>
           </button>
         </div>
 
-        {/* Nutrient Category Grid */}
-        <div className="category-grid nutrient-grid">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.key}
-              className={`category-btn ${activeCategory === cat.key ? 'active' : ''}`}
-              onClick={() => setActiveCategory(activeCategory === cat.key ? null : cat.key)}
-            >
-              <span className="category-emoji">{cat.emoji}</span>
-              <span className="category-label">{cat.label}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Selected Foods Content */}
-        {activeCategory === 'ALL' ? (
+        {activeSection === 'ALL' ? (
           <div className="category-foods-section">
-            <h3 className="category-foods-title">🍽️ All Recommended Foods</h3>
+            <h3 className="category-foods-title">🍽️ All Foods</h3>
+
+            {/* Nutrient Category Filter */}
+            <div className="nutrition-filter-row">
+              <label className="nutrition-filter-label" htmlFor="category-select">Category</label>
+              <select
+                id="category-select"
+                className="nutrition-filter-select"
+                value={activeCategory || ''}
+                onChange={(e) => setActiveCategory(e.target.value || null)}
+              >
+                <option value="">All</option>
+                {CATEGORIES.map(cat => (
+                  <option key={cat.key} value={cat.key}>
+                    {cat.emoji} {cat.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Diet Filter */}
             <div className="diet-filter-pills">
               <button className={`diet-filter-pill ${!dietFilter ? 'active' : ''}`} onClick={() => setDietFilter(null)}>All</button>
               <button className={`diet-filter-pill ${dietFilter === 'Vegetarian' ? 'active' : ''}`} onClick={() => setDietFilter('Vegetarian')}>🥦 Veg</button>
               <button className={`diet-filter-pill ${dietFilter === 'Non-Vegetarian' ? 'active' : ''}`} onClick={() => setDietFilter('Non-Vegetarian')}>🍗 Non-Veg</button>
             </div>
-            {dietFilteredFoods.length > 0 ? (
+
+            {filteredFoods.length > 0 ? (
               <div className="nutrition-items-list category-foods-list">
-                {dietFilteredFoods.map(food => (
+                {filteredFoods.map(food => (
                   <NutritionCard key={food.id} food={food} onClick={() => setSelectedFood(food)} />
                 ))}
               </div>
@@ -180,11 +191,11 @@ export default function Nutrition() {
               <div className="nutrition-empty-state category-empty">
                 <div className="empty-icon">🥗</div>
                 <h3>No foods available</h3>
-                <p>There are no foods to display.</p>
+                <p>Try a different filter selection.</p>
               </div>
             )}
           </div>
-        ) : activeCategory === 'AVOID' ? (
+        ) : (
           <div className="category-foods-section">
             <h3 className="category-foods-title">🚫 Foods to Avoid</h3>
             {avoidFoods.length > 0 ? (
@@ -201,36 +212,7 @@ export default function Nutrition() {
               </div>
             )}
           </div>
-        ) : activeCategory ? (
-          <div className="category-foods-section">
-            <h3 className="category-foods-title">{CATEGORIES.find(c => c.key === activeCategory)?.emoji} {CATEGORIES.find(c => c.key === activeCategory)?.label} Foods</h3>
-            <div className="diet-filter-pills">
-              <button className={`diet-filter-pill ${!dietFilter ? 'active' : ''}`} onClick={() => setDietFilter(null)}>All</button>
-              <button className={`diet-filter-pill ${dietFilter === 'Vegetarian' ? 'active' : ''}`} onClick={() => setDietFilter('Vegetarian')}>🥦 Veg</button>
-              <button className={`diet-filter-pill ${dietFilter === 'Non-Vegetarian' ? 'active' : ''}`} onClick={() => setDietFilter('Non-Vegetarian')}>🍗 Non-Veg</button>
-            </div>
-            {categoryFoods.length > 0 ? (
-              <div className="nutrition-items-list category-foods-list">
-                {categoryFoods.map(food => (
-                  <NutritionCard key={food.id} food={food} onClick={() => setSelectedFood(food)} />
-                ))}
-              </div>
-            ) : (
-              <div className="nutrition-empty-state category-empty">
-                <div className="empty-icon">🥗</div>
-                <h3>No foods in this category</h3>
-                <p>There are no foods available for this nutrient group.</p>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="nutrition-empty-state category-prompt">
-            <div className="empty-icon">👆</div>
-            <h3>Select a Nutrient Category</h3>
-            <p>Tap any category above to see recommended foods for that nutrient group.</p>
-          </div>
         )}
-
       </div>
 
       {selectedFood && <FoodDetailModal food={selectedFood} onClose={() => setSelectedFood(null)} />}

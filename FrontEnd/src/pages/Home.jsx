@@ -13,7 +13,7 @@ import BabyProfileCard from '../components/BabyProfileCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import BottomNavigation from '../components/BottomNavigation';
 import { useBabyContext } from '../context/BabyContext';
-import { getCurrentUser, getAuthToken, getReminders, getUserVaccineReminders } from '../api';
+import { getCurrentUser, getUserProfile, getAuthToken, getReminders, getUserVaccineReminders } from '../api';
 import { calculateBabyAgeDetailed, getBabyAgeMonths } from '../utils/babyAge';
 import '../styles/Home.css';
 
@@ -28,6 +28,7 @@ export default function Home() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notifLoading, setNotifLoading] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
   const [userData, setUserData] = useState({
     userName: "Loading...",
     trimester: "Baby Age",
@@ -86,6 +87,11 @@ export default function Home() {
           });
         }
 
+        const profile = await getUserProfile().catch(() => null);
+        if (isMounted && profile?.profile_image) {
+          setProfileImage(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/${profile.profile_image}`);
+        }
+
         if (isMounted) setLoading(false);
       } catch (error) {
         console.error('Error in initializeAndFetchData:', error);
@@ -141,6 +147,7 @@ export default function Home() {
           dueDate={userData.dueDate}
           weeksPregnant={userData.weeksPregnant}
           userType={HOME_USER_TYPE}
+          profileImage={profileImage}
           babyAgeLabel={userData.babyAgeLabel}
           babyAgeMonths={userData.babyAgeMonths}
           babyAgeWeeks={userData.babyAgeWeeks}

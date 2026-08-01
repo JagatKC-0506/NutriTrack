@@ -33,6 +33,14 @@ export const authenticateToken = async (req, res, next) => {
 export const errorHandler = (err, req, res, next) => {
   console.error(err);
 
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ detail: 'Image is too large (max 10 MB)' });
+  }
+
+  if (err.code === 'LIMIT_UNEXPECTED_FILE' || err.code === 'LIMIT_FILE_COUNT') {
+    return res.status(400).json({ detail: 'Invalid upload' });
+  }
+
   if (err.statusCode) {
     return res.status(err.statusCode).json({ detail: err.message });
   }

@@ -12,13 +12,14 @@ import {
   declinePartnerInvitation,
   uploadProfileImage,
   getProfileStatistics,
+  deleteAccount,
 } from '../controllers/profileController.js';
 import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowed = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
     if (allowed.includes(file.mimetype)) {
@@ -58,6 +59,12 @@ router.get('/emergency-contact', authenticateToken, getEmergencyContact);
  * Delete emergency contact
  */
 router.delete('/emergency-contact', authenticateToken, deleteEmergencyContact);
+
+/**
+ * DELETE /profile
+ * Permanently delete account and all associated data
+ */
+router.delete('/', authenticateToken, deleteAccount);
 
 /**
  * POST /profile/partner-invite

@@ -41,14 +41,16 @@ function formatDateOnly(dateString) {
 export default function VaccineCard({ 
   name = "Vaccine Name",
   emoji = "💉",
-  description = "Vaccine description",
   dueDate = "Dec 1, 2025",
   status = "upcoming", // taken, pending, upcoming, completed
   forPerson = "Mother", // Mother, Baby
   details = "", // Additional details
   isDueWithinWeek = false, // Highlight if due within 7 days
   recommended = false, // Show recommended badge
-  onMarkDone = () => {}
+  onMarkDone = () => {},
+  onUndo = null, // Show undo button when provided and vaccine is completed
+  onDelete = null, // Show delete button when provided (custom vaccines)
+  onInfo = null // Show info button when provided
 }) {
   const formattedDate = formatDateOnly(dueDate);
   
@@ -83,6 +85,30 @@ export default function VaccineCard({
             )}
           </div>
         </div>
+
+        {/* Info Button - Shows vaccine details in a modal */}
+        {onInfo && (
+          <button
+            className="vaccine-card-info-btn"
+            onClick={(e) => { e.stopPropagation(); onInfo(); }}
+            title={`Learn more about ${name}`}
+            aria-label={`Learn more about ${name}`}
+          >
+            i
+          </button>
+        )}
+
+        {/* Delete Button - Only for custom-added vaccines */}
+        {onDelete && (
+          <button
+            className="vaccine-card-delete-btn"
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            title={`Delete ${name}`}
+            aria-label={`Delete ${name}`}
+          >
+            🗑️
+          </button>
+        )}
       </div>
 
       {/* Card Details Section */}
@@ -93,12 +119,6 @@ export default function VaccineCard({
           <span className="vaccine-detail-badge">{details}</span>
         </div>
         
-        {/* Description */}
-        <div className="vaccine-detail-item">
-          <span className="vaccine-detail-label">ℹ</span>
-          <span className="vaccine-detail-value">{description}</span>
-        </div>
-        
         {/* Due Date */}
         <div className="vaccine-detail-item">
           <span className="vaccine-detail-label">📅</span>
@@ -107,7 +127,13 @@ export default function VaccineCard({
       </div>
 
       {/* Action Button - Only show for actionable vaccines */}
-      {status !== 'taken' && status !== 'completed' && status !== 'available' && (
+      {status === 'completed' && onUndo ? (
+        <div className="vaccine-card-action">
+          <button className="vaccine-action-btn undo" onClick={onUndo} title="Revert this vaccine to not done">
+            ↩ Undo
+          </button>
+        </div>
+      ) : status !== 'taken' && status !== 'completed' && status !== 'available' && (
         <div className="vaccine-card-action">
           <button className="vaccine-action-btn mark-done" onClick={onMarkDone}>
             Mark Done

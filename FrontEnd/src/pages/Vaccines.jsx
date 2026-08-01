@@ -11,11 +11,14 @@ import { useNavigate } from 'react-router-dom';
 import VaccinesHeader from '../components/VaccinesHeader';
 import VaccineCard from '../components/VaccineCard';
 import KhopCard from '../components/KhopCard';
+import VaccineInfoModal from '../components/VaccineInfoModal';
+import AddVaccineModal from '../components/AddVaccineModal';
 import BottomNavigation from '../components/BottomNavigation';
 import NotificationService from '../services/NotificationService';
 import { useToast } from '../context/ToastContext';
 import { useBabyContext } from '../context/BabyContext';
-import { getAllVaccines, getUserVaccineReminders, createVaccineReminder, updateVaccineReminderStatus } from '../api';
+import { getAllVaccines, getUserVaccineReminders, createVaccineReminder, updateVaccineReminderStatus, deleteVaccineReminder } from '../api';
+import { calculateBabyAgeDetailed } from '../utils/babyAge';
 import vaccineScheduleConfig, { getNextDoseDate, generateAutomaticVaccineReminders, calculateVaccineDateFromBirth } from '../utils/vaccineSchedule';
 import '../styles/Vaccines.css';
 
@@ -28,6 +31,9 @@ export default function Vaccines() {
   const [userReminders, setUserReminders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showKhopCard, setShowKhopCard] = useState(false);
+  const [infoVaccine, setInfoVaccine] = useState(null);
+  const [lastAutoCreatedDose, setLastAutoCreatedDose] = useState(null);
+  const [showAddVaccine, setShowAddVaccine] = useState(false);
 
   useEffect(() => {
     if (!selectedBaby && babies && babies.length > 0) {
@@ -355,6 +361,9 @@ export default function Vaccines() {
 
             const newDose = await createVaccineReminder(nextDoseReminder);
             
+            // Track the auto-created dose so it can be cleaned up on undo
+            setLastAutoCreatedDose({ doseId: newDose.id, vaccineName: vaccineToMark.vaccine_name, doseNumber: currentDose + 1 });
+            
             // Update state with the new dose
             setUserReminders(prev => [...prev, newDose]);
 
@@ -388,6 +397,80 @@ export default function Vaccines() {
     }
   };
 
+  const handleUndoDone = async (id) => {
+    try {
+      const vaccineToUndo = userReminders.find(v => v.id === id);
+      if (!vaccineToUndo) return;
+
+      const revertedStatus = (() => {
+        const due = new Date(vaccineToUndo.reminder_date);
+        const today = new Date();
+        const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        return due < todayStart ? 'overdue' : 'upcoming';
+      })();
+
+      const updatedReminders = userReminders.map(reminder =>
+        reminder.id === id
+          ? { ...reminder, status: revertedStatus, last_dose_date: null }
+          : reminder
+      );
+      setUserReminders(updatedReminders);
+
+      await updateVaccineReminderStatus(id, {
+        status: revertedStatus,
+        last_dose_date: null,
+      });
+
+      const autoDose = lastAutoCreatedDose;
+      if (autoDose && autoDose.vaccineName === vaccineToUndo.vaccine_name) {
+        const autoReminder = updatedReminders.find(r => r.id === autoDose.doseId);
+        if (autoReminder && autoReminder.status !== 'completed') {
+          await deleteVaccineReminder(autoDose.doseId).catch(() => {});
+          setUserReminders(prev => prev.filter(r => r.id !== autoDose.doseId));
+        }
+        setLastAutoCreatedDose(null);
+      }
+
+      const refreshedReminders = await getUserVaccineReminders(selectedBaby?.id);
+      setUserReminders(refreshedReminders || []);
+
+      addToast(`↩ ${vaccineToUndo.vaccine_name} marked as not done`, 'info');
+    } catch (error) {
+      console.error('Error undoing vaccine completion:', error);
+      try {
+        const refreshedReminders = await getUserVaccineReminders(selectedBaby?.id);
+        setUserReminders(refreshedReminders || []);
+      } catch (refreshError) {
+        console.error('Error refreshing vaccine reminders after undo failure:', refreshError);
+      }
+      addToast('Failed to undo. Please try again.', 'error');
+    }
+  };
+
+  const handleAddVaccine = async (vaccineData) => {
+    if (!selectedBaby) {
+      addToast('Please select a baby first', 'error');
+      throw new Error('No baby selected');
+    }
+    const created = await createVaccineReminder({ ...vaccineData, baby_id: selectedBaby.id });
+    const refreshed = await getUserVaccineReminders(selectedBaby.id);
+    setUserReminders(refreshed || []);
+    addToast(`✓ ${created.vaccine_name} added`, 'success');
+  };
+
+  const handleDeleteVaccine = async (id, name) => {
+    if (!window.confirm(`Delete ${name}? This cannot be undone.`)) return;
+    try {
+      await deleteVaccineReminder(id);
+      const refreshed = await getUserVaccineReminders(selectedBaby?.id);
+      setUserReminders(refreshed || []);
+      addToast(`🗑️ ${name} deleted`, 'info');
+    } catch (error) {
+      console.error('Error deleting vaccine:', error);
+      addToast('Failed to delete vaccine', 'error');
+    }
+  };
+
   if (loading) {
     return (
       <div className="vaccines-container">
@@ -405,8 +488,9 @@ export default function Vaccines() {
       <KhopCard 
         isOpen={showKhopCard}
         onClose={() => setShowKhopCard(false)}
-        babyName={selectedBaby?.name || 'Baby'}
-        babyDOB={selectedBaby?.date_of_birth}
+        personName={selectedBaby?.name || 'Baby'}
+        dateValue={selectedBaby?.date_of_birth}
+        ageLabel={calculateBabyAgeDetailed(selectedBaby?.date_of_birth).label}
         completedVaccines={userReminders.filter(v => v.status === 'completed')}
       />
 
@@ -414,6 +498,7 @@ export default function Vaccines() {
       <VaccinesHeader 
         onBack={() => navigate('/home')}
         onKhopCard={() => setShowKhopCard(true)}
+        onAddVaccine={() => setShowAddVaccine(true)}
       />
 
       {babies && babies.length > 1 && (
@@ -495,6 +580,7 @@ export default function Vaccines() {
             filteredVaccines.map((vaccine) => {
               // Find the original vaccine data to get 'recommended' status
               const originalVaccine = allVaccines.find(v => v.name === vaccine.vaccine_name);
+              const isCustom = !originalVaccine;
               
               return (
                 <VaccineCard
@@ -510,6 +596,9 @@ export default function Vaccines() {
                   isDueWithinWeek={isDueWithinWeek(vaccine.reminder_date)}
                   recommended={originalVaccine?.recommended || false}
                   onMarkDone={() => handleMarkDone(vaccine.id)}
+                  onUndo={() => handleUndoDone(vaccine.id)}
+                  onDelete={isCustom ? () => handleDeleteVaccine(vaccine.id, vaccine.vaccine_name) : null}
+                  onInfo={() => setInfoVaccine(originalVaccine || { name: vaccine.vaccine_name, emoji: vaccine.vaccine_icon, description: vaccine.description })}
                 />
               );
             })
@@ -520,6 +609,23 @@ export default function Vaccines() {
           )}
         </div>
       </div>
+
+      {/* Vaccine Info Modal */}
+      {infoVaccine && (
+        <VaccineInfoModal
+          vaccine={infoVaccine}
+          onClose={() => setInfoVaccine(null)}
+        />
+      )}
+
+      {/* Add Vaccine Modal */}
+      <AddVaccineModal
+        isOpen={showAddVaccine}
+        onClose={() => setShowAddVaccine(false)}
+        onAdd={handleAddVaccine}
+        recipient="baby"
+        babyId={selectedBaby?.id || null}
+      />
 
       {/* Bottom Navigation */}
       <BottomNavigation activeTab="Vaccines" />

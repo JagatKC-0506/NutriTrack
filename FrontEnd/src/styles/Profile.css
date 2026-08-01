@@ -407,6 +407,15 @@
   line-height: 1.5;
 }
 
+.pf-danger-text {
+  color: var(--danger, #ef4444) !important;
+}
+
+.pf-btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ===== FORM ===== */
 .pf-field-label {
   display: block;

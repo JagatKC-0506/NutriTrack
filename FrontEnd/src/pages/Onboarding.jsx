@@ -5,7 +5,7 @@
  * Displays before login/signup to introduce app features
  * 
  * FLOW:
- * Onboarding (3 slides) → Login/Welcome page
+ * Onboarding (3 slides) → Login page
  */
 
 import { useState } from 'react';
@@ -44,14 +44,14 @@ export default function Onboarding() {
 
   const handleNext = () => {
     if (isLastSlide) {
-      navigate('/welcome');
+      navigate('/login');
     } else {
       setCurrentSlide(currentSlide + 1);
     }
   };
 
   const handleSkip = () => {
-    navigate('/welcome');
+    navigate('/login');
   };
 
   return (
