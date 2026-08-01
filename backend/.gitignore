@@ -11,3 +11,6 @@ npm-debug.log
 yarn-error.log
 dist/
 build/
+
+# User-uploaded files (profile photos, baby documents) - PRIVATE
+uploads/
