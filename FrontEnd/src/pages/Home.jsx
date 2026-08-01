@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import GreetingCard from '../components/GreetingCard';
 import BabyProfileCard from '../components/BabyProfileCard';
 import EmergencyAlerts from '../components/EmergencyAlerts';
+import NotificationBanner from '../components/NotificationBanner';
 import LoadingSpinner from '../components/LoadingSpinner';
 import BottomNavigation from '../components/BottomNavigation';
 import { useBabyContext } from '../context/BabyContext';
@@ -140,6 +141,9 @@ export default function Home() {
     <div className="home-container">
       {/* Main Content */}
       <div className="home-content">
+
+        {/* Notification Permission Banner */}
+        <NotificationBanner />
 
         {/* Greeting Section */}
         <GreetingCard 

@@ -605,6 +605,8 @@
   height: 70px;
   box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.3);
   z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(70px + env(safe-area-inset-bottom));
 }
 
 .nav-item {
@@ -792,7 +794,7 @@
 /* ===== FLOATING ADD BUTTON ===== */
 .floating-add-button {
   position: fixed;
-  bottom: 90px;
+  bottom: calc(90px + env(safe-area-inset-bottom));
   right: 20px;
   width: 60px;
   height: 60px;

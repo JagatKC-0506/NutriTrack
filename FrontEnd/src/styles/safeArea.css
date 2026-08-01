@@ -23,14 +23,3 @@ body {
 .fab-safe-bottom {
   bottom: calc(6rem + env(safe-area-inset-bottom));
 }
-
-/* Bottom navigation: extend into the gesture bar area */
-.bottom-navigation {
-  padding-bottom: env(safe-area-inset-bottom);
-  height: calc(70px + env(safe-area-inset-bottom));
-}
-
-/* Home floating add button (raised above nav) */
-.floating-add-button {
-  bottom: calc(90px + env(safe-area-inset-bottom));
-}

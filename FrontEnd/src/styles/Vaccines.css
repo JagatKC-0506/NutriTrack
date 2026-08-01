@@ -248,3 +248,19 @@
   font-size: 11px;
   border-radius: 10px;
 }
+
+/* ===== BABY VACCINES PAGE: 2-row tab grid (3 x 2) ===== */
+.vaccine-tabs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  overflow: visible;
+}
+
+.vaccine-tabs-grid button,
+.vaccine-tabs-grid .vaccine-tab-btn {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

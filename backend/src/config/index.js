@@ -11,7 +11,7 @@ export const config = {
       ? (() => { throw new Error('SECRET_KEY must be defined in production'); })() 
       : process.env.SECRET_KEY || 'your-secret-key-change-this-in-production-min-32-chars',
     algorithm: process.env.ALGORITHM || 'HS256',
-    expiresIn: process.env.ACCESS_TOKEN_EXPIRE_MINUTES || '480m',
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRE_MINUTES || '43200m',
   },
   server: {
     port: process.env.PORT || 8000,

@@ -567,12 +567,12 @@ export default function Vaccines() {
         </div>
 
         {/* Tab Selection */}
-        <div className="vaccine-tabs">
+        <div className="vaccine-tabs vaccine-tabs-grid">
           <button 
             className={`vaccine-tab-btn ${activeTab === 'all' ? 'active' : ''}`}
             onClick={() => setActiveTab('all')}
           >
-            All Vaccines
+            All
           </button>
           <button 
             className={`vaccine-tab-btn ${activeTab === 'overdue' ? 'active' : ''}`}
